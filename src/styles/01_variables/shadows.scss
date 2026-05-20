@@ -4,15 +4,15 @@
 $size-shadow: 0.0625rem;
 
 $shadow-icon: 0 0 $size-shadow 0 rgba($color-project-primary, $opacity-lower);
-$shadow-footer: 0 -3 * $size-shadow 6 * $size-shadow 0 rgba($color-default-primary, $opacity-small);
-$shadow-header: 3 * $size-shadow 0 2 * $size-shadow -2 * $size-shadow rgba($color-default-primary, $opacity-lower);
+$shadow-footer: 0 (-3 * $size-shadow) 6 * $size-shadow 0 rgba($color-default-primary, $opacity-small);
+$shadow-header: 3 * $size-shadow 0 2 * $size-shadow (-2 * $size-shadow) rgba($color-default-primary, $opacity-lower);
 
 $shadow-header-bottom: 0 2 * $size-shadow 2 * $size-shadow 0 rgba($color-default-primary, $opacity-small);
 
 $shadow-primary-light: 0 0 3 * $size-shadow 0 $color-project-primary;
 
 /* Cards */
-$shadow-card: 0 0 6 * $size-shadow -$size-shadow rgba($color-default-primary, $opacity-lower),
+$shadow-card: 0 0 6 * $size-shadow (-$size-shadow) rgba($color-default-primary, $opacity-lower),
   0 $size-shadow $size-shadow 0 rgba($color-default-primary, $opacity-small),
   0 $size-shadow 3 * $size-shadow 0 rgba($color-default-primary, $opacity-small);
 
@@ -23,8 +23,8 @@ $shadow-bubble-card: drop-shadow(0 0 3 * $size-shadow rgba($color-default-primar
   drop-shadow(0 $size-shadow $size-shadow rgba($color-default-primary, $opacity-small));
 
 /* Stepper */
-$shadow-element-button: inset 0 5 * $size-shadow 3 * $size-shadow -4 * $size-shadow rgba($color-default-primary, $opacity-small);
-$shadow-element-background: 3 * $size-shadow -4 * $size-shadow 2 * $size-shadow -2 * $size-shadow
+$shadow-element-button: inset 0 5 * $size-shadow 3 * $size-shadow (-4 * $size-shadow) rgba($color-default-primary, $opacity-small);
+$shadow-element-background: 3 * $size-shadow (-4 * $size-shadow) 2 * $size-shadow (-2 * $size-shadow)
   rgba($color-default-primary, $opacity-lower);
 
 /* Actions, boutons, link */

@@ -29,21 +29,25 @@ $grid-columns: 16;
 
 // Layout workspace : container = flex (menu à gauche + content à droite)
 // Ported from workspace.component.scss + menu-layout.component.scss du legacy.
+// `overflow: hidden` au lieu de `auto` côté next : on évite le double scroll
+// (html + .sc-app__container) qui apparaît si le Header dépasse 11rem. Le
+// scroll est concentré sur `.sc-app__content` ci-dessous.
+//
+// NOTE : le legacy avait `* { box-sizing: unset }` ici, mais c'était scopé par
+// Angular ViewEncapsulation et n'affectait pas les pages enfants. Le porter
+// en SCSS global cassait la grille Bootstrap (col-lg-9 + col-lg-3 + paddings
+// 15px = 100% + 60px → débordement → wrap). On le supprime : le `border-box`
+// par défaut de Bootstrap s'applique partout, conformément au rendu legacy.
 .sc-app__container {
   background-color: $color-background;
   display: flex;
-  overflow: auto;
-
-  *,
-  *::before,
-  *::after {
-    box-sizing: unset;
-  }
+  overflow: hidden;
 }
 
 .sc-app__content {
   flex: 1;
   height: calc(100vh - 11rem);
+  overflow-y: auto;
   padding-top: 0;
   padding-bottom: $size-large;
 }

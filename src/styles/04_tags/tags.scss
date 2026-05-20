@@ -1,8 +1,8 @@
 @import "bases";
 
 body {
-  overflow-y: visible;
-  overflow-x: hidden;
+  overflow: hidden;
+  height: 100vh;
   font-family: $font-default;
 }
 

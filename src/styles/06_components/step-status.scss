@@ -1,0 +1,29 @@
+@import "bases";
+
+.sc-status-step {
+  border-radius: $radius-large;
+  @include txt-information;
+  color: $color-txt-default-primary-very-light;
+  padding: 0.1rem 0.15rem 0.1rem 0.5rem;
+
+  &.validated {
+    background-color: $color-background-blue;
+    em.c-icon {
+      background-color: $color-tacct-blue;
+    }
+  }
+
+  &.in-progress {
+    background-color: $color-background;
+    em.c-icon {
+      background-color: $color-empty-dark;
+    }
+  }
+
+  &.incomplete {
+    background-color: $color-background;
+    em.c-icon {
+      background-color: $color-empty-dark;
+    }
+  }
+}

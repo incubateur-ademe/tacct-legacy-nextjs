@@ -6,7 +6,15 @@ const nextConfig: NextConfig = {
     // Permet aux SCSS portés du legacy Angular de résoudre `bases`, `colors`, etc.
     // sans préfixe relatif (comportement Angular/Webpack reproduit).
     loadPaths: [path.join(process.cwd(), 'src/styles')],
-    silenceDeprecations: ['legacy-js-api', 'import'],
+    silenceDeprecations: [
+      'legacy-js-api',
+      'import',
+      'if-function',
+      'global-builtin',
+      'color-functions',
+      'slash-div',
+      'abs-percent',
+    ],
   },
 };
 

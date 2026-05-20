@@ -1,0 +1,77 @@
+@import "bases";
+
+/* Logos colorés des 3 sections de l'accueil workspace */
+.logo-tacct-diagnose {
+  height: 81px;
+  width: 92px;
+  background-size: 92px;
+  background-image: url("/assets/img/logo_tacct_diag.svg");
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.logo-tacct-strategy {
+  height: 81px;
+  width: 92px;
+  background-size: 92px;
+  background-image: url("/assets/img/logo_tacct_strat.svg");
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.logo-tacct-evaluation {
+  height: 81px;
+  width: 92px;
+  background-size: 92px;
+  background-image: url("/assets/img/logo_tacct_eval.svg");
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Bloc info "Diagnostiquer les impacts" (3 items centrés) */
+.c-diagnose-impact__bloc-info {
+  padding: 0;
+  margin: 2em auto;
+  display: flex;
+  flex-wrap: wrap;
+  width: 50rem;
+
+  .o-item {
+    width: 15rem;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+    margin-top: 2rem;
+  }
+}
+
+/* Liste résumé des impacts étudiés ("Construire des stratégies") */
+.sc-construct-strategy__summary-list {
+  display: flex;
+  flex-direction: row;
+  margin-top: 2 * $size-default;
+  justify-content: space-around;
+}
+
+.sc-construct-strategy__summary-item {
+  display: flex;
+  flex-direction: column;
+  width: 20%;
+  height: 12rem;
+}
+
+.sc-construct-strategy__summary-item-logo {
+  align-self: flex-start;
+}
+
+.sc-construct-strategy__summary-item-txt {
+  flex: 1;
+}
+
+/* Légende sous le titre de StudyInfo */
+.sc-study-info__legend {
+  color: $color-txt-regular;
+  padding-left: 3.7rem;
+  margin-top: -2rem;
+}

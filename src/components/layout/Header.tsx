@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getCurrentUser } from '@/server/auth/current-user';
 import { isAdmin } from '@/server/study/current-study';
+import { UserTerritorySelect } from './UserTerritorySelect';
 import styles from './Header.module.scss';
 
 export async function Header() {
@@ -12,6 +13,15 @@ export async function Header() {
   const isHeadOfAStudy = user.user_study.some((us) => us.head_study);
   const settingsHref = admin ? '/workspace/gestion/studies-management' : '/workspace/settings';
 
+  const studies = user.user_study
+    .map((us) => us.study)
+    .filter((s): s is NonNullable<typeof s> => s !== null)
+    .map((s) => ({
+      id: s.id,
+      territoryName: s.territory_name,
+      year: Number(s.year),
+    }));
+
   return (
     <div className={styles.containerHeader}>
       <div className="row">
@@ -22,6 +32,7 @@ export async function Header() {
               aria-label="Accueil"
               className={`justify-content-between ${styles.logoTacct}`}
             />
+            <UserTerritorySelect studies={studies} />
             <div className={styles.header}>
               <span className="mr-2 c-legend-action">{user.firstname}</span>
               <span className="mr-3 c-legend-action text-uppercase">{user.lastname}</span>

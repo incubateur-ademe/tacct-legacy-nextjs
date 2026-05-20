@@ -30,3 +30,64 @@
     max-width: none;
   }
 }
+
+/* Variante avec bande orange à gauche + icône (modale "diagnostic incomplet") */
+.sc-modal__type {
+  background: $color-tacct-orange;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: $size-xl;
+  padding: ($size-default * 2) $size-default $size-default $size-default;
+
+  .status-incomplete {
+    border: $border-size-default $border-type-default $color-default-secondary;
+  }
+}
+
+.sc-modal__container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: $size-medium;
+}
+
+.sc-modal__content__titles {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: $size-medium * 2;
+  margin-bottom: $size-default * 2;
+
+  h3 {
+    margin: 0;
+  }
+}
+
+.sc-modal__title-info {
+  font-size: $txt-size-lower;
+  font-weight: $txt-bold;
+  color: $color-txt-project-secondary;
+}
+
+.sc-modal__close {
+  position: absolute;
+  top: $size-default;
+  right: $size-default;
+}
+
+.sc-modal__content .c-group-buttons {
+  margin-top: $size-medium;
+}
+
+/* Reset des styles par défaut du <dialog> natif quand il sert de modale */
+dialog.modal-dialog {
+  border: 0;
+  padding: 0;
+  color: inherit;
+  max-width: none;
+
+  &::backdrop {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+}

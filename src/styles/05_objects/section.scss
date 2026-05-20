@@ -14,7 +14,7 @@ section {
 }
 
 .o-section--full-width {
-  margin: 0 -2 * $size-default;
+  margin: 0 (-2 * $size-default);
 }
 
 /* Types de section */
@@ -38,7 +38,7 @@ section {
 .o-section--even {
   background-color: $color-project-secondary-very-light;
   padding: 2 * $size-default;
-  margin: $size-medium -2 * $size-default 2 * $size-default -2 * $size-default;
+  margin: $size-medium (-2 * $size-default) 2 * $size-default (-2 * $size-default);
 
   & .c-input__group label,
   & .c-input__group .sc-datepicker__label {

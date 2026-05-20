@@ -1,0 +1,29 @@
+@import "bases";
+
+.c-footer {
+  @include txt-marianne-regular;
+
+  .c-footer__copyright {
+    font-size: $txt-size-small;
+  }
+
+  .c-footer__links {
+    @include txt-marianne-regular;
+    font-size: $txt-size-lower;
+  }
+
+  .c-footer__logo {
+    padding-right: $size-medium;
+  }
+
+  .c-centred-elements {
+    display: flex;
+    align-content: center;
+    align-items: center;
+  }
+
+  .c-footer__hr {
+    position: relative;
+    width: 100%;
+  }
+}

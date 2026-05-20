@@ -1,0 +1,46 @@
+@import "bases";
+
+/* Port de help-section.component.scss du legacy */
+.sc-help-section {
+  display: block;
+  padding-top: $size-medium;
+
+  ol {
+    margin-left: $size-default + $size-small;
+  }
+
+  p {
+    word-break: break-word;
+  }
+
+  .container {
+    border-left: (2 * $border-size-default) $border-type-default $color-project-secondary-txt;
+    padding-left: $size-default + $size-lower + $size-small;
+    margin-left: $size-default + $size-small;
+  }
+}
+
+/* Items cliquables (chaque page du help section) */
+.sc-help-section__item {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* Modale d'aide ouverte au clic sur un item (équiv. <app-page-info> legacy) */
+.sc-help-modal {
+  width: 60rem;
+  max-width: 90vw;
+
+  .sc-help-modal__content {
+    padding-top: $size-default;
+    line-height: 1.5;
+  }
+}

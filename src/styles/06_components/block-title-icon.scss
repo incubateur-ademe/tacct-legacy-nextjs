@@ -1,0 +1,29 @@
+@import "bases";
+
+.sc-block-title-icon {
+  display: flex;
+  padding-bottom: 2 * $size-default;
+  align-items: center;
+  margin-right: 2rem;
+}
+
+.sc-block-title-icon-lower {
+  display: flex;
+  align-items: center;
+}
+
+.sc-block-title-icon__icon {
+  margin-right: $size-default;
+}
+
+.sc-block-title-icon__title {
+  &.warning {
+    color: $color-warning;
+  }
+}
+
+.sc-block-title-icon__description {
+  color: #434343;
+  font-family: txt-marianne-regular;
+  font-size: $txt-size-lower;
+}

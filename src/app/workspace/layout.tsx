@@ -1,5 +1,6 @@
 import { Header } from '@/components/layout/Header';
 import { Menu } from '@/components/layout/Menu';
+import { Footer } from '@/components/layout/Footer';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { userRoles } from '@/server/study/current-study';
 
@@ -18,6 +19,9 @@ export default async function WorkspaceLayout({
         <Menu userRoles={roles} />
         <div className="sc-app__content container-fluid">
           <div className="content-body">{children}</div>
+          <div className="container page">
+            <Footer />
+          </div>
         </div>
       </div>
     </>

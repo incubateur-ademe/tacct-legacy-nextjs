@@ -15,13 +15,12 @@ interface BuiltPool {
 /**
  * Construit la config `pg` à partir de DATABASE_URL.
  *
- * Subtilités du driver adapter Prisma 7 :
- *
  * - `sslmode=…` dans l'URL → `pg-connection-string` le traduit en `verify-full`,
  *   ce qui écrase nos options SSL. On le strip, on gère SSL via `pool.ssl`.
- * - `?schema=…` est un param du moteur Prisma natif, ignoré par
- *   `@prisma/adapter-pg`. On l'extrait et on force le `search_path` à chaque
- *   nouvelle connexion via `pool.on('connect')`.
+ * - `?schema=…` est un param du moteur Prisma natif, ignoré par le pool `pg`.
+ *   On l'extrait pour le passer ensuite à `PrismaPg({ schema })`, qui qualifie
+ *   les tables dans les requêtes générées (`"schema"."Table"`). Pas besoin de
+ *   toucher au `search_path` côté connexion.
  */
 function buildPool(): BuiltPool {
   const rawUrl = process.env.DATABASE_URL;
@@ -57,21 +56,7 @@ function createPrismaClient(): PrismaClient {
   const { config, schema } = buildPool();
   const pool = new Pool(config);
 
-  // Le param `?schema=…` n'est pas lu par l'adapter : on force le search_path
-  // à chaque nouvelle connexion. On utilise un paramètre lié pour gérer les
-  // noms de schemas avec caractères spéciaux (ex. "tacct-legacy").
-  if (schema) {
-    pool.on('connect', (client) => {
-      client.query({
-        text: 'SELECT set_config($1, $2, false)',
-        values: ['search_path', schema],
-      }).catch((err) => {
-        console.error('[prisma] échec du SET search_path :', err);
-      });
-    });
-  }
-
-  const adapter = new PrismaPg(pool);
+  const adapter = new PrismaPg(pool, schema ? { schema } : undefined);
   return new PrismaClient({
     adapter,
     log:

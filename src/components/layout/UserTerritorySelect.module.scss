@@ -1,0 +1,19 @@
+@import "bases";
+
+.select {
+  border: $border-size-default $border-type-default $color-empty-light;
+  border-radius: $radius-default;
+  padding: 0.25rem 0.6rem;
+  background-color: $color-default-secondary;
+  font-family: $font-marianne-regular;
+  font-size: $txt-size-lower;
+  color: $color-txt-default-primary;
+  height: 2rem;
+  min-width: 10rem;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: $color-project-primary;
+  }
+}

@@ -1,8 +1,12 @@
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { getCurrentStudy } from '@/server/study/current-study';
 import { prisma } from '@/server/db';
+import { BlockTitleIcon } from '@/components/ui/BlockTitleIcon';
+import { StepStatus } from '@/components/ui/StepStatus';
+import { ContentLayout } from '@/components/layout/ContentLayout';
+import { DiagnosticIncompleteButton } from '@/components/workspace/DiagnosticIncompleteButton';
+import { pluralize } from '@/lib/pluralize';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,13 +21,11 @@ export default async function WorkspaceHomePage({
   const { study: studyIdParam } = await searchParams;
   const study = await getCurrentStudy(user, studyIdParam);
 
-  // Pas d'étude associée → admin/studies (pour admin) ou message vide
   if (!study) {
     redirect('/workspace/gestion/studies-management');
   }
 
-  // Compteurs nécessaires pour les sections du parcours
-  const [nbObservedExposures, nbImpacts, studiedImpacts] = await Promise.all([
+  const [nbObservedExposures, nbImpacts, allStudiedImpacts] = await Promise.all([
     prisma.observed_exposure.count({ where: { study_id: study.id } }),
     prisma.impact.count({
       where: { impact_theme: { study_id: study.id } },
@@ -38,57 +40,72 @@ export default async function WorkspaceHomePage({
     }),
   ]);
 
-  const regionLabel = study.commune?.department?.region?.label ?? '—';
+  const diagnosticComplete =
+    study.observed_exposure_valid === 'validated' &&
+    study.exposition_future_valid === 'validated' &&
+    study.sensibility_valid === 'validated';
+
+  // Reproduit le `sortImpacts()` legacy : filtre les impacts avec ≥ 1 action,
+  // puis tri stable createdAt DESC → actions ASC → trajectories DESC, top 3.
+  const studiedImpacts = [...allStudiedImpacts]
+    .filter((s) => s.impact_action.length > 0)
+    .sort((a, b) => (b.created_at?.getTime() ?? 0) - (a.created_at?.getTime() ?? 0))
+    .sort((a, b) => a.impact_action.length - b.impact_action.length)
+    .sort((a, b) => b.impact_trajectory.length - a.impact_trajectory.length)
+    .slice(0, 3);
+
+  const regionLabel = study.commune?.department?.region?.label ?? '';
 
   return (
-    <div className="container">
-      <div className="row">
-        <div className="col-lg-12 col-md-16">
-          {/* ── Study info ── */}
-          <StudyInfo
-            territoryName={study.territory_name}
-            year={Number(study.year)}
-            regionLabel={regionLabel}
-          />
+    <ContentLayout helpKey="main-page">
+      <div className="container">
+        <div className="row">
+          <div className="col-lg-12">
+            {/* ── Study info ── */}
+            <StudyInfo
+              territoryName={study.territory_name}
+              year={Number(study.year)}
+              regionLabel={regionLabel}
+            />
 
-          {/* ── Diagnostiquer les impacts ── */}
-          <DiagnoseImpacts
-            nbObservedExposures={nbObservedExposures}
-            nbImpacts={nbImpacts}
-            study={{
-              observedExposureValid: study.observed_exposure_valid,
-              expositionFutureValid: study.exposition_future_valid,
-              sensibilityValid: study.sensibility_valid,
-            }}
-          />
+            {/* ── Diagnostiquer les impacts ── */}
+            <DiagnoseImpacts
+              nbObservedExposures={nbObservedExposures}
+              nbImpacts={nbImpacts}
+              observedExposureValid={study.observed_exposure_valid}
+              expositionFutureValid={study.exposition_future_valid}
+              sensibilityValid={study.sensibility_valid}
+            />
 
-          {/* ── Construire des stratégies ── */}
-          <ConstructStrategy
-            impacts={studiedImpacts.map((s) => ({
-              id: s.id,
-              description: s.description ?? '',
-              icon: s.impact_theme?.thematic?.icon ?? 'suspended',
-              nbActions: s.impact_action.length,
-              nbTrajectories: s.impact_trajectory.length,
-            }))}
-          />
+            {/* ── Construire des stratégies ── */}
+            <ConstructStrategy
+              impacts={studiedImpacts.map((s) => ({
+                id: s.id,
+                description: s.description ?? '',
+                icon: s.impact_theme?.thematic?.icon ?? 'suspended',
+                nbActions: s.impact_action.length,
+                nbTrajectories: s.impact_trajectory.length,
+              }))}
+              diagnosticComplete={diagnosticComplete}
+            />
 
-          {/* ── Évaluer les actions ── */}
-          <div className="row mt-4">
-            <div className="col-lg-12 col-md-16">
-              <div className="o-card">
-                <EvaluateActions />
+            {/* ── Évaluer les actions ── */}
+            <div className="row mt-4">
+              <div className="col-lg-12 col-md-16">
+                <div className="o-card">
+                  <EvaluateActions />
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </ContentLayout>
   );
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-// Sous-composants — équivalents directs des composants Angular de l'accueil
+// Sous-composants — reproductions directes des composants Angular de l'accueil
 
 function StudyInfo({
   territoryName,
@@ -104,13 +121,12 @@ function StudyInfo({
       <div className="col-lg-12 col-md-16">
         <div className="o-card">
           <div className="row">
-            <div className="col-16 d-flex align-items-center">
-              <em className="c-icon medium project-primary dashboard mr-3" aria-hidden="true" />
-              <div>
-                <h1 className="c-title-black-bold m-0">{territoryName}</h1>
-                <div className="c-subtitle-grey">Diagnostic</div>
-              </div>
-            </div>
+            <BlockTitleIcon
+              className="col-16"
+              pageTitle={territoryName}
+              subtitle="Dossier TACCT"
+              icon="dashboard"
+            />
           </div>
           <div className="sc-study-info__legend">
             <span>Région {regionLabel}</span>
@@ -122,40 +138,18 @@ function StudyInfo({
   );
 }
 
-function StepStatus({ status }: { status: string }) {
-  const color =
-    status === 'validated' ? '#198754' : status === 'in-progress' ? '#f9a825' : '#dc3545';
-  const label =
-    status === 'validated' ? 'Validé' : status === 'in-progress' ? 'En cours' : 'À compléter';
-  return (
-    <span
-      style={{
-        display: 'inline-block',
-        padding: '2px 8px',
-        borderRadius: 12,
-        background: color,
-        color: 'white',
-        fontSize: 11,
-        fontWeight: 600,
-      }}
-    >
-      {label}
-    </span>
-  );
-}
-
 function DiagnoseImpacts({
   nbObservedExposures,
   nbImpacts,
-  study,
+  observedExposureValid,
+  expositionFutureValid,
+  sensibilityValid,
 }: {
   nbObservedExposures: number;
   nbImpacts: number;
-  study: {
-    observedExposureValid: string;
-    expositionFutureValid: string;
-    sensibilityValid: string;
-  };
+  observedExposureValid: string;
+  expositionFutureValid: string;
+  sensibilityValid: string;
 }) {
   return (
     <div className="row mt-4">
@@ -169,37 +163,38 @@ function DiagnoseImpacts({
           </div>
 
           <div className="c-diagnose-impact__bloc-info">
-            <Item
+            <DiagnoseItem
               icon="eye"
               count={nbObservedExposures}
               singular="Aléa climatique"
               plural="Aléas climatiques"
-              status={study.observedExposureValid}
+              status={observedExposureValid}
             />
-            <Item
+            <DiagnoseItem
               icon="exposition-future"
               count={nbObservedExposures}
               singular="Aléa climatique futur"
               plural="Aléas climatiques futurs"
-              status={study.expositionFutureValid}
+              status={expositionFutureValid}
             />
-            <Item
+            <DiagnoseItem
               icon="sensibilite"
               count={nbImpacts}
               singular="Impact qualifié"
               plural="Impacts qualifiés"
-              status={study.sensibilityValid}
+              status={sensibilityValid}
             />
           </div>
+
           <div className="o-btn--end">
-            <Link
+            <a
               id="worskpace-acceder-diagnostic"
               className="c-btn--primary"
               href="/workspace/dashboard"
               title="Accéder au diagnostic"
             >
               Accéder au diagnostic
-            </Link>
+            </a>
           </div>
         </div>
       </div>
@@ -207,7 +202,7 @@ function DiagnoseImpacts({
   );
 }
 
-function Item({
+function DiagnoseItem({
   icon,
   count,
   singular,
@@ -227,7 +222,7 @@ function Item({
       </div>
       <div className="mb-2">
         <span className="c-subtitle-black-bold">{count} </span>
-        <span className="c-subtitle-black">{count > 1 ? plural : singular}</span>
+        <span className="c-subtitle-black">{pluralize(count, singular, plural)}</span>
       </div>
       <StepStatus status={status} />
     </div>
@@ -236,6 +231,7 @@ function Item({
 
 function ConstructStrategy({
   impacts,
+  diagnosticComplete,
 }: {
   impacts: {
     id: string;
@@ -244,8 +240,14 @@ function ConstructStrategy({
     nbActions: number;
     nbTrajectories: number;
   }[];
+  diagnosticComplete: boolean;
 }) {
   const count = impacts.length;
+  const summaryLabel =
+    count === 0
+      ? 'Aucun impact étudié'
+      : `${count} ${pluralize(count, 'impact étudié', 'impacts étudiés')}`;
+
   return (
     <div className="row mt-4">
       <div className="col-lg-12">
@@ -257,12 +259,9 @@ function ConstructStrategy({
                 Construire des stratégies
               </span>
             </div>
-            <span className="c-subtitle mr-5">
-              {count === 0
-                ? 'Aucun impact étudié'
-                : `${count} impact${count > 1 ? 's' : ''} étudié${count > 1 ? 's' : ''}`}
-            </span>
+            <span className="c-subtitle mr-5">{summaryLabel}</span>
           </div>
+
           <div className="sc-construct-strategy__summary-list">
             {impacts.map((imp) => (
               <div key={imp.id} className="sc-construct-strategy__summary-item">
@@ -275,23 +274,17 @@ function ConstructStrategy({
                   dangerouslySetInnerHTML={{ __html: imp.description }}
                 />
                 <span className="c-subtitle-black sc-construct-strategy__summary-item-txt">
-                  {imp.nbActions} action{imp.nbActions > 1 ? 's' : ''}
+                  {imp.nbActions} {pluralize(imp.nbActions, 'action', 'actions')}
                 </span>
                 <span className="c-subtitle-black sc-construct-strategy__summary-item-txt">
-                  {imp.nbTrajectories} trajectoire{imp.nbTrajectories > 1 ? 's' : ''}
+                  {imp.nbTrajectories} {pluralize(imp.nbTrajectories, 'trajectoire', 'trajectoires')}
                 </span>
               </div>
             ))}
           </div>
+
           <div className="o-btn--end">
-            <Link
-              id="worskpace-acceder-trajectoires"
-              className="c-btn--primary"
-              href="/workspace/impacts"
-              title="Accéder aux trajectoires"
-            >
-              Accéder aux trajectoires
-            </Link>
+            <DiagnosticIncompleteButton diagnosticComplete={diagnosticComplete} />
           </div>
         </div>
       </div>
