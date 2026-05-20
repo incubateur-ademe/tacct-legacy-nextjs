@@ -1,11 +1,16 @@
 import Link from 'next/link';
 import { getCurrentUser } from '@/server/auth/current-user';
+import { isAdmin } from '@/server/study/current-study';
 import styles from './Header.module.scss';
 
 export async function Header() {
   const user = await getCurrentUser();
 
   if (!user) return null;
+
+  const admin = isAdmin(user);
+  const isHeadOfAStudy = user.user_study.some((us) => us.head_study);
+  const settingsHref = admin ? '/workspace/gestion/studies-management' : '/workspace/settings';
 
   return (
     <div className={styles.containerHeader}>
@@ -20,21 +25,33 @@ export async function Header() {
             <div className={styles.header}>
               <span className="mr-2 c-legend-action">{user.firstname}</span>
               <span className="mr-3 c-legend-action text-uppercase">{user.lastname}</span>
-              <button type="button" aria-label="Profil">
+
+              <Link href="/workspace/profile" aria-label="Profil">
                 <span className="c-icon__circle project-primary mr-2">
                   <em className="c-icon people project-primary medium" title="Profil" />
                 </span>
-              </button>
-              <button type="button" aria-label="Paramétrage">
-                <span className="c-icon__circle project-primary mr-2">
-                  <em className="c-icon settings project-primary medium" title="Paramétrage" />
-                </span>
-              </button>
-              <button type="button" aria-label="Déconnexion" className="mr-5">
+              </Link>
+
+              {(admin || isHeadOfAStudy) && (
+                <Link
+                  href={settingsHref}
+                  aria-label={admin ? 'Administration' : 'Paramétrage'}
+                >
+                  <span className="c-icon__circle project-primary mr-2">
+                    <em
+                      className="c-icon settings project-primary medium"
+                      title={admin ? 'Administration' : 'Paramétrage'}
+                    />
+                  </span>
+                </Link>
+              )}
+
+              {/* Logout : sera branché sur ProConnect en phase finale */}
+              <Link href="/logout" aria-label="Déconnexion" className="mr-5">
                 <span className="c-icon__circle project-primary">
                   <em className="c-icon logout project-primary medium" title="Déconnexion" />
                 </span>
-              </button>
+              </Link>
             </div>
           </div>
         </div>

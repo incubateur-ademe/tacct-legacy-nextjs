@@ -1,0 +1,160 @@
+// Ported from tacct-legacy menu.component.scss (Angular)
+// Classes globales : utilisées directement par le composant Menu de Next.js.
+
+.sc-menu {
+  background-color: $color-default-secondary;
+  box-shadow: $shadow-header;
+  width: 0;
+  height: 100vh;
+  position: relative;
+  z-index: 50;
+  transition: 0.4s ease all;
+  padding-top: 7rem;
+
+  &.small,
+  &.normal {
+    width: $icon-size-medium;
+  }
+
+  &.open:not(.normal) {
+    width: $size-menu;
+  }
+
+  &.open.burger-menu {
+    width: $size-zone-menu;
+  }
+}
+
+.sc-menu__content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 0;
+  height: 100%;
+  transition: 0.4s ease all;
+  overflow: hidden;
+
+  &.small {
+    width: $icon-size-medium;
+  }
+
+  &.open {
+    width: $size-menu;
+  }
+
+  &.open.burger-menu {
+    width: $size-zone-menu;
+  }
+}
+
+.sc-menu__icon {
+  background-color: $color-default-secondary;
+  box-shadow: $shadow-header;
+  border-radius: 0;
+  height: $height-burger-icon;
+  margin-left: 0;
+  position: absolute;
+  transition: 0.4s ease margin-left;
+
+  &.open {
+    margin-left: $size-menu;
+  }
+
+  &:hover {
+    background-color: $color-project-primary-very-light;
+  }
+}
+
+.sc-menu__nav {
+  background-color: $color-default-secondary;
+  display: flex;
+  align-content: flex-start;
+  text-decoration: none;
+  align-items: center;
+  width: $size-menu;
+  height: $size-large;
+
+  & em.c-icon {
+    min-width: $size-default + $size-medium;
+  }
+
+  &:hover:not(.sc-menu__nav-disabled) {
+    background-color: $color-project-primary;
+  }
+  &.disabled {
+    cursor: default;
+  }
+  &.normal,
+  &.normal:hover {
+    background-color: transparent;
+  }
+
+  &.normal:hover:not(.active) em.c-icon {
+    background-color: $color-project-primary-very-light;
+  }
+
+  &.active em.c-icon {
+    background-color: $color-project-primary;
+    color: $color-txt-default-secondary;
+  }
+  &.active .sc-menu__title-nav {
+    font-weight: bold;
+  }
+  &.active:not(.normal) .sc-menu__title-nav {
+    color: $color-txt-default-secondary;
+  }
+  &.active:not(.normal) {
+    background-color: $color-project-primary;
+  }
+
+  &.normal:hover:not(.sc-menu__nav-disabled) .sc-menu__title-nav {
+    color: $color-project-primary;
+  }
+
+  &.burger-menu {
+    width: $size-zone-menu;
+  }
+
+  &.sc-menu__nav--no-event {
+    pointer-events: none;
+  }
+}
+
+.sc-menu__title-nav {
+  font-family: $font-default;
+  font-size: $txt-size-lower;
+  font-weight: $txt-regular;
+  text-transform: uppercase;
+  color: $color-txt-default-tertiary;
+  white-space: nowrap;
+  margin-left: $size-medium;
+}
+
+.sc-menu__nav-disabled {
+  cursor: default;
+
+  & span,
+  em.c-icon {
+    color: $color-empty;
+  }
+
+  &.normal:hover:not(.active) em.c-icon {
+    background-color: transparent;
+  }
+}
+
+.sc-menu__subnav {
+  @include txt-paragraphe-small;
+  display: block;
+  margin-left: $size-large + $size-medium;
+  margin-bottom: $size-lower;
+  text-decoration: none;
+
+  &:hover:not(.active) {
+    color: $color-project-primary;
+  }
+
+  &.active {
+    font-weight: $txt-bold;
+  }
+}

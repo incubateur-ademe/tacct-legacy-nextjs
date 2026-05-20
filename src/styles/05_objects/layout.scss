@@ -26,3 +26,43 @@ $grid-columns: 16;
     margin-left: 0;
   }
 }
+
+// Layout workspace : container = flex (menu à gauche + content à droite)
+// Ported from workspace.component.scss + menu-layout.component.scss du legacy.
+.sc-app__container {
+  background-color: $color-background;
+  display: flex;
+  overflow: auto;
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: unset;
+  }
+}
+
+.sc-app__content {
+  flex: 1;
+  height: calc(100vh - 11rem);
+  padding-top: 0;
+  padding-bottom: $size-large;
+}
+
+.content-body {
+  min-height: 80vh;
+}
+
+.sc-app__zone-menu {
+  width: $size-zone-menu;
+  height: 100%;
+
+  &.small {
+    width: $icon-size-default;
+  }
+}
+
+.sc-app__menu {
+  position: absolute;
+  top: 0;
+  left: 0;
+}

@@ -22,6 +22,7 @@ export const getCurrentUser = cache(async () => {
     where: { email: DEV_AUTH_EMAIL },
     include: {
       study_office: true,
+      commune: true,
       user_study: { include: { study: true } },
     },
   });
