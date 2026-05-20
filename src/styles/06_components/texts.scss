@@ -1,0 +1,152 @@
+@import "bases";
+
+.c-title-h1 {
+  @include h1-secondary;
+}
+
+.c-title-h2 {
+  @include h2-secondary;
+}
+
+.c-subtitle {
+  font-family: $font-default;
+  font-size: $txt-size-lower;
+  font-weight: $txt-black;
+  line-height: $size-medium;
+  color: $color-txt-project-secondary;
+  margin: 0;
+}
+
+.c-subtitle-black {
+  font-family: $font-default;
+  font-size: $txt-size-default;
+  font-weight: $txt-regular;
+  line-height: $size-medium;
+  color: $color-default-primary-light;
+  margin: 0;
+}
+
+.c-subtitle-black-bold {
+  font-family: $font-default;
+  font-size: $txt-size-default;
+  font-weight: $txt-black;
+  line-height: $size-medium;
+  color: $color-txt-default-primary-very-light;
+  margin: 0;
+}
+
+.c-project-sheet-section-title {
+  @include title-project-sheet-section;
+}
+
+.p-bold-primary {
+  @include p-bold-primary;
+}
+.p-small {
+  @include txt-paragraphe;
+  font-size: $txt-size-lower;
+  color: $color-default-primary-very-light;
+}
+.p-small-grey {
+  @include txt-paragraphe;
+  font-size: $txt-size-lower;
+  color: $color-empty;
+}
+.p-small-bold {
+  @include txt-paragraphe;
+  font-weight: $txt-bold;
+  font-size: $txt-size-lower;
+  color: $color-default-primary-very-light;
+}
+.c-legend {
+  @include h2-secondary;
+  margin-bottom: $size-lower;
+  text-transform: uppercase;
+}
+.c-legend-action-bold {
+  @include h2-secondary;
+  font-size: $txt-size-default;
+  color: $color-project-primary;
+  margin-bottom: $size-lower;
+}
+.c-legend-action {
+  @include txt-paragraphe;
+  color: $color-project-primary;
+  margin-bottom: $size-lower;
+}
+.c-legend-paragraphe {
+  @include txt-paragraphe;
+}
+
+.c-txt-marianne-regular {
+  @include txt-marianne-regular;
+}
+.c-txt-marianne-bold {
+  @include txt-marianne-bold;
+}
+
+.c-required {
+  @include required;
+  margin-left: $size-lower;
+
+  // FIXME à refactoriser pour mettre warning et error
+  &.error {
+    color: $color-txt-warning;
+  }
+  &.error-message {
+    color: $color-txt-error;
+  }
+}
+
+.c-empty {
+  color: $color-empty;
+}
+.c-error-message {
+  font-family: $font-default;
+  font-size: $txt-size-small;
+  font-weight: $txt-bold;
+  line-height: $size-default;
+  color: $color-error;
+  z-index: 10;
+}
+
+.c-password-message {
+  max-width: fit-content;
+  color: $label-grey;
+  font-family: $font-marianne-regular;
+  font-size: $txt-size-small;
+  font-weight: $txt-bold;
+}
+
+.c-form-account-error {
+  font-family: $font-default;
+  font-size: $txt-size-small;
+  font-weight: $txt-bold;
+  line-height: $size-default;
+  color: $color-error;
+  z-index: 10;
+  margin-left: 15.625 * $size-default;
+}
+
+.c-minutes:before {
+  @include txt-placeholder;
+  @include input-right-placeholder;
+  content: "min.";
+}
+
+.c-hours:before {
+  @include txt-placeholder;
+  @include input-right-placeholder;
+  content: "h.";
+}
+
+.c-euro:before {
+  @include txt-placeholder;
+  @include input-right-placeholder;
+  content: "€";
+  font-style: normal;
+}
+
+c-title-bold {
+  @include txt-paragraph-normal;
+}

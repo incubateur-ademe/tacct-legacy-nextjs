@@ -1,0 +1,34 @@
+@import "bases";
+
+.c-stepper__info-group {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.c-stepper__info-step {
+  @include txt-paragraphe-small;
+  @include overflow-ellipsis;
+  color: $color-txt-default-tertiary;
+  margin-left: $size-default;
+  min-width: $size-lower;
+  max-width: $size-menu - $icon-size-medium;
+}
+
+.c-stepper__sub-step {
+  @include txt-paragraphe-small;
+  @include overflow-ellipsis;
+  color: $color-txt-default-tertiary;
+  margin-left: $size-default;
+  margin-bottom: $size-lower;
+  min-width: $size-lower;
+  max-width: $size-zone-menu - $icon-size-medium;
+  cursor: pointer;
+
+  &.active {
+    font-weight: $txt-bold;
+  }
+
+  &:hover:not(.active) {
+    color: $color-txt-project-secondary;
+  }
+}

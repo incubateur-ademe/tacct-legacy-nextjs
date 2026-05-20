@@ -1,0 +1,88 @@
+@import "bases";
+
+.o-btn__icon-group {
+  display: flex;
+
+  & > button {
+    margin-right: $size-lower;
+  }
+
+  & > button:last-child {
+    margin-right: 0;
+  }
+}
+
+/* Position button to the right, ex: action in forms */
+.o-btn--end {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2 * $size-default;
+
+  & > button {
+    margin-left: $size-lower;
+  }
+}
+
+/* Position button to the right, ex: action in forms */
+.o-btn--start {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 2 * $size-default;
+
+  & > button {
+    margin-left: $size-lower;
+  }
+}
+
+/* Position buttons to the left and right on same row, ex: actions in search */
+.o-btn--between {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2 * $size-default;
+}
+
+/* Align button with input */
+.o-btn--next-input {
+  display: flex;
+  align-items: flex-start;
+
+  & button {
+    margin: $size-lower 0 0 $size-default;
+  }
+
+  & .c-input__group {
+    flex: 1;
+  }
+}
+
+/* Align button with input on same row in grid system */
+.o-btn--next-input-grid {
+  display: flex;
+  align-items: flex-start;
+
+  & .o-btn--next-input__btn-zone > button {
+    margin: $size-lower 0 0 0;
+    width: auto;
+    height: 2.5rem;
+  }
+}
+
+.o-btn--next-input__btn-zone {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Align button with simple text */
+.o-btn--next-text {
+  display: flex;
+  align-items: center;
+  margin-bottom: $size-default;
+
+  & p:first-of-type {
+    margin-right: $size-default;
+  }
+
+  & .c-checkbox__group {
+    margin-bottom: $size-lower;
+  }
+}

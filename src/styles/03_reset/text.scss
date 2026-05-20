@@ -1,0 +1,33 @@
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding-inline-start: 0;
+  margin-block-start: 0;
+  margin-block-end: 0;
+  margin: 0;
+}
+
+ul {
+  list-style: none;
+}
+
+p {
+  @include txt-paragraphe;
+  white-space: pre-wrap;
+}
+
+a {
+  color: black;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: none;
+}

@@ -1,0 +1,16 @@
+@import "bases";
+
+.admin-list-filter {
+  margin-bottom: -2 * $size-default;
+
+  p {
+    margin-bottom: $size-lower;
+  }
+  .content {
+    padding: 2 * $size-default;
+  }
+
+  button {
+    font-family: $font-default;
+  }
+}

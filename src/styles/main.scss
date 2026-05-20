@@ -1,0 +1,14 @@
+// Point d'entrée global des styles TACCT.
+// Reprend la structure de l'index.scss Angular legacy, en adaptant les imports
+// (tilde Webpack → chemins relatifs / node_modules) et en retirant Angular Material.
+
+@import "bases";
+
+// Bootstrap 4 (depuis node_modules)
+@import "../../node_modules/bootstrap/scss/bootstrap";
+
+@import "03_reset/index";
+@import "04_tags/index";
+@import "05_objects/index";
+@import "06_components/index";
+@import "07_utilities/index";

@@ -1,0 +1,75 @@
+@import "bases";
+
+body .ngx-pagination {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0;
+
+  & li {
+    @include txt-paragraphe-small;
+    border-radius: $radius-default;
+
+    & a {
+      border-radius: $radius-default;
+    }
+  }
+
+  & .current {
+    background-color: $color-project-primary;
+  }
+
+  & .pagination-next a::after,
+  & .pagination-next.disabled::after,
+  & .pagination-previous a::before,
+  & .pagination-previous.disabled::before {
+    font-family: $font-icon;
+    font-size: $icon-size-default;
+    line-height: $size-default + $size-small;
+    display: flex;
+    align-items: center;
+    margin: 0;
+  }
+
+  & .pagination-previous a::before,
+  & .pagination-previous.disabled::before {
+    content: $chevron-left;
+  }
+
+  & .pagination-next a::after,
+  & .pagination-next.disabled::after {
+    content: $chevron-right;
+  }
+
+  & .pagination-previous a::before,
+  & .pagination-next a::after {
+    color: $color-link;
+  }
+}
+
+ul li.page-item.active {
+  .page-link {
+    background-color: $color-project-primary;
+    border-color: $color-project-primary;
+  }
+}
+ul li {
+  &:first-child {
+    a.page-link {
+      color: $color-txt-link;
+    }
+  }
+  &:last-child {
+    a.page-link {
+      color: $color-txt-link;
+    }
+  }
+  a.page-link {
+    padding: 0.2rem 0.55rem;
+    border: 0;
+    border-top-style: none;
+    border-bottom-style: none;
+    margin-left: 0.7rem;
+    border-radius: 20%;
+  }
+}

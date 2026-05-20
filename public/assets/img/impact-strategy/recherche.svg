@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon/recherche</title>
+    <g id="Icon/recherche" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <path d="M15.8366969,10.8870237 L17.2027223,11.2530491 L17.1046461,17.0831761 L11.906211,26.1809234 C11.3582132,27.1399709 11.6914347,28.3616726 12.6504822,28.9096705 C12.947886,29.0796064 13.2839504,29.1703122 13.6264697,29.1730953 L26.4380552,29.2771955 C27.5425883,29.2861703 28.4452648,28.398045 28.4542396,27.2935119 C28.457137,26.9369381 28.3646492,26.5860737 28.1863564,26.2772615 L22.9347731,17.1812523 L22.9347731,17.1812523 L23.0328493,11.3511253 L23.8988747,10.8511253" id="Path-6" stroke="#69A76C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" transform="translate(20.073557, 20.078367) rotate(-330.000000) translate(-20.073557, -20.078367) "></path>
+        <path d="M12,20 C14,20 14,22 16,22 C18,22 18,20 20,20 C22,20 22,22 24,22" id="Line" stroke="#69A76C" stroke-width="2" stroke-linecap="round"></path>
+        <circle id="Oval" fill="#69A76C" cx="25" cy="9" r="1"></circle>
+        <circle id="Oval-Copy" fill="#69A76C" cx="28" cy="11" r="1"></circle>
+        <circle id="Oval-Copy-2" fill="#69A76C" cx="25" cy="12" r="1"></circle>
+    </g>
+</svg>

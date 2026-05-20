@@ -1,0 +1,8 @@
+@import "bases";
+
+h3 {
+  color: $color-tacct-orange;
+  font-weight: $txt-bold;
+  text-transform: uppercase;
+  margin-bottom: $size-default * 2;
+}

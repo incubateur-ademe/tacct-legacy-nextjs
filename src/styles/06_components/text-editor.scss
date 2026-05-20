@@ -1,0 +1,45 @@
+@import "bases";
+
+.angular-editor {
+  width: 100%;
+}
+
+.angular-editor {
+  border-radius: $radius-default;
+  border: $border-empty;
+}
+
+.angular-editor-toolbar {
+  font-family: $font-default !important;
+  font-size: $txt-size-default !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-bottom: $border-empty-light !important;
+  padding: $size-lower + $size-small $size-default $size-lower $size-default !important;
+}
+
+.angular-editor-placeholder {
+  visibility: hidden;
+}
+
+.angular-editor-textarea {
+  @include txt-paragraphe;
+  border: none !important;
+  height: 5 * $size-large !important;
+}
+
+.angular-editor-toolbar-set {
+  border: $border-empty-light;
+  border-radius: $radius-default;
+  overflow: hidden;
+}
+
+body .angular-editor-toolbar .angular-editor-toolbar-set > button.angular-editor-button {
+  @include btn-tertiary;
+  color: $color-txt-default-primary;
+  border: none !important;
+}
+
+body .ae-font .ae-picker-label {
+  border: none;
+}

@@ -1,0 +1,98 @@
+@import "bases";
+
+.c-checkbox__group {
+  display: flex;
+  flex-wrap: wrap;
+  margin: $size-lower 0 $size-default 0;
+}
+
+.c-checkbox__input {
+  visibility: visible;
+  opacity: 0;
+  width: 0;
+  margin: 0;
+}
+
+/* Label, box et check de la checkbox */
+@mixin box-style {
+  content: "";
+  background-color: $color-default-secondary;
+  border: $border-empty;
+  border-radius: $radius-default;
+  width: $size-default - $size-small * 0.5;
+  height: $size-default - $size-small * 0.5;
+  position: absolute;
+  left: $size-small;
+  top: 0;
+}
+
+@mixin check-style {
+  content: "";
+  border: $border-default-secondary;
+  border-width: 0 0.125rem 0.125rem 0;
+  border-radius: 0.0625rem;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  width: $size-small;
+  height: $size-lower;
+  position: absolute;
+  left: $size-lower + $size-small * 0.25;
+  z-index: 10;
+}
+
+.c-checkbox__label {
+  @include txt-paragraphe;
+  display: block;
+  padding-left: $size-medium + $size-small;
+  margin-right: $size-default;
+  position: relative;
+}
+
+.c-checkbox__label--small {
+  @include txt-paragraphe-small;
+  display: block;
+  padding-left: $size-medium + $size-small;
+  margin-right: $size-default;
+  position: relative;
+}
+
+.c-checkbox__input + .c-checkbox__label:after {
+  @include box-style;
+  margin-top: 0.45rem;
+}
+
+.c-checkbox__input + .c-checkbox__label--small:after {
+  @include box-style;
+  margin-top: 0.25rem;
+}
+
+.c-checkbox__input:focus + .c-checkbox__label:after {
+  box-shadow: $shadow-primary-light;
+}
+
+.c-checkbox__input:checked + .c-checkbox__label:after,
+.c-checkbox__input:checked + .c-checkbox__label--small:after {
+  background-color: $color-project-primary;
+  border: $border-project-primary;
+}
+
+.c-checkbox__input:checked + .c-checkbox__label:before {
+  @include check-style;
+  top: $size-lower;
+}
+
+.c-checkbox__input:checked + .c-checkbox__label--small:before {
+  @include check-style;
+  top: 0.3rem;
+}
+
+.c-checkbox__input:hover:not(:disabled) + .c-checkbox__label:after,
+.c-checkbox__input:hover:not(:disabled) + .c-checkbox__label--small:after {
+  box-shadow: $shadow-primary-light;
+}
+
+.c-checkbox__input:not(:disabled) + .c-checkbox__label,
+.c-checkbox__input:not(:disabled) + .c-checkbox__label--small {
+  cursor: pointer;
+}

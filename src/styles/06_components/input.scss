@@ -1,0 +1,141 @@
+@import "bases";
+
+input::placeholder {
+  @include txt-placeholder;
+}
+
+.c-input__group {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: $size-lower;
+  margin-bottom: $size-default;
+  padding-right: $size-lower;
+  padding-left: $size-lower;
+}
+
+.c-input__exist {
+  border: $border-empty;
+  border-radius: 0.1875rem;
+  padding: $size-small;
+  padding-left: $size-medium;
+  margin-top: $size-lower;
+  margin-bottom: $size-default;
+}
+
+.c-input {
+  @include input-style;
+  @include txt-paragraphe;
+  height: 2.98rem;
+
+  &:read-only,
+  &:disabled {
+    overflow-y: hidden;
+    color: $COLUMBIA-GREY;
+    border-color: $COLUMBIA-GREY;
+  }
+
+  &::placeholder {
+    overflow: visible;
+  }
+}
+
+.c-input__large {
+  @include input-style;
+  @include txt-paragraphe;
+  height: $icon-size-medium + $size-small;
+  &:read-only,
+  &:disabled {
+    overflow-y: hidden;
+    color: $COLUMBIA-GREY;
+    border-color: $COLUMBIA-GREY;
+  }
+
+  &::placeholder {
+    overflow: visible;
+  }
+}
+
+.c-input__unit {
+  @include txt-paragraphe;
+  padding-left: $size-lower;
+  position: absolute;
+  top: $size-small;
+  line-height: 2 * $size-default;
+}
+
+textarea.c-input {
+  min-height: 2 * $size-large;
+  height: 2 * $size-large;
+}
+
+.c-input:focus:not(:read-only) ~ label,
+.c-input:active:not(:read-only) ~ label {
+  color: $color-txt-project-primary;
+}
+
+.c-input__label {
+  @include input-label;
+  background: $color-default-secondary;
+}
+
+.c-input__group.readonly {
+  flex-basis: auto;
+  margin-bottom: $size-lower;
+  min-width: 25%;
+
+  &:before {
+    content: "";
+  }
+
+  & .c-input {
+    padding-left: 0;
+    padding-right: 0;
+    resize: none;
+  }
+
+  & .c-input__label {
+    background: none;
+    padding: 0;
+    max-width: inherit;
+    left: $size-lower + $size-small;
+    white-space: nowrap;
+    text-overflow: inherit;
+  }
+}
+
+body .ng-autocomplete {
+  width: 100%;
+}
+
+.c-input--autocomplete > .autocomplete-container {
+  box-shadow: none;
+  width: auto;
+  height: auto;
+}
+
+.c-input--autocomplete > .autocomplete-container.active {
+  z-index: auto;
+}
+
+body .c-input--autocomplete > .autocomplete-container > .input-container > input {
+  @include input-style;
+  background-color: transparent;
+  height: auto;
+  padding: 0 $size-lower;
+
+  &:disabled {
+    color: $color-txt-default-primary;
+    border: none;
+    padding: 0;
+  }
+}
+
+body .c-input--autocomplete > .autocomplete-container > .suggestions-container {
+  @include txt-paragraphe;
+  border-radius: 0 0 $radius-default $radius-default;
+}
+
+body .c-input--autocomplete > .autocomplete-container > .suggestions-container.is-visible {
+  z-index: 999;
+}

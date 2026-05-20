@@ -1,0 +1,69 @@
+@import "bases";
+
+.c-act__legend {
+  margin-top: $size-medium;
+}
+
+.color-tacct-red {
+  color: $color-tacct-red;
+}
+.color-tacct-orange {
+  color: $color-tacct-orange;
+}
+.color-tacct-green {
+  color: $color-tacct-green;
+}
+.color-tacct-purple {
+  color: $color-tacct-purple;
+}
+.color-project-primary-theme {
+  color: $color-project-primary-txt;
+}
+.color-project-primary-action {
+  color: $color-project-primary;
+}
+.bg-color-project-primary {
+  background-color: $color-project-primary;
+}
+
+.txt-size-small {
+  font-size: $txt-size-small;
+} // 12 px
+.txt-size-lower {
+  font-size: $txt-size-lower;
+} // 14 px
+.txt-size-default {
+  font-size: $txt-size-default;
+} // 16 px
+.txt-size-legend {
+  font-size: $txt-size-legend;
+} // 18 px
+.txt-size-regular {
+  font-size: $txt-size-regular;
+} // 20 px
+.txt-size-medium {
+  font-size: $txt-size-medium;
+} // 24 px
+.txt-size-large {
+  font-size: $txt-size-large;
+} // 28 px
+.txt-size-xl {
+  font-size: $txt-size-xl;
+} // 36 px
+
+.txt-bold {
+  font-weight: $txt-bold;
+}
+.txt-medium {
+  font-weight: $txt-medium;
+}
+.txt-regular {
+  font-weight: $txt-regular;
+}
+.txt-light {
+  font-weight: $txt-light;
+}
+
+.txt-line-large {
+  line-height: $txt-size-large;
+}

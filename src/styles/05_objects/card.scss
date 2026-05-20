@@ -1,0 +1,117 @@
+@import "bases";
+
+.o-card {
+  @include card-style;
+  padding: 2 * $size-default;
+  p {
+    margin-bottom: $size-lower;
+  }
+}
+
+.o-card.o-card__triangle::after {
+  content: "";
+  position: absolute;
+  bottom: $bottom-triangle;
+  left: $left-triangle;
+  border-radius: $radius-default;
+  border: $border-triangle $border-type-default $color-default-secondary;
+  transform-origin: 0 0;
+  transform: rotate(-45deg);
+  box-shadow: $triangle-box-shadow;
+}
+
+.o-card--second {
+  @include card-style;
+  background-color: transparent;
+  padding: $size-default;
+  margin-bottom: $size-default;
+
+  & > button:first-child {
+    float: right;
+  }
+}
+
+.o-card-section--even {
+  background-color: $color-project-secondary-very-light;
+}
+
+.o-card-p-0 {
+  @include card-style;
+  p {
+    margin-bottom: $size-lower;
+  }
+  .content {
+    padding: 2 * $size-default;
+  }
+  .title-disabled {
+    @include txt-paragraph-disabled;
+    display: block;
+  }
+
+  .title-normal {
+    @include txt-paragraph-normal;
+    display: block;
+  }
+
+  .o-observed-exposure__nb {
+    @include txt-paragraphe-bold;
+    color: $color-default-primary;
+    font-size: 22px;
+  }
+
+  .icon-nb {
+    padding-right: 0.2rem;
+  }
+  .o-observed-exposure__type-exposition {
+    @include txt-paragraphe-bold;
+    color: $color-txt-default-primary-very-light;
+    display: block;
+  }
+  .o-observed-exposure__type-exposition-2 {
+    @include txt-paragraphe;
+    color: $color-txt-default-primary-very-light;
+    display: block;
+  }
+
+  .o-section-info {
+    width: 16rem;
+  }
+
+  .cord-two-cols {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+
+    .o-section-deletable {
+      .o-section-delete-edit {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        text-align: center;
+        width: 3.5rem;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+
+      .o-section-info {
+        margin-right: -3.5rem;
+        transition: margin-right 0.5s;
+      }
+    }
+
+    &:hover {
+      .o-section-deletable {
+        .o-section-delete-edit {
+          opacity: 1;
+        }
+        .o-section-info {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+}
+
+.popover {
+  max-width: 50% !important;
+}

@@ -1,0 +1,71 @@
+@import "bases";
+
+.c-radio__group {
+  margin: $size-lower 0 $size-default 0;
+}
+
+.c-radio__input {
+  visibility: visible;
+  opacity: 0;
+  width: 0;
+  margin: 0;
+}
+
+.c-radio__global-label {
+  font-family: $font-default;
+  font-size: $txt-size-default;
+  line-height: 2 * $size-default;
+  color: $color-txt-default-primary;
+  margin-right: $size-default;
+  position: relative;
+  white-space: nowrap;
+  align-items: center;
+}
+
+.c-radio__label {
+  font-family: $font-default;
+  font-size: $txt-size-default;
+  color: $color-txt-default-primary;
+  padding-left: $size-medium + $size-small;
+  margin-right: $size-default;
+  position: relative;
+  white-space: nowrap;
+}
+
+.c-radio__input + .c-radio__label:after {
+  content: "";
+  background-color: $color-default-secondary;
+  border: $border-empty;
+  border-radius: 50%;
+  box-sizing: border-box;
+  width: $size-default;
+  height: $size-default;
+  margin-top: 0.0625rem;
+  position: absolute;
+  left: $size-small;
+  top: 0;
+}
+
+.c-radio__input:checked + .c-radio__label:after {
+  border: $border-project-primary-medium;
+}
+
+.c-radio__input:checked:disabled + .c-radio__label:after {
+  border: 0.3125rem solid $COLUMBIA-GREY;
+}
+
+.c-radio__input:hover:not(:disabled) + .c-radio__label:after {
+  box-shadow: $shadow-primary-light;
+}
+
+.c-radio__input:not(:disabled) + .c-radio__label {
+  cursor: pointer;
+}
+
+.c-radio__input:disabled + .c-radio__label {
+  color: $color-empty;
+}
+
+.c-radio__input:focus + .c-radio__label:after {
+  box-shadow: $shadow-primary-light;
+}

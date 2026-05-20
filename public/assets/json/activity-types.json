@@ -1,0 +1,18 @@
+[
+  {
+    "id": "0",
+    "activityType": "Biodiversité"
+  },
+  {
+    "id": "1",
+    "activityType": "Eau"
+  },
+  {
+    "id": "2",
+    "activityType": "Paysages"
+  },
+  {
+    "id": "3",
+    "activityType": "Sols"
+  }
+]

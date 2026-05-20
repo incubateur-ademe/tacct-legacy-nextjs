@@ -1,0 +1,164 @@
+@import "../01_variables/index";
+
+/* Reset and interaction basic */
+@mixin btn {
+  box-sizing: border-box;
+  position: relative;
+  transition: background 0.2s;
+  cursor: pointer;
+
+  &:focus,
+  &:focus-within,
+  &:active:focus {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+@mixin btn-with-icon {
+  background-repeat: no-repeat;
+  background-position-x: 0.32rem;
+  padding: 0.8rem 1.5rem 1rem 3.2rem;
+}
+
+@mixin arrow-right-white {
+  background-image: url("/assets/img/arrow-right-white.svg");
+}
+@mixin arrow-right-blue {
+  background-image: url("/assets/img/arrow-right.svg");
+}
+
+@mixin btn-blue {
+  background-color: $color-ademe-blue;
+  border: $color-ademe-blue;
+  color: white;
+  &:hover {
+    background-color: $color-ademe-blue-hover;
+  }
+}
+
+/* TYPE : Text or Icon */
+@mixin btn-text {
+  text-transform: uppercase;
+  font-family: $font-default;
+  font-size: $txt-size-lower;
+  font-weight: $txt-bold;
+  line-height: $size-default + $size-lower;
+  text-align: center;
+  vertical-align: middle;
+  max-height: $size-large;
+  border-radius: $radius-default;
+  padding: $size-lower $size-default;
+}
+
+@mixin btn-icon {
+  font-family: $font-icon;
+  border-radius: 50%;
+  padding: 0;
+  height: fit-content;
+  width: fit-content;
+}
+
+@mixin btn-text-marianne {
+  text-transform: uppercase;
+  font-family: $font-marianne-regular;
+  font-size: $txt-size-lower;
+  line-height: $size-default + $size-lower;
+  text-align: center;
+  vertical-align: middle;
+  max-height: $size-large;
+  border-radius: $radius-medium;
+  padding: $size-lower $size-default;
+}
+
+/* VISUAL WEIGHT : Primary > secondary > tertiary */
+@mixin btn-primary {
+  color: $color-default-secondary;
+  background-color: $color-link;
+
+  &:hover:not(:disabled) {
+    background-color: $color-button-primary-hover;
+  }
+
+  &:focus:not(:active):not(:hover) {
+    box-shadow: $shadow-focus;
+  }
+
+  &:active:hover:not(:disabled) {
+    background-color: $color-button-primary-active;
+  }
+
+  &:disabled {
+    background-color: $color-empty-light;
+    cursor: default;
+  }
+}
+
+@mixin btn-secondary {
+  color: $color-link;
+  background-color: transparent;
+  border: $border-link;
+
+  &:hover:not(:disabled) {
+    background-color: $color-button-secondary-hover;
+  }
+
+  &:focus:not(:active):not(:hover) {
+    box-shadow: $shadow-focus;
+  }
+
+  &:active:hover:not(:disabled) {
+    background-color: $color-button-secondary-active;
+  }
+
+  &:disabled {
+    color: $color-txt-disabled;
+    border-color: $color-empty-light;
+    cursor: default;
+  }
+}
+
+@mixin btn-tertiary {
+  color: $color-link;
+  background-color: transparent;
+
+  &:hover:not(:disabled) {
+    background-color: $color-button-tertiary-hover;
+  }
+
+  &:focus:not(:active):not(:hover) {
+    box-shadow: $shadow-focus;
+  }
+
+  &:active:hover:not(:disabled) {
+    background-color: $color-button-tertiary-active;
+  }
+
+  &:disabled {
+    color: $color-txt-disabled;
+    cursor: default;
+  }
+}
+
+@mixin btn-white {
+  color: $color-default-secondary;
+  border: 0.0625rem solid white;
+  background-color: $YALE-BLUE;
+
+  &:hover:not(:disabled) {
+    background-color: $color-button-primary-hover;
+  }
+
+  &:focus:not(:active):not(:hover) {
+    box-shadow: $shadow-focus;
+  }
+
+  &:active:hover:not(:disabled) {
+    background-color: $color-button-primary-active;
+  }
+
+  &:disabled {
+    background-color: $color-empty-light;
+    cursor: default;
+  }
+}

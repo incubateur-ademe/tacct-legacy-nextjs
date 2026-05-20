@@ -1,0 +1,28 @@
+$grid-breakpoints: (
+  // handset portrait (small, medium, large) | handset landscape (small)
+  xs: 0,
+  // handset landscape (medium, large) | tablet portrait(small, large)
+  sm: 580px,
+  //  tablet landscape (small, large)
+  md: 760px,
+  // laptops and desktops
+  lg: 1200px,
+  // large desktops
+  xl: 1480px
+);
+
+$container-max-widths: (
+  sm: 580px,
+  md: 760px,
+  lg: 1200px,
+  xl: 1480px,
+);
+
+$grid-columns: 16;
+
+.container {
+  width: auto;
+  &.page {
+    margin-left: 0;
+  }
+}

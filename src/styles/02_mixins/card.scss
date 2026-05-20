@@ -1,0 +1,7 @@
+@import "../01_variables/index";
+
+@mixin card-style {
+  background-color: $color-default-secondary;
+  border-radius: $radius-default;
+  box-shadow: $shadow-card;
+}

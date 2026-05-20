@@ -1,0 +1,201 @@
+@import "bases";
+
+.ng-select {
+  border: $border-empty;
+  border-radius: $radius-default;
+  width: 100%;
+  height: fit-content;
+}
+
+.ng-select:focus,
+.ng-select:active,
+.ng-select:focus-within {
+  border-color: $color-project-primary;
+
+  & + label {
+    color: $color-project-primary;
+  }
+}
+
+.ng-select:focus:not(:read-only) ~ label,
+.ng-select:active:not(:read-only) ~ label,
+.ng-select:focus-within:not(:read-only) ~ label {
+  color: $color-txt-project-primary;
+}
+
+/* Label */
+.c-select__label {
+  @include input-label;
+  background: $color-default-secondary;
+}
+
+/* Input and container */
+body .ng-select.ng-select-single .ng-select-container .ng-value-container .ng-input {
+  left: inherit;
+}
+
+body .ng-select .ng-select-container .ng-value-container .ng-input > input {
+  @include txt-paragraphe;
+  @include overflow-ellipsis;
+  vertical-align: middle;
+  line-height: $size-medium;
+  width: calc(100% - 5rem);
+  min-height: $size-large - $size-default;
+  height: $size-medium;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Placeholder */
+.ng-select .ng-select-container .ng-placeholder {
+  @include txt-placeholder;
+}
+
+.ng-select .ng-has-value .ng-placeholder {
+  display: none;
+}
+
+.ng-select.ng-select-disabled .ng-select-container .ng-value-container .ng-placeholder {
+  display: none;
+}
+
+/* Selected value */
+.ng-value {
+  @include txt-paragraphe;
+  display: flex;
+  flex-direction: row-reverse;
+  line-height: 2 * $size-default;
+  height: 2 * $size-default;
+}
+
+/* Tag icon */
+.ng-value-icon {
+  font-size: $txt-size-medium;
+  font-weight: $txt-bold;
+  color: transparent;
+  padding-top: 0.0625rem;
+  padding-right: $size-small;
+  position: relative;
+
+  &:hover:after {
+    color: $color-error;
+  }
+
+  &:after {
+    content: $close;
+    font-family: $font-icon;
+    font-size: $size-medium;
+    color: $color-link;
+    position: absolute;
+    left: 0;
+  }
+}
+
+.ng-select .ng-value-container {
+  padding: $size-small;
+  padding-left: $size-lower;
+  min-height: $size-large - $size-lower;
+  align-items: center;
+}
+
+/* Icon clear */
+.ng-select .ng-clear-wrapper {
+  display: flex;
+  align-items: center;
+  width: $size-lower;
+  height: $size-default + $size-medium;
+  padding-bottom: $size-small;
+}
+
+/* Icon arrow */
+.ng-select .ng-arrow-wrapper {
+  margin-left: $size-default;
+  position: absolute;
+  right: 0;
+}
+
+.ng-select .ng-arrow-wrapper .ng-arrow {
+  border-color: $color-link;
+  border-style: solid;
+  border-width: 0 0.125rem 0.125rem 0;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  margin-top: $size-small + $size-lower;
+  margin-right: $size-default;
+  padding: 0.3125rem;
+  transition: all 0.2s ease;
+}
+
+.ng-select.ng-select-opened > .ng-select-container .ng-arrow {
+  transform: rotate(-135deg);
+  -webkit-transform: rotate(-135deg);
+  margin-top: $size-default;
+  padding: 0.3125rem;
+}
+
+/* Dropdown */
+.ng-dropdown-panel {
+  background-color: $color-default-secondary;
+  box-shadow: $shadow-card;
+  border-radius: $radius-default;
+  overflow: hidden;
+}
+
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-option {
+  @include txt-paragraphe;
+  padding: $size-lower $size-lower + $size-small;
+  cursor: pointer;
+}
+
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-marked {
+  color: $color-default-primary;
+  background-color: $color-empty-light;
+}
+
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-disabled {
+  color: $COLUMBIA-GREY;
+  background-color: transparent;
+  cursor: default;
+}
+
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-selected,
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-selected.ng-option-marked {
+  color: $color-txt-default-secondary;
+  background-color: $color-project-secondary;
+}
+
+/* Tag */
+.ng-select-multiple {
+  .ng-value {
+    @include tag-style;
+    margin-right: $size-lower;
+  }
+}
+
+/* Disabled */
+body .ng-select-disabled {
+  border: none;
+
+  & .ng-value-container {
+    padding-left: 0;
+  }
+
+  & + .c-select__label {
+    padding: 0;
+    max-width: inherit;
+    left: $size-lower + $size-small;
+  }
+
+  & .ng-arrow-wrapper {
+    display: none;
+  }
+
+  & .ng-select-container .ng-value-container .ng-input > input {
+    cursor: default;
+  }
+}
+
+/* Override existant */
+.sc-detail-synthese-impacts__form .ng-dropdown-panel {
+  width: 26rem;
+}

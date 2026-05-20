@@ -1,0 +1,32 @@
+@import "bases";
+
+.modal-dialog {
+  background-color: $color-default-secondary;
+  box-shadow: $shadow-card;
+  border-radius: $radius-default;
+  outline: none;
+  width: 46rem;
+  margin: 2rem auto;
+  position: relative;
+  animation-duration: 0.4s;
+  animation-name: modal-slide;
+}
+
+.modal-content {
+  border: 0;
+  flex-direction: row;
+  outline: none;
+}
+
+.c-modal__close-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: $size-lower;
+}
+
+@include responsive-breakpoints-min(lg) {
+  .modal-dialog {
+    max-width: none;
+  }
+}

@@ -1,0 +1,105 @@
+@import "bases";
+
+/* Tous inputs doit se trouver dans une section pour gérer les fonds de couleur des labels */
+section {
+  & .c-input__group label,
+  & .c-input__group .sc-datepicker__label {
+    background-color: $color-default-secondary;
+  }
+}
+
+/* Gestion des marges d'une section */
+.o-section {
+  padding: 2 * $size-default;
+}
+
+.o-section--full-width {
+  margin: 0 -2 * $size-default;
+}
+
+/* Types de section */
+.o-section--header {
+  box-shadow: $shadow-header-bottom;
+}
+
+.o-section--header-block-title {
+  padding: 2 * $size-default;
+  padding-bottom: 0;
+  margin: -2 * $size-default;
+  margin-bottom: 2 * $size-default;
+  box-shadow: $shadow-header-bottom;
+  position: relative;
+
+  &.with-element {
+    margin-bottom: 0;
+  }
+}
+
+.o-section--even {
+  background-color: $color-project-secondary-very-light;
+  padding: 2 * $size-default;
+  margin: $size-medium -2 * $size-default 2 * $size-default -2 * $size-default;
+
+  & .c-input__group label,
+  & .c-input__group .sc-datepicker__label {
+    background-color: $color-project-secondary-very-light;
+  }
+}
+
+.section-ghost {
+  background-color: $color-project-secondary-very-light;
+}
+
+.section-blue {
+  background-color: $color-link;
+}
+
+/* Contenu propre aux sections */
+.o-section__title-element {
+  display: flex;
+}
+
+.o-section__container {
+  padding: $size-default 0;
+
+  & > .c-input__group:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.o-centred-elements {
+  display: flex;
+  align-content: center;
+  align-items: center;
+}
+
+.o-paragraph__spaced {
+  @include txt-paragraphe;
+  margin-top: 1rem;
+}
+
+.o-paragraph__spaced-bold {
+  @include txt-paragraphe-bold;
+  margin-top: 1rem;
+}
+
+.o-list__centered {
+  font-family: $font-marianne-medium;
+  font-size: $txt-size-medium;
+  font-weight: $txt-regular;
+  line-height: 2 * $size-default;
+  color: $color-txt-project-primary;
+  text-transform: uppercase;
+  margin-top: 1rem;
+  margin-left: 3rem;
+}
+
+.o-list__centered-subtitle {
+  font-family: $font-marianne-medium;
+  font-size: $txt-size-regular;
+  font-weight: $txt-light;
+  line-height: 2 * $size-default;
+  color: $color-txt-project-primary;
+  margin-top: 1rem;
+  margin-left: 3rem;
+}

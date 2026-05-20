@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="956px" height="60px" viewBox="0 0 956 60" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>399B1C49-2164-458C-ADAE-12E2AAA191A3</title>
+    <defs>
+        <linearGradient x1="-1.11022302e-14%" y1="50%" x2="100%" y2="50%" id="linearGradient-1">
+            <stop stop-color="#27B1A5" offset="0%"></stop>
+            <stop stop-color="#2D5E58" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="TACCT-Page-publique" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="TACCT-Homepage" transform="translate(-226.000000, -1095.000000)">
+            <g id="fleche" transform="translate(226.000000, 1095.000000)">
+                <path d="M14,16 L923.695882,16 L923.695882,16 L923.695882,0 L956,30 L923.695882,60 L923.695882,44 L14,44 C6.2680135,44 4.38058703e-15,37.7319865 0,30 C-4.38058703e-15,22.2680135 6.2680135,16 14,16 Z" id="Rectangle" fill="url(#linearGradient-1)"></path>
+                <text id="Démarche-Tacct-:-ada" font-family="Marianne-ExtraBold, Marianne" font-size="18" font-weight="600" fill="#FFFFFF">
+                    <tspan x="91" y="37">DÉMARCHE TACCT : ADAPTER SON TERRITOIRE AU CHANGEMENT CLIMATIQUE</tspan>
+                </text>
+            </g>
+        </g>
+    </g>
+</svg>

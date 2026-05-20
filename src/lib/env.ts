@@ -1,39 +1,51 @@
 import { z } from 'zod';
 
+// Phase 1 : seules DATABASE_URL et APP_URL sont obligatoires.
+// Les variables ProConnect / mail / CRM seront durcies plus tard quand on
+// branchera ces intégrations.
 const serverEnvSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   APP_URL: z.url(),
 
-  DATABASE_URL: z.url(),
+  DATABASE_URL: z.string().min(1),
+  DATABASE_CA_PATH: z.string().optional(),
 
-  AUTH_SECRET: z.string().min(1),
-  AUTH_URL: z.url(),
+  // ── Dev impersonation ── (remplace ProConnect tant que l'auth n'est pas branchée)
+  DEV_AUTH_EMAIL: z.email().optional(),
+
+  // ── Auth (Phase 7) ──
+  AUTH_SECRET: z.string().optional(),
+  AUTH_URL: z.url().optional(),
   AUTH_TRUST_HOST: z.string().optional(),
+  PROCONNECT_ISSUER: z.url().optional(),
+  PROCONNECT_CLIENT_ID: z.string().optional(),
+  PROCONNECT_CLIENT_SECRET: z.string().optional(),
 
-  PROCONNECT_ISSUER: z.url(),
-  PROCONNECT_CLIENT_ID: z.string(),
-  PROCONNECT_CLIENT_SECRET: z.string(),
+  // ── Mail ──
+  MAILER_DSN: z.string().optional(),
+  ADMIN_MAIL: z.email().optional(),
+  APP_EMAIL_CONTACT_ADEME: z.email().optional(),
+  RECEPTION_TEST_EMAIL_ADDRESS: z.email().optional(),
 
-  MAILER_DSN: z.string(),
-  ADMIN_MAIL: z.email(),
-  APP_EMAIL_CONTACT_ADEME: z.email(),
-  RECEPTION_TEST_EMAIL_ADDRESS: z.email(),
+  // ── Référentiel ADEME ──
+  DATA_ADEME_URL: z.url().optional(),
+  REGION_ENDPOINT: z.string().optional(),
+  DEPARTMENT_ENDPOINT: z.string().optional(),
+  COMMUNE_ENDPOINT: z.string().optional(),
+  REMOVED_COMMUNE_ENDPOINT: z.string().optional(),
+  POSTAL_CODE_ENDPOINT: z.string().optional(),
 
-  DATA_ADEME_URL: z.url(),
-  REGION_ENDPOINT: z.string(),
-  DEPARTMENT_ENDPOINT: z.string(),
-  COMMUNE_ENDPOINT: z.string(),
-  REMOVED_COMMUNE_ENDPOINT: z.string(),
-  POSTAL_CODE_ENDPOINT: z.string(),
-
+  // ── CRM ──
   CRM_CONNECT_URL: z.string().optional(),
   CRM_CONNECT_CLIENT_ID: z.string().optional(),
   CRM_CONNECT_CLIENT_SECRET: z.string().optional(),
   CRM_CONNECT_SOURCE: z.string().default('TACCT'),
 
+  // ── ReCaptcha ──
   RECAPTCHA_SITE_KEY: z.string().optional(),
   RECAPTCHA_SECRET: z.string().optional(),
 
+  // ── Médias ──
   FILES_DIRECTORY: z.string().default('./var/uploads'),
   DATA_DIRECTORY: z.string().default('./data'),
 });

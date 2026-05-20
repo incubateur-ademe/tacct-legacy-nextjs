@@ -1,0 +1,17 @@
+@import "bases";
+
+.c-liste {
+  padding-inline-start: 0 !important;
+}
+
+.c-list__icon-square {
+  @include txt-paragraphe;
+  list-style: square;
+  padding-left: 2rem;
+}
+
+.c-list__icon-circle {
+  @include txt-paragraphe;
+  list-style: circle;
+  padding-left: 2rem;
+}

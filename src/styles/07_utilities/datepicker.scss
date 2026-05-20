@@ -1,0 +1,91 @@
+@import "bases";
+
+.ngb-datepicker {
+  font-family: $font-default;
+}
+
+.ngb-datepicker.dropdown-menu {
+  background-color: $color-default-secondary;
+  border: none;
+  box-shadow: $shadow-card;
+  z-index: 10;
+}
+
+.ngb-dp-content {
+  box-shadow: inset $shadow-header-bottom;
+}
+
+body .ngb-dp-weekdays {
+  background: $color-project-primary-very-light;
+  box-shadow: $shadow-header-bottom;
+  margin-bottom: $size-small;
+}
+
+.ngb-dp-weekday.small {
+  color: $color-txt-project-primary-dark;
+  font-style: normal;
+}
+
+body .ngb-dp-navigation-chevron {
+  border-width: 0.14rem 0.14rem 0 0;
+  border-radius: $radius-default * 0.5;
+  color: $color-txt-link;
+}
+
+.ngb-dp-today:focus,
+.ngb-dp-today:active:focus,
+.ngb-dp-day:focus,
+.ngb-dp-day:active:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.ngb-dp-day[tabindex="0"] {
+  border-radius: $radius-default;
+  box-shadow: 0 0 0 $size-small * 0.5 rgba($color-project-primary, $opacity-default);
+}
+
+body .ngb-dp-header {
+  padding: $size-default;
+}
+
+body .ngb-dp-arrow-btn {
+  padding: $size-small $size-small 0 $size-small;
+  cursor: pointer;
+
+  &:hover .ngb-dp-navigation-chevron {
+    color: $color-txt-project-primary-dark;
+  }
+}
+
+.ngb-dp-day,
+.ngb-dp-weekday {
+  padding: $size-small;
+}
+
+.ngb-dp-day:hover {
+  background-color: $color-project-primary-very-light;
+  border-radius: $radius-default;
+}
+
+.ngb-dp-arrow-btn:focus {
+  outline-color: $color-project-secondary;
+}
+
+.bg-primary {
+  color: $color-txt-default-secondary;
+  background-color: $color-project-primary-dark !important;
+}
+
+body .ngb-datepicker > .custom-select {
+  @include txt-paragraphe;
+  @include input-style;
+  margin: 0 $size-small;
+  min-width: 5rem;
+  height: auto;
+  cursor: pointer;
+
+  &:hover {
+    border-color: $color-project-primary;
+  }
+}

@@ -1,0 +1,19 @@
+@import "bases";
+
+.o-bubble-card__group {
+  filter: $shadow-bubble-card;
+}
+
+.o-bubble-card {
+  background-color: $color-default-secondary;
+  border-radius: $radius-default;
+  padding: 2 * $size-default 2 * $size-default $size-default 2 * $size-default;
+}
+
+.o-bubble-card__arrow {
+  background-color: $color-default-secondary;
+  width: $size-medium;
+  height: $size-default - $size-small;
+  margin-left: 2 * $size-default;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}

@@ -1,0 +1,236 @@
+@import "../01_variables/index";
+
+@mixin h1-secondary {
+  font-family: $font-marianne-medium;
+  font-size: $txt-size-medium;
+  font-weight: $txt-regular;
+  line-height: 2 * $size-default;
+  color: $color-txt-project-primary;
+  text-transform: uppercase;
+}
+
+@mixin h2-secondary {
+  font-family: $font-marianne-bold;
+  font-size: $txt-size-legend;
+  font-weight: $txt-bold;
+  line-height: $size-medium;
+  color: $color-project-primary-txt;
+}
+
+@mixin p-bold-primary {
+  font-family: $font-marianne-bold;
+  font-size: $txt-size-default;
+  font-weight: $txt-bold;
+  line-height: $size-medium;
+  color: $color-project-primary-txt;
+}
+
+@mixin txt-placeholder {
+  font-family: $font-default;
+  font-size: $txt-size-default;
+  font-weight: $txt-regular;
+  font-style: italic;
+  color: $color-txt-placeholder;
+}
+
+@mixin txt-paragraphe {
+  font-family: $font-default;
+  font-size: $txt-size-default;
+  font-weight: $txt-regular;
+  font-style: normal;
+  line-height: $size-medium;
+  color: $color-txt-default-primary;
+}
+
+@mixin txt-paragraphe-bold {
+  @include txt-paragraphe;
+  font-weight: $txt-bold;
+  color: $color-txt-default-tertiary;
+}
+
+@mixin txt-paragraphe-small {
+  @include txt-paragraphe;
+  font-size: $txt-size-lower;
+  color: $color-txt-default-tertiary;
+}
+
+@mixin txt-paragraphe-small-bold {
+  @include txt-paragraphe-small;
+  font-weight: $txt-bold;
+}
+
+@mixin txt-information {
+  font-family: $font-default;
+  font-size: $txt-size-lower;
+  font-weight: $txt-bold;
+  font-style: normal;
+  color: $color-txt-project-secondary;
+}
+
+@mixin txt-paragraph {
+  font-family: $font-default;
+  font-weight: $txt-regular;
+  font-style: normal;
+  line-height: $size-default;
+}
+
+@mixin txt-paragraph-disabled {
+  @include txt-paragraph;
+  font-size: $txt-size-small;
+  color: $color-txt-empty;
+}
+
+@mixin txt-paragraph-normal {
+  @include txt-paragraph;
+  font-size: $txt-size-lower;
+  color: $color-default-primary-very-light;
+}
+
+@mixin title-project-sheet-section {
+  color: $color-project-primary;
+  text-transform: uppercase;
+  font-size: $size-medium;
+  font-family: $font-marianne-bold;
+  margin-bottom: $size-default;
+}
+
+/* Police Marianne */
+
+@mixin txt-marianne-bold {
+  font-family: $font-marianne-bold;
+  font-size: $txt-size-default;
+  color: $color-txt-regular;
+}
+
+@mixin txt-marianne-extra-bold {
+  font-family: $font-marianne-extra-bold;
+  color: $color-txt-regular;
+}
+
+@mixin txt-marianne-light {
+  font-family: $font-marianne-light;
+  font-size: $txt-size-default;
+  color: $color-txt-regular;
+}
+
+@mixin txt-marianne-medium {
+  font-family: $font-marianne-medium;
+  font-size: $txt-size-default;
+  color: $color-txt-regular;
+}
+
+@mixin txt-marianne-regular {
+  font-family: $font-marianne-regular;
+  font-size: $txt-size-default;
+  color: $color-txt-regular;
+}
+
+@mixin txt-marianne-thin {
+  font-family: $font-marianne-thin;
+  font-size: $txt-size-default;
+  color: $color-txt-regular;
+}
+
+/* fin police marianne */
+
+@mixin number-information {
+  @include txt-information;
+  border-left: $border-empty-light;
+  display: inline-block;
+  padding-left: $size-small;
+  padding-top: 0.2rem;
+}
+
+@mixin overflow-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@mixin required {
+  font-family: $font-default;
+  font-size: $txt-size-small;
+  font-weight: $txt-medium;
+  font-style: italic;
+  line-height: $size-medium;
+  color: $color-project-primary-txt;
+}
+
+@mixin input-style {
+  font-family: $font-default;
+  font-size: $txt-size-default;
+  background-color: transparent;
+  border-radius: $radius-default;
+  border: $border-empty;
+  width: 100%;
+  width: -moz-available;
+  height: $size-medium;
+  padding: $size-lower;
+  outline: none;
+
+  &:focus,
+  &:active,
+  &:focus-within {
+    border: $border-project-primary;
+  }
+}
+
+.o-ellipsis {
+  @include overflow-ellipsis;
+}
+
+@mixin input-label {
+  @include overflow-ellipsis;
+  font-family: $font-default;
+  font-size: $txt-size-small;
+  font-weight: $txt-regular;
+  font-style: normal;
+  line-height: $size-default;
+  color: $color-txt-placeholder;
+  max-width: 75%;
+  padding-right: $size-small;
+  padding-left: $size-small;
+  position: absolute;
+  left: $size-default + $size-small;
+  top: -$size-lower;
+  pointer-events: none;
+}
+
+@mixin input-right-placeholder {
+  line-height: $size-medium;
+  padding: $size-lower 0 $size-lower $size-lower;
+  margin-right: $size-medium + $size-small;
+  margin-left: $size-lower;
+  position: absolute;
+  right: $size-lower;
+}
+
+@mixin tag-style {
+  @include txt-paragraphe;
+  color: $color-txt-default-primary;
+  border-radius: $radius-default;
+  background-color: $color-project-secondary-light;
+  list-style: none;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: $size-lower;
+  padding-right: $size-lower;
+  height: $size-medium + $size-small;
+}
+
+@mixin title-1 {
+  font-size: $txt-size-xl;
+  font-weight: 900;
+}
+
+@mixin title-2 {
+  font-size: $txt-size-large;
+  font-weight: 900;
+}
+
+@mixin title-section {
+  color: $YALE-BLUE;
+  font-family: $font-default;
+  font-size: $txt-size-legend;
+}

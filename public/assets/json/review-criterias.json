@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Efficacité",
+    "weighting": 1,
+    "rank": 1
+  },
+  {
+    "name": "Faisabilité ",
+    "weighting": 1,
+    "rank": 2
+  },
+  {
+    "name": "Flexibilité",
+    "weighting": 1,
+    "rank": 3
+  },
+  {
+    "name": "Synergie",
+    "weighting": 1,
+    "rank": 4
+  },
+  {
+    "name": "Co-bénéfice environnemental",
+    "weighting": 1,
+    "rank": 5
+  },
+  {
+    "name": "Acceptabilité sociale",
+    "weighting": 1,
+    "rank": 6
+  },
+  {
+    "name": "Coût-efficacité",
+    "weighting": 1,
+    "rank": 7
+  },
+  {
+    "name": "Contribution à l'atténuation",
+    "weighting": 1,
+    "rank": 8
+  }
+]

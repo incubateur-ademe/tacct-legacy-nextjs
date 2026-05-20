@@ -1,0 +1,38 @@
+@import "colors";
+
+/* Parameters */
+$radius-default: 0.1875rem; // 3 px
+$radius-small: 0.25rem; // 4 px
+$radius-medium: 0.3125rem; // 5 px
+$radius-large: 1rem; // 16 px
+$radius-xl: 1.5rem; // 24 px
+$radius-xxl: 3.5rem; // 56 px
+
+$border-size-default: 0.0625rem; // 1px
+$border-size-medium: 0.3125rem; // 5 px
+
+$border-triangle: 0.8rem;
+$bottom-triangle: -1.4rem;
+$left-triangle: 3.75rem;
+
+$border-type-default: solid;
+$border-type-dashed: dashed;
+
+/* Global border */
+$border-default-secondary: $border-size-default $border-type-default $color-default-secondary;
+
+$border-project-primary: $border-size-default $border-type-default $color-project-primary;
+$border-project-primary-secondary: $border-size-default $border-type-default $color-project-primary-txt;
+$border-project-primary-medium: $border-size-medium $border-type-default $color-project-primary;
+
+$border-project-secondary: $border-size-default $border-type-default $color-project-secondary;
+
+$border-empty: $border-size-default $border-type-default $color-empty;
+$border-empty-light: $border-size-default $border-type-default $color-empty-light;
+
+$border-link: $border-size-default $border-type-default $color-link;
+
+$border-link: $border-size-default $border-type-default $color-ademe-blue;
+
+/* Specific border */
+$border-drag-drop: $border-size-default $border-type-dashed $color-project-secondary;

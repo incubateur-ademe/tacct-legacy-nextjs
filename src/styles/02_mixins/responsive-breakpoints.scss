@@ -1,0 +1,41 @@
+@import "../01_variables/bootstrap";
+
+$breakpoints: (
+  xs: $bootstrap-xs-screen,
+  sm: $bootstrap-sm-screen,
+  md: $bootstrap-md-screen,
+  lg: $bootstrap-lg-screen,
+);
+
+@mixin responsive-breakpoints-max($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    $breakpoint-value: map-get($breakpoints, $breakpoint);
+
+    @media (max-width: ($breakpoint-value - 1)) {
+      @content;
+    }
+  } @else {
+    @warn 'Invalid breakpoint: #{$breakpoint}.';
+  }
+}
+@mixin responsive-breakpoints-min($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    $breakpoint-value: map-get($breakpoints, $breakpoint);
+    @media (min-width: ($breakpoint-value - 1)) {
+      @content;
+    }
+  } @else {
+    @warn 'Invalid breakpoint: #{$breakpoint}.';
+  }
+}
+@mixin responsive-breakpoints-between($breakpoint-min, $breakpoint-max) {
+  @if map-has-key($breakpoints, $breakpoint-min) and map-has-key($breakpoints, $breakpoint-max) {
+    $breakpoint-value-min: map-get($breakpoints, $breakpoint-min);
+    $breakpoint-value-max: map-get($breakpoints, $breakpoint-max);
+    @media (min-width: ($breakpoint-value-min - 1)) and (max-width: ($breakpoint-value-max - 1)) {
+      @content;
+    }
+  } @else {
+    @warn 'Invalid breakpoint: #{$breakpoint-min} or #{$breakpoint-max}.';
+  }
+}

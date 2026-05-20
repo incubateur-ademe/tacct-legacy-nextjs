@@ -1,0 +1,7 @@
+@import "bases";
+
+.c-collapse__group last-of-type {
+  & .sc-collapse {
+    border-bottom: none;
+  }
+}

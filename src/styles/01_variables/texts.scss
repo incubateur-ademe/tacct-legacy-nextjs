@@ -1,0 +1,56 @@
+@import "concrete-color";
+@import "opacity";
+
+$font-marianne-bold: "Marianne-Bold";
+$font-marianne-extra-bold: "Marianne-ExtraBold";
+$font-marianne-light: "Marianne-Light";
+$font-marianne-medium: "Marianne-Medium";
+$font-marianne-regular: "Marianne-Regular";
+$font-marianne-thin: "Marianne-Thin";
+
+$font-default: $font-marianne-regular;
+$font-icon: "font-icon";
+
+// ----- Font-size ----- //
+$txt-size-small: 0.75rem; // 12 px
+$txt-size-lower: 0.875rem; // 14 px
+$txt-size-default: 1rem; // 16 px
+$txt-size-legend: 1.125rem; // 18 px
+$txt-size-regular: 1.25rem; // 20 px
+$txt-size-medium: 1.5rem; // 24 px
+$txt-size-large: 1.75rem; // 28 px
+$txt-size-xl: 2.25rem; // 36 px
+
+// ----- Font-weight ----- //
+$txt-black: 900;
+$txt-bold: 700;
+$txt-medium: 500;
+$txt-regular: 400;
+$txt-light: 300;
+
+// ----- Color ----- //
+$color-txt-default-primary: $BLACK;
+$color-txt-default-primary-light: $JET;
+$color-txt-default-primary-very-light: $BLACK-OLIVE;
+
+$color-txt-default-secondary: $WHITE;
+$color-txt-default-tertiary: $color-default-tertiary;
+
+$color-txt-project-primary: $color-project-primary-txt;
+$color-txt-project-primary-dark: $color-project-primary-dark;
+$color-txt-project-primary-light: $color-project-primary-light;
+
+$color-txt-project-secondary: $color-project-secondary-txt;
+$color-txt-project-secondary-dark: $color-project-secondary-dark;
+$color-txt-project-secondary-light: $color-project-secondary-light;
+
+$color-txt-placeholder: $color-empty;
+$color-txt-disabled: $color-empty-light;
+$color-txt-empty: $color-empty;
+
+$color-txt-link: $color-link;
+
+$color-txt-error: $color-error;
+
+$color-txt-warning: $color-warning;
+$color-txt-regular: $label-grey;

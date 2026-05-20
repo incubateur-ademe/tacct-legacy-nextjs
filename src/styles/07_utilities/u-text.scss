@@ -1,0 +1,25 @@
+@import "bases";
+
+.u-txt-bold {
+  font-weight: $txt-bold;
+}
+
+.u-txt-small {
+  font-size: $txt-size-lower;
+}
+
+.u-paragraph-normal {
+  white-space: normal;
+}
+
+.u-txt-word-break {
+  word-break: break-word;
+}
+
+.u-txt-primary {
+  color: $color-project-primary;
+}
+
+.u-txt-empty {
+  color: $color-empty;
+}

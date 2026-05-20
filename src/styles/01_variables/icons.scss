@@ -1,0 +1,1239 @@
+@import "colors.scss";
+
+$acidification: "\e900";
+$acte: "\e901";
+$acte_A: "\e902";
+$acte_B: "\e903";
+$acte_n_sare: "\e904";
+$add: "\e905";
+$add-acte: "\e906";
+$add-doc: "\e907";
+$add-folder: "\e908";
+$add-people: "\e909";
+$add-project: "\e90a";
+$add-small: "\e90b";
+$agriculture: "\e90c";
+$alea: "\e90d";
+$apart: "\e90e";
+$apps: "\e90f";
+$arrow-decreases: "\e910";
+$arrow-holding: "\e911";
+$arrow-increases: "\e912";
+$associated: "\e913";
+$attachment: "\e914";
+$boat: "\e915";
+$book: "\e916";
+$burger: "\e917";
+$calendar: "\e918";
+$cancel: "\e919";
+$card-game: "\e91a";
+$certificat: "\e91b";
+$check: "\e91c";
+$check-small: "\e91d";
+$chevron-down: "\e91e";
+$chevron-down-small: "\e91f";
+$chevron-left: "\e920";
+$chevron-left-small: "\e921";
+$chevron-right: "\e922";
+$chevron-right-small: "\e923";
+$chevron-up: "\e924";
+$chevron-up-small: "\e925";
+$cible: "\e926";
+$city: "\e927";
+$clock: "\e928";
+$close: "\e929";
+$close-small: "\e92a";
+$control-attachment: "\e92b";
+$convert-acte: "\e92c";
+$dashboard: "\e92d";
+$default-smile: "\e92e";
+$delete: "\e92f";
+$delete-notification: "\e930";
+$doc: "\e931";
+$doc-small: "\e932";
+$download: "\e933";
+$download-cloud: "\e934";
+$download-doc: "\e935";
+$dpe: "\e936";
+$drag-drop: "\e937";
+$duplicate: "\e938";
+$dynamic-renov: "\e939";
+$eau: "\e93a";
+$ecosysteme: "\e93b";
+$edit-acte: "\e93c";
+$edit-folder: "\e93d";
+$edit-project: "\e93e";
+$elevation: "\e93f";
+$eligibility: "\e940";
+$eligibility-no: "\e941";
+$enterprise: "\e942";
+$erlenmeyer: "\e943";
+$euro: "\e944";
+$export-bdd: "\e945";
+$exposition-future: "\e946";
+$eye: "\e947";
+$eye-hide: "\e948";
+$favorite: "\e949";
+$favorite-full: "\e94a";
+$financial-aid: "\e94b";
+$flag: "\e94c";
+$folder: "\e94d";
+$folder-details: "\e94e";
+$folder-fusion: "\e94f";
+$folder-linked: "\e950";
+$folder-selected: "\e951";
+$foret: "\e952";
+$formation: "\e953";
+$france: "\e954";
+$fuel: "\e955";
+$gaz: "\e956";
+$grue: "\e957";
+$heart: "\e958";
+$heating: "\e959";
+$help: "\e95a";
+$home: "\e95b";
+$home-back: "\e95c";
+$home_nav: "\e95d";
+$indicators-input: "\e95e";
+//$info: "\e95f";
+$inondation: "\e960";
+$institution: "\e961";
+$large-smile: "\e962";
+$light-smile: "\e963";
+$list: "\e964";
+$location: "\e965";
+$lock: "\e966";
+$logo-bddfaire: "\e967";
+$logo-faire: "\e968";
+$logo-sarenov: "\e969";
+$logo-tbs: "\e96a";
+$logout: "\e96b";
+$magic: "\e96c";
+$magic-star: "\e96d";
+$mail: "\e96e";
+$module: "\e96f";
+$module-characteristic: "\e970";
+$module-company: "\e971";
+$module-consumption: "\e972";
+$module-finance: "\e973";
+$module-notes: "\e974";
+$module-report: "\e975";
+$module-scenario: "\e976";
+$module-support: "\e977";
+$module-works: "\e978";
+$monopropriete: "\e979";
+$more: "\e97a";
+$neige: "\e97b";
+$neutral-smile: "\e97c";
+$niveaux: "\e97d";
+$no-doc: "\e97e";
+$notification: "\e97f";
+$pause: "\e980";
+$peche: "\e981";
+$pen: "\e982";
+$pen-small: "\e983";
+$people: "\e984";
+$people-inactive: "\e985";
+$people-moral: "\e986";
+$peoples: "\e987";
+$people-warn: "\e988";
+$percentage: "\e989";
+$phone: "\e98a";
+$photo: "\e98b";
+$plan-adaptation: "\e98c";
+$play: "\e98d";
+$pluie: "\e98e";
+$position: "\e98f";
+$postit: "\e990";
+$project: "\e991";
+$project-associated: "\e992";
+$recall: "\e993";
+$report: "\e994";
+$resource: "\e995";
+$sante: "\e996";
+$search: "\e997";
+$secheresse: "\e998";
+$sensibilite: "\e999";
+$settings: "\e99a";
+$solar: "\e99b";
+$soustract: "\e99c";
+$soustract-small: "\e99d";
+$stat: "\e99e";
+$status-edit: "\e99f";
+$status-empty-folder: "\e9a0";
+$status-error: "\e9a1";
+$status-incomplete: "\e9a2";
+$status-info: "\e9a3";
+$status-inprogress: "\e9a4";
+$status-notification: "\e9a5";
+$status-pause: "\e9a6";
+$status-play: "\e9a7";
+$status-recall: "\e9a8";
+$status-suspended: "\e9a9";
+$status-validate: "\e9aa";
+$statut: "\e9ab";
+$structure: "\e9ac";
+$surface: "\e9ad";
+$syndic: "\e9ae";
+$technical: "\e9af";
+$temperature: "\e9b0";
+$temperature-annuelle: "\e9b1";
+$textarea: "\e9b2";
+$train: "\e9b3";
+$unhappy-smile: "\e9b4";
+$update: "\e9b5";
+$vent: "\e9b6";
+//$warning: "\e9b7";
+$wood: "\e9b8";
+$zipcode: "\e9b9";
+
+@font-face {
+  font-family: "font-icon";
+  src: url("/assets/fonts/Font-icon/font-icon.eot");
+  src: url("/assets/fonts/Font-icon/font-icon.eot") format("embedded-opentype"),
+    url("/assets/fonts/Font-icon/font-icon.ttf") format("truetype"),
+    url("/assets/fonts/Font-icon/font-icon.woff") format("woff"),
+    url("/assets/fonts/Font-icon/font-icon.svg") format("svg");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Marianne font */
+@font-face {
+  font-family: $font-marianne-bold;
+  src: url("/assets/fonts/Marianne/Marianne-Bold.otf");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: $font-marianne-extra-bold;
+  src: url("/assets/fonts/Marianne/Marianne-ExtraBold.otf");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: $font-marianne-light;
+  src: url("/assets/fonts/Marianne/Marianne-Light.otf");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: $font-marianne-medium;
+  src: url("/assets/fonts/Marianne/Marianne-Medium.otf");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: $font-marianne-regular;
+  src: url("/assets/fonts/Marianne/Marianne-Regular.otf");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: $font-marianne-thin;
+  src: url("/assets/fonts/Marianne/Marianne-Thin.otf");
+  font-display: swap;
+}
+
+/* Fin Marianne font */
+
+em.c-icon {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: "font-icon" !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.acidification {
+  &:before {
+    content: $acidification;
+  }
+}
+.acte {
+  &:before {
+    content: $acte;
+  }
+}
+.acte_A {
+  &:before {
+    content: $acte_A;
+  }
+}
+.acte_B {
+  &:before {
+    content: $acte_B;
+  }
+}
+.acte_n_sare {
+  &:before {
+    content: $acte_n_sare;
+  }
+}
+.add {
+  &:before {
+    content: $add;
+  }
+}
+.add-acte {
+  &:before {
+    content: $add-acte;
+  }
+}
+.add-doc {
+  &:before {
+    content: $add-doc;
+  }
+}
+.add-folder {
+  &:before {
+    content: $add-folder;
+  }
+}
+.add-people {
+  &:before {
+    content: $add-people;
+  }
+}
+.add-project {
+  &:before {
+    content: $add-project;
+  }
+}
+.add-small {
+  &:before {
+    content: $add-small;
+  }
+}
+.agriculture {
+  &:before {
+    content: $agriculture;
+  }
+}
+.alea {
+  &:before {
+    content: $alea;
+  }
+}
+.apart {
+  &:before {
+    content: $apart;
+  }
+}
+.apps {
+  &:before {
+    content: $apps;
+  }
+}
+.arrow-decreases {
+  &:before {
+    content: $arrow-decreases;
+  }
+}
+.arrow-holding {
+  &:before {
+    content: $arrow-holding;
+  }
+}
+.arrow-increases {
+  &:before {
+    content: $arrow-increases;
+  }
+}
+.associated {
+  &:before {
+    content: $associated;
+  }
+}
+.attachment {
+  &:before {
+    content: $attachment;
+  }
+}
+.boat {
+  &:before {
+    content: $boat;
+  }
+}
+.book {
+  &:before {
+    content: $book;
+  }
+}
+.burger {
+  &:before {
+    content: $burger;
+  }
+}
+.calendar {
+  &:before {
+    content: $calendar;
+  }
+}
+.cancel {
+  &:before {
+    content: $cancel;
+  }
+}
+.card-game {
+  &:before {
+    content: $card-game;
+  }
+}
+.certificat {
+  &:before {
+    content: $certificat;
+  }
+}
+.check {
+  &:before {
+    content: $check;
+  }
+}
+.check-small {
+  &:before {
+    content: $check-small;
+  }
+}
+.chevron-down {
+  &:before {
+    content: $chevron-down;
+  }
+}
+.chevron-down-small {
+  &:before {
+    content: $chevron-down-small;
+  }
+}
+.chevron-left {
+  &:before {
+    content: $chevron-left;
+  }
+}
+.chevron-left-small {
+  &:before {
+    content: $chevron-left-small;
+  }
+}
+.chevron-right {
+  &:before {
+    content: $chevron-right;
+  }
+}
+.chevron-right-small {
+  &:before {
+    content: $chevron-right-small;
+  }
+}
+.chevron-up {
+  &:before {
+    content: $chevron-up;
+  }
+}
+.chevron-up-small {
+  &:before {
+    content: $chevron-up-small;
+  }
+}
+.cible {
+  &:before {
+    content: $cible;
+  }
+}
+.city {
+  &:before {
+    content: $city;
+  }
+}
+.clock {
+  &:before {
+    content: $clock;
+  }
+}
+.close {
+  &:before {
+    content: $close;
+  }
+}
+.close-small {
+  &:before {
+    content: $close-small;
+  }
+}
+.control-attachment {
+  &:before {
+    content: $control-attachment;
+  }
+}
+.convert-acte {
+  &:before {
+    content: $convert-acte;
+  }
+}
+.dashboard {
+  &:before {
+    content: $dashboard;
+  }
+}
+.default-smile {
+  &:before {
+    content: $default-smile;
+  }
+}
+.delete {
+  &:before {
+    content: $delete;
+  }
+}
+.delete-notification {
+  &:before {
+    content: $delete-notification;
+  }
+}
+.doc {
+  &:before {
+    content: $doc;
+  }
+}
+.doc-small {
+  &:before {
+    content: $doc-small;
+  }
+}
+.download {
+  &:before {
+    content: $download;
+  }
+}
+.download-cloud {
+  &:before {
+    content: $download-cloud;
+  }
+}
+.download-doc {
+  &:before {
+    content: $download-doc;
+  }
+}
+.dpe {
+  &:before {
+    content: $dpe;
+  }
+}
+.drag-drop {
+  &:before {
+    content: $drag-drop;
+  }
+}
+.duplicate {
+  &:before {
+    content: $duplicate;
+  }
+}
+.dynamic-renov {
+  &:before {
+    content: $dynamic-renov;
+  }
+}
+.eau {
+  &:before {
+    content: $eau;
+  }
+}
+.ecosysteme {
+  &:before {
+    content: $ecosysteme;
+  }
+}
+.edit-acte {
+  &:before {
+    content: $edit-acte;
+  }
+}
+.edit-folder {
+  &:before {
+    content: $edit-folder;
+  }
+}
+.edit-project {
+  &:before {
+    content: $edit-project;
+  }
+}
+.elevation {
+  &:before {
+    content: $elevation;
+  }
+}
+.eligibility {
+  &:before {
+    content: $eligibility;
+  }
+}
+.eligibility-no {
+  &:before {
+    content: $eligibility-no;
+  }
+}
+.enterprise {
+  &:before {
+    content: $enterprise;
+  }
+}
+.erlenmeyer {
+  &:before {
+    content: $erlenmeyer;
+  }
+}
+.euro {
+  &:before {
+    content: $euro;
+  }
+}
+.export-bdd {
+  &:before {
+    content: $export-bdd;
+  }
+}
+.exposition-future {
+  &:before {
+    content: $exposition-future;
+  }
+}
+.eye {
+  &:before {
+    content: $eye;
+  }
+}
+.eye-hide {
+  &:before {
+    content: $eye-hide;
+  }
+}
+.favorite {
+  &:before {
+    content: $favorite;
+  }
+}
+.favorite-full {
+  &:before {
+    content: $favorite-full;
+  }
+}
+.financial-aid {
+  &:before {
+    content: $financial-aid;
+  }
+}
+.flag {
+  &:before {
+    content: $flag;
+  }
+}
+.folder {
+  &:before {
+    content: $folder;
+  }
+}
+.folder-details {
+  &:before {
+    content: $folder-details;
+  }
+}
+.folder-fusion {
+  &:before {
+    content: $folder-fusion;
+  }
+}
+.folder-linked {
+  &:before {
+    content: $folder-linked;
+  }
+}
+.folder-selected {
+  &:before {
+    content: $folder-selected;
+  }
+}
+.foret {
+  &:before {
+    content: $foret;
+  }
+}
+.formation {
+  &:before {
+    content: $formation;
+  }
+}
+.france {
+  &:before {
+    content: $france;
+  }
+}
+.fuel {
+  &:before {
+    content: $fuel;
+  }
+}
+.gaz {
+  &:before {
+    content: $gaz;
+  }
+}
+.grue {
+  &:before {
+    content: $grue;
+  }
+}
+.heart {
+  &:before {
+    content: $heart;
+  }
+}
+.heating {
+  &:before {
+    content: $heating;
+  }
+}
+.help {
+  &:before {
+    content: $help;
+  }
+}
+.home {
+  &:before {
+    content: $home;
+  }
+}
+.home-back {
+  &:before {
+    content: $home-back;
+  }
+}
+.home_nav {
+  &:before {
+    content: $home_nav;
+  }
+}
+.indicators-input {
+  &:before {
+    content: $indicators-input;
+  }
+}
+.inondation {
+  &:before {
+    content: $inondation;
+  }
+}
+.institution {
+  &:before {
+    content: $institution;
+  }
+}
+.large-smile {
+  &:before {
+    content: $large-smile;
+  }
+}
+.light-smile {
+  &:before {
+    content: $light-smile;
+  }
+}
+.list {
+  &:before {
+    content: $list;
+  }
+}
+.location {
+  &:before {
+    content: $location;
+  }
+}
+.lock {
+  &:before {
+    content: $lock;
+  }
+}
+.logo-bddfaire {
+  &:before {
+    content: $logo-bddfaire;
+  }
+}
+.logo-faire {
+  &:before {
+    content: $logo-faire;
+  }
+}
+.logo-sarenov {
+  &:before {
+    content: $logo-sarenov;
+  }
+}
+.logo-tbs {
+  &:before {
+    content: $logo-tbs;
+  }
+}
+.logout {
+  &:before {
+    content: $logout;
+  }
+}
+.magic {
+  &:before {
+    content: $magic;
+  }
+}
+.magic-star {
+  &:before {
+    content: $magic-star;
+  }
+}
+.mail {
+  &:before {
+    content: $mail;
+  }
+}
+.module {
+  &:before {
+    content: $module;
+  }
+}
+.module-characteristic {
+  &:before {
+    content: $module-characteristic;
+  }
+}
+.module-company {
+  &:before {
+    content: $module-company;
+  }
+}
+.module-consumption {
+  &:before {
+    content: $module-consumption;
+  }
+}
+.module-finance {
+  &:before {
+    content: $module-finance;
+  }
+}
+.module-notes {
+  &:before {
+    content: $module-notes;
+  }
+}
+.module-report {
+  &:before {
+    content: $module-report;
+  }
+}
+.module-scenario {
+  &:before {
+    content: $module-scenario;
+  }
+}
+.module-support {
+  &:before {
+    content: $module-support;
+  }
+}
+.module-works {
+  &:before {
+    content: $module-works;
+  }
+}
+.monopropriete {
+  &:before {
+    content: $monopropriete;
+  }
+}
+.more {
+  &:before {
+    content: $more;
+  }
+}
+.neige {
+  &:before {
+    content: $neige;
+  }
+}
+.neutral-smile {
+  &:before {
+    content: $neutral-smile;
+  }
+}
+.niveaux {
+  &:before {
+    content: $niveaux;
+  }
+}
+.no-doc {
+  &:before {
+    content: $no-doc;
+  }
+}
+.notification {
+  &:before {
+    content: $notification;
+  }
+}
+.pause {
+  &:before {
+    content: $pause;
+  }
+}
+.peche {
+  &:before {
+    content: $peche;
+  }
+}
+.pen {
+  &:before {
+    content: $pen;
+  }
+}
+.pen-small {
+  &:before {
+    content: $pen-small;
+  }
+}
+.people {
+  &:before {
+    content: $people;
+  }
+}
+.people-inactive {
+  &:before {
+    content: $people-inactive;
+  }
+}
+.people-moral {
+  &:before {
+    content: $people-moral;
+  }
+}
+.peoples {
+  &:before {
+    content: $peoples;
+  }
+}
+.people-warn {
+  &:before {
+    content: $people-warn;
+  }
+}
+.percentage {
+  &:before {
+    content: $percentage;
+  }
+}
+.phone {
+  &:before {
+    content: $phone;
+  }
+}
+.photo {
+  &:before {
+    content: $photo;
+  }
+}
+.plan-adaptation {
+  &:before {
+    content: $plan-adaptation;
+  }
+}
+.play {
+  &:before {
+    content: $play;
+  }
+}
+.pluie {
+  &:before {
+    content: $pluie;
+  }
+}
+.position {
+  &:before {
+    content: $position;
+  }
+}
+.postit {
+  &:before {
+    content: $postit;
+  }
+}
+.project {
+  &:before {
+    content: $project;
+  }
+}
+.project-associated {
+  &:before {
+    content: $project-associated;
+  }
+}
+.recall {
+  &:before {
+    content: $recall;
+  }
+}
+.report {
+  &:before {
+    content: $report;
+  }
+}
+.resource {
+  &:before {
+    content: $resource;
+  }
+}
+.sante {
+  &:before {
+    content: $sante;
+  }
+}
+.search {
+  &:before {
+    content: $search;
+  }
+}
+.secheresse {
+  &:before {
+    content: $secheresse;
+  }
+}
+.sensibilite {
+  &:before {
+    content: $sensibilite;
+  }
+}
+.settings {
+  &:before {
+    content: $settings;
+  }
+}
+.solar {
+  &:before {
+    content: $solar;
+  }
+}
+.soustract {
+  &:before {
+    content: $soustract;
+  }
+}
+.soustract-small {
+  &:before {
+    content: $soustract-small;
+  }
+}
+.stat {
+  &:before {
+    content: $stat;
+  }
+}
+.status-edit {
+  &:before {
+    content: $status-edit;
+  }
+}
+.status-empty-folder {
+  &:before {
+    content: $status-empty-folder;
+  }
+}
+.status-error {
+  &:before {
+    content: $status-error;
+  }
+}
+.status-incomplete {
+  &:before {
+    content: $status-incomplete;
+  }
+}
+.status-info {
+  &:before {
+    content: $status-info;
+  }
+}
+.status-inprogress {
+  &:before {
+    content: $status-inprogress;
+  }
+}
+.status-notification {
+  &:before {
+    content: $status-notification;
+  }
+}
+.status-pause {
+  &:before {
+    content: $status-pause;
+  }
+}
+.status-play {
+  &:before {
+    content: $status-play;
+  }
+}
+.status-recall {
+  &:before {
+    content: $status-recall;
+  }
+}
+.status-suspended {
+  &:before {
+    content: $status-suspended;
+  }
+}
+.status-validate {
+  &:before {
+    content: $status-validate;
+  }
+}
+.statut {
+  &:before {
+    content: $statut;
+  }
+}
+.structure {
+  &:before {
+    content: $structure;
+  }
+}
+.surface {
+  &:before {
+    content: $surface;
+  }
+}
+.suspended {
+  border-radius: 50%;
+  &:before {
+    content: $status-suspended;
+  }
+}
+.syndic {
+  &:before {
+    content: $syndic;
+  }
+}
+.technical {
+  &:before {
+    content: $technical;
+  }
+}
+.temperature {
+  &:before {
+    content: $temperature;
+  }
+}
+.temperature-annuelle {
+  &:before {
+    content: $temperature-annuelle;
+  }
+}
+.textarea {
+  &:before {
+    content: $textarea;
+  }
+}
+.train {
+  &:before {
+    content: $train;
+  }
+}
+.unhappy-smile {
+  &:before {
+    content: $unhappy-smile;
+  }
+}
+.update {
+  &:before {
+    content: $update;
+  }
+}
+.vent {
+  &:before {
+    content: $vent;
+  }
+}
+.wood {
+  &:before {
+    content: $wood;
+  }
+}
+.zipcode {
+  &:before {
+    content: $zipcode;
+  }
+}
+
+.none {
+  &:before {
+    display: block;
+    height: 40px;
+    width: 40px;
+  }
+}
+
+.status-pause {
+  background-color: $color-warning;
+  border-radius: 50%;
+  &:before {
+    content: $status-pause;
+    color: $color-default-secondary;
+  }
+}
+.status-incomplete {
+  background-color: $color-warning;
+  border-radius: 50%;
+  &:before {
+    content: $status-incomplete;
+    color: $color-default-secondary;
+  }
+}
+.status-inprogress {
+  background-color: $color-project-secondary;
+  border-radius: 50%;
+  &:before {
+    content: $status-inprogress;
+    color: $color-default-secondary;
+  }
+}
+.status-recall {
+  background-color: $color-warning;
+  border-radius: 50%;
+  &:before {
+    content: $status-recall;
+    color: $color-default-secondary;
+  }
+}
+.status-suspended {
+  background-color: $color-warning;
+  border-radius: 50%;
+  &:before {
+    content: $status-suspended;
+    color: $color-default-secondary;
+  }
+}
+
+.status-validate {
+  background-color: $color-success;
+  border-radius: 50%;
+  &:before {
+    content: $status-validate;
+    color: $color-default-secondary;
+  }
+}

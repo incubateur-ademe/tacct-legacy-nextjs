@@ -1,0 +1,174 @@
+@import "bases";
+
+/* Primary buttons */
+.c-btn--primary {
+  @include btn;
+  @include btn-text;
+  @include btn-primary;
+}
+
+.c-btn--primary-square {
+  @include btn;
+  @include btn-text;
+  @include btn-primary;
+  border-radius: 0;
+}
+
+.c-btn--primary-icon-circle {
+  @include btn;
+  @include btn-icon;
+  @include btn-primary;
+
+  &.border {
+    border: $border-default-secondary;
+  }
+}
+
+.c-btn--primary-icon-square {
+  @include btn;
+  @include btn-icon;
+  @include btn-primary;
+  border-radius: $radius-default;
+
+  &.border {
+    border: $border-default-secondary;
+  }
+}
+
+.c-btn--primary-circle {
+  @include btn;
+  @include btn-text;
+  @include btn-primary;
+  text-transform: lowercase;
+  border-radius: $size-medium;
+  height: 2 * $size-default;
+  padding: $size-small $size-lower + $size-small;
+
+  &::first-letter {
+    text-transform: capitalize;
+  }
+}
+
+/* Secondary buttons */
+.c-btn--secondary {
+  @include btn;
+  @include btn-text;
+  @include btn-secondary;
+}
+
+.c-btn--secondary-square {
+  @include btn;
+  @include btn-text;
+  @include btn-secondary;
+  border-radius: 0;
+}
+
+.c-btn--secondary-icon-circle {
+  @include btn;
+  @include btn-icon;
+  @include btn-secondary;
+}
+
+.c-btn--secondary-icon-square {
+  @include btn;
+  @include btn-icon;
+  @include btn-secondary;
+  border-radius: $radius-default;
+}
+
+/* Tertiary buttons */
+.c-btn--tertiary {
+  @include btn;
+  @include btn-text;
+  @include btn-tertiary;
+}
+
+.c-btn--tertiary-square {
+  @include btn;
+  @include btn-text;
+  @include btn-tertiary;
+  border-radius: 0;
+}
+
+.c-btn--tertiary-icon {
+  @include btn;
+  @include btn-icon;
+  @include btn-tertiary;
+  border-radius: $radius-default;
+
+  &:hover:not(:disabled) {
+    background-color: transparent;
+  }
+
+  &:active:hover:not(:disabled) {
+    background-color: transparent;
+  }
+}
+
+.c-btn--tertiary-icon-circle {
+  @include btn;
+  @include btn-icon;
+  @include btn-tertiary;
+}
+
+.c-btn--tertiary-icon-circle-text {
+  @include btn;
+  @include btn-text;
+  @include btn-tertiary;
+  font-size: $size-default;
+  font-weight: $txt-regular;
+  text-transform: lowercase;
+  display: flex;
+  align-items: center;
+  padding: 0 $size-lower 0 0;
+}
+
+.c-btn {
+  font-family: $font-marianne-regular;
+  font-size: $font-size-small;
+  color: $color-ademe-blue;
+  background: $color-default-secondary;
+  border: 3 * $border-size-default $border-type-default $color-ademe-blue;
+  border-radius: 2 * $radius-xl;
+  display: flex;
+  align-items: center;
+  padding: $size-default;
+
+  &:hover {
+    display: flex;
+    color: $color-default-secondary;
+    background: $color-ademe-blue;
+    border-color: $color-ademe-blue;
+    border-radius: 2 * $radius-xl;
+    .c-btn__icon {
+      background: url(/assets/img/arrow-droite-white.svg) no-repeat;
+      background-position-x: 5px;
+      padding: $size-default 1.5 * $size-default $size-default 2 * $size-default;
+    }
+  }
+}
+
+.c-btn__icon {
+  background: url(/assets/img/arrow-droite-blue.svg) no-repeat;
+  background-position-x: 5px;
+  padding: $size-default 1.5 * $size-default $size-default 2 * $size-default;
+}
+
+.c-group-buttons {
+  display: flex;
+  height: $size-large;
+  button:not(:last-child) {
+    margin-right: $size-default;
+  }
+  a:not(:last-child) {
+    margin-right: $size-default;
+  }
+}
+
+.c-group-buttons--center {
+  justify-content: center;
+}
+
+.c-group-buttons--end {
+  justify-content: flex-end;
+}

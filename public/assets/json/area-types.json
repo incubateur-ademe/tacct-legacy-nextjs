@@ -1,0 +1,22 @@
+[
+  {
+    "id": "0",
+    "area": "Agricoles et forestiers"
+  },
+  {
+    "id": "1",
+    "area": "De montagne"
+  },
+  {
+    "id": "2",
+    "area": "Littoraux et maritimes"
+  },
+  {
+    "id": "3",
+    "area": "Naturels et aquatiques"
+  },
+  {
+    "id": "4",
+    "area": "Urbanisés"
+  }
+]

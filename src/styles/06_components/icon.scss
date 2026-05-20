@@ -1,0 +1,145 @@
+@import "bases";
+
+.c-icon {
+  font-family: $font-icon;
+  font-size: $icon-size-default;
+
+  &:not(em) {
+    line-height: 1;
+  }
+
+  &.small {
+    font-size: $icon-size-small;
+  }
+
+  &.lower {
+    font-size: $icon-size-lower;
+  }
+
+  &.medium {
+    font-size: $icon-size-medium;
+  }
+
+  &.large {
+    font-size: $icon-size-large;
+  }
+
+  &.xl {
+    font-size: $icon-size-xl;
+  }
+
+  &.project-primary {
+    color: $color-project-primary;
+  }
+
+  &.project-primary-secondary {
+    color: $ADEME-GREEN;
+  }
+
+  &.project-secondary {
+    color: $color-project-secondary;
+  }
+
+  &.project-link {
+    color: $color-link;
+  }
+
+  &.default-secondary {
+    color: $color-default-secondary;
+  }
+
+  &.blue {
+    color: $color-tacct-blue;
+  }
+
+  &.empty {
+    color: $color-empty;
+  }
+
+  &.empty-light {
+    color: $color-empty-light;
+  }
+
+  // Smileys icons colors
+  &.empty-smile {
+    color: $color-project-secondary-txt;
+  }
+
+  &.green-smile {
+    color: $color-strategy-primary;
+  }
+
+  &.dark-green-smile {
+    color: $color-strategy-primary-dark;
+  }
+
+  &.orange-smile {
+    color: $color-tacct-orange;
+  }
+
+  &.red-smile {
+    color: $color-tacct-red;
+  }
+}
+
+.c-icon__circle {
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: max-content;
+  height: max-content;
+
+  &.large {
+    width: $icon-size-large;
+    height: $icon-size-large;
+  }
+
+  &.xl {
+    width: $icon-size-xl;
+    height: $icon-size-xl;
+  }
+
+  &.project-primary {
+    border: $border-project-primary;
+  }
+
+  &.project-primary-secondary {
+    border: $border-project-primary-secondary;
+  }
+
+  &.project-secondary {
+    border: $border-default-secondary;
+  }
+
+  &.empty-light {
+    border: $border-empty-light;
+  }
+
+  &.empty {
+    border: $border-empty;
+  }
+  &.active {
+    background-color: $color-project-primary;
+  }
+  &.green {
+    background-color: $GREEN-TACCT;
+    border: $border-size-default $border-type-default $GREEN-TACCT;
+  }
+  &.green-light {
+    background-color: $color-green-light;
+    border: $border-size-default $border-type-default $color-green-light;
+    width: $size-medium;
+    height: $size-medium;
+  }
+  &.orange {
+    background-color: $color-warning;
+    border: $border-size-default $border-type-default $color-warning;
+  }
+  &.orange-light {
+    background-color: $color-orange-light;
+    border: $border-size-default $border-type-default $color-orange-light;
+    width: $size-medium;
+    height: $size-medium;
+  }
+}

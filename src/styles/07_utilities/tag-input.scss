@@ -1,0 +1,83 @@
+@import "bases";
+
+.c-tag-input {
+  @include input-style;
+  min-height: $size-large - $size-default;
+  height: auto;
+  padding: 0.1875rem;
+
+  &.readonly {
+    border: none;
+  }
+}
+
+.tag {
+  font-family: $font-default !important;
+  border-radius: $radius-default !important;
+  background-color: $color-project-secondary-light !important;
+  color: $color-txt-default-primary !important;
+  height: $size-medium + $size-small !important;
+  line-height: 1.8rem !important;
+  padding: 0 0 0 $size-lower !important;
+  margin: $size-small * 0.5 $size-small !important;
+
+  &:hover {
+    box-shadow: none !important;
+  }
+}
+
+.ng2-tag-input {
+  border-bottom: none !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+}
+
+.ng2-tag-input--disabled {
+  display: none !important;
+}
+
+.ng2-tags-container {
+  @include overflow-ellipsis;
+  align-items: center;
+}
+
+.ng2-tag-input__text-input {
+  color: $color-txt-default-primary !important;
+  background-color: transparent !important;
+  height: auto !important;
+  line-height: 2 * $size-default;
+  width: 300%;
+  padding: 0.0625rem $size-lower !important;
+}
+
+.delete-icon {
+  padding-right: $size-lower !important;
+  width: $size-default !important;
+
+  &:hover {
+    -webkit-transform: scale(1) translateY(0) !important;
+    transform: scale(1) translateY(0) !important;
+
+    &:before {
+      color: $color-error;
+    }
+  }
+
+  & svg {
+    height: $size-medium !important;
+  }
+
+  &:before {
+    content: $close;
+    font-family: $font-icon;
+    font-size: $size-medium;
+    font-weight: $txt-bold;
+    color: $color-link;
+    padding-top: 0.0625rem;
+    position: absolute;
+  }
+
+  & path {
+    display: none;
+  }
+}

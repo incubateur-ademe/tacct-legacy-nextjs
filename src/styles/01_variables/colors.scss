@@ -1,0 +1,93 @@
+@import "concrete-color";
+@import "opacity";
+
+/* Default colors */
+$color-default-primary: $BLACK;
+$color-default-primary-light: $JET;
+$color-default-primary-very-light: $BLACK-OLIVE;
+
+$color-default-secondary: $WHITE;
+
+$color-default-tertiary: $OUTERSPACE;
+
+$color-background: $CULTURED;
+$color-background-grey: $BACKGROUND-GREY;
+$color-background-blue: $BACKGROUND-BLUE;
+
+/* Brand colors */
+$color-ademe-blue: $YALE-BLUE;
+$color-ademe-blue-hover: $YALE-BLUE-HOVER;
+$color-ademe-light-blue: $ICEBERG;
+$color-ademe-rouge: $MAXIMUM-RED;
+
+/* colors TACCT */
+$color-tacct-red: $TACCT-RED;
+$color-tacct-orange: $TACCT-ORANGE;
+$color-tacct-yellow: $HONEY-YELLOW;
+$color-tacct-green: $TACCT-GREEN;
+$color-tacct-blue: $TACCT-BLUE;
+$color-tacct-purple: $TACCT-PURPLE;
+
+/* Project primary colors */
+$color-project-primary-very-light: $ALICE-BLUE;
+$color-project-primary-light: $BABY-BLUE-EYES;
+$color-project-primary: $YALE-BLUE;
+$color-project-primary-txt: $ADEME-GREEN;
+$color-project-primary-dark: $ROYAL-DARK-BLUE;
+$color-project-primary-very-dark: $OXFORD-BLUE;
+
+/* Project secondary colors */
+$color-project-secondary-very-light: $GHOST-WHITE;
+$color-project-secondary-light: $PERIWINKLE;
+$color-project-secondary: $ICEBERG;
+$color-project-secondary-txt: $ADEME-GREY;
+$color-project-secondary-dark: $LAPIS-LAZULI;
+$color-project-secondary-very-dark: $PRUSSIAN-BLUE;
+
+/* Links colors */
+$color-link-light: $BABY-BLUE;
+$color-link: $YALE-BLUE;
+$color-link-dark: $BLUE-SAPPHIRE;
+
+/* Alerts colors */
+$color-error: $MAXIMUM-RED;
+$color-error-light: $LIGHT-SALMON-PINK;
+$color-error-very-light: $PALE-PINK;
+$color-error-dark: $ANTIQUE-RUBY;
+
+$color-success: $CARIBBEAN-GREEN;
+$color-success-light: $MIDDLE-BLUE-GREEN;
+$color-success-very-light: $AERO-BLUE;
+$color-success-dark: $BOTTLE-GREEN;
+
+$color-warning: $MANGO-TANGO;
+$color-warning-light: $MACARONI-AND-CHEESE;
+$color-warning-very-light: $MOCCASIN;
+$color-warning-dark: $RUSSET;
+
+/* Empty colors, disabled colors */
+$color-empty-light: $GLITTER;
+$color-empty: $COLUMBIA-GREY;
+$color-empty-dark: $SLATE-GRAY;
+
+/* Actions colors (buttons) */
+$color-button-primary-hover: $YALE-BLUE-HOVER;
+$color-button-secondary-hover: rgba($YALE-BLUE-HOVER, $opacity-lower);
+$color-button-tertiary-hover: rgba($YALE-BLUE-HOVER, $opacity-lower);
+
+$color-button-primary-active: rgba($color-link-dark, $opacity-lower);
+$color-button-secondary-active: rgba($color-link-dark, $opacity-lower);
+$color-button-tertiary-active: rgba($color-link-dark, $opacity-lower);
+
+/* Label colors (buttons) */
+$label: #282828;
+$subtitle: #434343;
+$label-grey: #666666;
+
+$color-green-light: rgba($GREEN-TACCT, $opacity-lower);
+$color-orange-light: rgba($color-warning, $opacity-lower);
+
+/* Color strategie */
+$color-strategy-primary: $PERSIAN-GREEN;
+$color-strategy-primary-light: $MEDIUM-TURQUOISE;
+$color-strategy-primary-dark: $CELADON-GREEN;

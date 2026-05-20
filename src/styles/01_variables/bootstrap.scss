@@ -1,0 +1,24 @@
+$grid-columns: 12;
+$grid-gutter-width: 30px;
+
+$bootstrap-xs-screen: 0;
+$bootstrap-sm-screen: 576px;
+$bootstrap-md-screen: 768px;
+$bootstrap-lg-screen: 1200px;
+
+$bootstrap-sm-container: 540px;
+$bootstrap-md-container: 720px;
+$bootstrap-lg-container: 1092px;
+
+$grid-breakpoints: (
+  /** Extra small screen / phone **/ xs: 0,
+  /** Small screen / phone **/ sm: $bootstrap-sm-screen,
+  /** Medium screen / tablet **/ md: $bootstrap-md-screen,
+  /** Large screen / desktop **/ lg: $bootstrap-lg-screen
+);
+
+$container-max-widths: (
+  sm: $bootstrap-sm-container,
+  md: $bootstrap-md-container,
+  lg: $bootstrap-lg-container,
+);

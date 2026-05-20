@@ -1,0 +1,10 @@
+@import "bases";
+
+.o-page-title {
+  text-align: center;
+  font-size: $txt-size-medium;
+  color: $color-txt-project-primary;
+  font-weight: $txt-regular;
+  line-height: 2 * $size-default;
+  margin-bottom: 4rem;
+}

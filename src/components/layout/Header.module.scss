@@ -1,0 +1,37 @@
+@import "bases";
+
+.logoTacct {
+  height: 3.3rem;
+  width: 30rem;
+  background-size: 30rem;
+  background-image: url("/assets/img/logo_tacct_navbar.svg");
+  background-position: bottom;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  margin-left: 4rem;
+}
+
+.containerHeader {
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cardHeader {
+  padding: 0.8rem;
+  margin-bottom: 0.1rem;
+}
+
+.active {
+  :global(.c-icon) {
+    color: $color-default-secondary;
+  }
+  span {
+    background-color: $color-ademe-blue;
+  }
+}

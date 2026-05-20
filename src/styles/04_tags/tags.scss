@@ -1,0 +1,15 @@
+@import "bases";
+
+body {
+  overflow-y: visible;
+  overflow-x: hidden;
+  font-family: $font-default;
+}
+
+textarea {
+  resize: vertical;
+}
+
+a {
+  cursor: pointer;
+}
