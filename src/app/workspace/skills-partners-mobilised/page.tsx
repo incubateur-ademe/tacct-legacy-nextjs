@@ -5,12 +5,18 @@ import {
   getImpactsWithCompetencesForStudy,
   getSkillTerritoryCatalog,
 } from '@/server/skills-partners/queries';
-import { revokeImpactFromSkills } from '@/server/skills-partners/actions';
-import { CompetenceForm } from '@/components/skills-partners/CompetenceForm';
+import { BlockTitleIcon } from '@/components/ui/BlockTitleIcon';
+import { ContentLayout } from '@/components/layout/ContentLayout';
+import { SyntheseImpacts } from '@/components/skills-partners/SyntheseImpacts';
+import { DetailSyntheseImpacts } from '@/components/skills-partners/DetailSyntheseImpacts';
+import type { SyntheseImpactItem } from '@/components/skills-partners/SyntheseImpactSimple';
+import type { DetailSyntheseImpactItem } from '@/components/skills-partners/DetailSyntheseImpacts';
 
 export const dynamic = 'force-dynamic';
 
-type SearchParams = Promise<{ study?: string; showRevoked?: string }>;
+type SearchParams = Promise<{ study?: string }>;
+
+const MIN_FUTURE_EXPOSURE = 8;
 
 export default async function SkillsPartnersPage({
   searchParams,
@@ -18,7 +24,7 @@ export default async function SkillsPartnersPage({
   searchParams: SearchParams;
 }) {
   const user = await requireCurrentUser();
-  const { study: studyIdParam, showRevoked } = await searchParams;
+  const { study: studyIdParam } = await searchParams;
   const study = await getCurrentStudy(user, studyIdParam);
   if (!study) redirect('/workspace/gestion/studies-management');
 
@@ -27,163 +33,104 @@ export default async function SkillsPartnersPage({
     getSkillTerritoryCatalog(),
   ]);
 
-  const skillOptions = skills.map((s) => ({ id: s.id, label: s.label }));
+  const skillOptions = skills.map((s) => ({ id: s.id, label: s.label ?? '' }));
 
-  // Critère de priorité : sensibility × future_exposure >= 8
-  // Les impacts révoqués apparaissent dans la section "Non prioritaires" (toggle).
-  const impactsWithScore = impacts.map((imp) => {
+  /**
+   * Mapping legacy : pour chaque impact, on calcule
+   *   observedExposure = sensitivity × exposure_observée
+   *   futureExposure   = sensitivity × exposure_future
+   * (les seuils 8/12/16 du legacy sont des produits sur 16.)
+   */
+  type Item = SyntheseImpactItem & {
+    actionPlan: string;
+    revokedDiagnostic: boolean;
+  };
+
+  const items: Item[] = impacts.map((imp) => {
     const sensitivity = imp.sensitivity ? Number(imp.sensitivity) : 0;
-    const futureExposure = imp.observed_exposure?.future_exposure?.exposure
+    const obs = imp.observed_exposure?.exposure ? Number(imp.observed_exposure.exposure) : 0;
+    const fut = imp.observed_exposure?.future_exposure?.exposure
       ? Number(imp.observed_exposure.future_exposure.exposure)
       : 0;
-    const score = sensitivity * futureExposure;
     return {
-      impact: imp,
-      score,
-      isPriority: !imp.revoked_diagnostic && score >= 8,
+      id: imp.id,
+      description: imp.description ?? '',
+      thematicIcon: imp.impact_theme?.thematic?.icon ?? 'suspended',
+      thematicName: imp.impact_theme?.thematic?.name ?? imp.impact_theme?.name ?? '',
+      observedExposure: sensitivity * obs,
+      futureExposure: sensitivity * fut,
+      revokedDiagnostic: imp.revoked_diagnostic,
+      actionPlan: imp.action_plan ?? '',
     };
   });
 
-  // Tri par score descendant pour mettre les plus exposés en premier
-  impactsWithScore.sort((a, b) => b.score - a.score);
+  // Tri legacy : par futureExposure DESC puis par description
+  const sorted = [...items].sort((a, b) => {
+    if (b.futureExposure !== a.futureExposure) return b.futureExposure - a.futureExposure;
+    return a.description.localeCompare(b.description);
+  });
 
-  const priority = impactsWithScore.filter((x) => x.isPriority);
-  const nonPriority = impactsWithScore.filter((x) => !x.isPriority);
-  const showNonPriority = showRevoked === '1';
+  // Pour la liste compacte : ignore les impacts révoqués dans les prioritaires
+  // (la legacy les filtre en amont via le store) — on garde tous pour avoir
+  // possibilité de réajouter via le bouton "Ajouter" dans la zone non-prio.
+  const syntheseItems: SyntheseImpactItem[] = sorted;
 
-  return (
-    <div className="container page">
-      <div className="row">
-        <div className="col-lg-12 col-md-16">
-          <div className="o-card">
-            <h1 className="c-title-black-bold">Compétences et partenaires à mobiliser</h1>
-            <div className="c-subtitle-grey mt-1">
-              {priority.length} impact{priority.length > 1 ? 's' : ''} prioritaire{priority.length > 1 ? 's' : ''}
-              {' • '}
-              {nonPriority.length} non prioritaire{nonPriority.length > 1 ? 's' : ''}
-            </div>
-          </div>
-        </div>
-      </div>
+  // Pour les détails : uniquement les prioritaires non révoqués
+  const detailItems: DetailSyntheseImpactItem[] = sorted
+    .filter((i) => i.futureExposure >= MIN_FUTURE_EXPOSURE && !i.revokedDiagnostic)
+    .map((i) => ({
+      id: i.id,
+      description: i.description,
+      thematicIcon: i.thematicIcon,
+      thematicName: i.thematicName,
+      actionPlan: i.actionPlan,
+      observedExposure: i.observedExposure,
+      futureExposure: i.futureExposure,
+      revokedDiagnostic: i.revokedDiagnostic,
+    }));
 
-      {priority.length === 0 && (
-        <div className="o-card mt-4 text-center py-5">
-          Aucun impact prioritaire. Les impacts deviennent prioritaires quand sensibilité × exposition
-          future est ≥ 8.
-        </div>
-      )}
-
-      {priority.map((x) => (
-        <ImpactCard
-          key={x.impact.id}
-          impactWithScore={x}
-          skills={skillOptions}
-          canRevoke={false}
-        />
-      ))}
-
-      {nonPriority.length > 0 && (
-        <>
-          <div className="row mt-5">
-            <div className="col-lg-12 col-md-16">
-              <a
-                href={`?${showNonPriority ? '' : 'showRevoked=1'}`}
-                className="c-btn--tertiary"
-              >
-                {showNonPriority ? '▾ Masquer' : '▸ Afficher'} les impacts non prioritaires (
-                {nonPriority.length})
-              </a>
-            </div>
-          </div>
-          {showNonPriority &&
-            nonPriority.map((x) => (
-              <ImpactCard
-                key={x.impact.id}
-                impactWithScore={x}
-                skills={skillOptions}
-                canRevoke={!x.impact.revoked_diagnostic}
-              />
-            ))}
-        </>
-      )}
-    </div>
-  );
-}
-
-function ImpactCard({
-  impactWithScore: { impact, score, isPriority },
-  skills,
-  canRevoke,
-}: {
-  impactWithScore: {
-    impact: Awaited<ReturnType<typeof getImpactsWithCompetencesForStudy>>[number];
-    score: number;
-    isPriority: boolean;
-  };
-  skills: { id: string; label: string }[];
-  canRevoke: boolean;
-}) {
-  const hazardName =
-    impact.observed_exposure?.climate_hazard?.name ??
-    impact.observed_exposure?.climate_hazard_custom ??
-    '—';
-  const sensitivity = impact.sensitivity ? Number(impact.sensitivity) : null;
-  const futureExposure = impact.observed_exposure?.future_exposure?.exposure;
-
-  const initial = impact.impact_competence.map((c) => ({
-    id: c.id,
-    skillTerritoryId: c.skill_territory_id ?? '',
-    otherOrganization: c.other_organization,
-  }));
-
-  // Couleur d'alerte selon score (rouge ≥ 16, orange ≥ 12, jaune ≥ 8)
-  const scoreColor =
-    score >= 16 ? '#dc3545' : score >= 12 ? '#fd7e14' : score >= 8 ? '#ffc107' : '#6c757d';
+  // Index des compétences existantes par impact id
+  const competencesByImpact = new Map<
+    string,
+    { id: string; skillTerritoryId: string; otherOrganization: string }[]
+  >();
+  for (const imp of impacts) {
+    competencesByImpact.set(
+      imp.id,
+      imp.impact_competence.map((c) => ({
+        id: c.id,
+        skillTerritoryId: c.skill_territory_id ?? '',
+        otherOrganization: c.other_organization ?? '',
+      })),
+    );
+  }
 
   return (
-    <div className="row mt-4">
-      <div className="col-lg-12 col-md-16">
-        <div className="o-card" style={{ borderLeft: `4px solid ${scoreColor}` }}>
-          <div className="d-flex justify-content-between align-items-start">
-            <div>
-              <h2 className="c-subtitle-black-bold m-0">
-                {impact.description ?? '(impact sans description)'}
-              </h2>
-              <div className="c-subtitle-grey mt-1">
-                Thématique : {impact.impact_theme?.name ?? '—'}
-                {' • '}Aléa : {hazardName}
-              </div>
-              <div className="c-subtitle-grey mt-1">
-                Sensibilité : {sensitivity ?? '—'} / 4
-                {' • '}Exposition future :{' '}
-                {futureExposure === null || futureExposure === undefined
-                  ? '—'
-                  : `${String(futureExposure)} / 3`}
-                {' • '}Score : <strong>{score}</strong>
-                {!isPriority && (
-                  <span className="badge bg-warning ms-2">
-                    {impact.revoked_diagnostic ? 'Retiré' : 'Non prioritaire'}
-                  </span>
-                )}
-              </div>
-            </div>
-            {canRevoke && (
-              <form
-                action={async () => {
-                  'use server';
-                  await revokeImpactFromSkills(impact.id);
-                }}
-              >
-                <button type="submit" className="c-btn--tertiary">
-                  Retirer
-                </button>
-              </form>
-            )}
+    <ContentLayout helpKey="skills-partners-mobilised">
+      <div className="container page">
+        <div className="o-card u-margin__bottom--m">
+          <div className="row">
+            <BlockTitleIcon
+              pageTitle="Compétences et partenaires à mobiliser"
+              subtitle="Stratégies d'adaptation"
+              icon="peoples"
+            />
           </div>
+        </div>
 
-          <CompetenceForm impactId={impact.id} skills={skills} initial={initial} />
+        <div className="o-card">
+          <SyntheseImpacts impacts={syntheseItems} />
+
+          {detailItems.map((d) => (
+            <DetailSyntheseImpacts
+              key={d.id}
+              syntheseImpact={d}
+              skills={skillOptions}
+              initialCompetences={competencesByImpact.get(d.id) ?? []}
+            />
+          ))}
         </div>
       </div>
-    </div>
+    </ContentLayout>
   );
 }

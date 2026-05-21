@@ -81,6 +81,28 @@ export async function deleteImpactTheme(id: string) {
   revalidatePath('/workspace/sensibility');
 }
 
+/**
+ * Patch de la justification d'une thématique (édition inline depuis
+ * l'accordéon de la page sensibility). Port du `UpdateImpactTheme` legacy.
+ */
+export async function updateImpactThemeJustification(
+  id: string,
+  justification: string,
+): Promise<void> {
+  const theme = await prisma.impact_theme.findUnique({
+    where: { id },
+    select: { study_id: true },
+  });
+  if (!theme?.study_id) throw new Error('NOT_FOUND');
+  await assertCanEditStudy(theme.study_id);
+
+  await prisma.impact_theme.update({
+    where: { id },
+    data: { justification, updated_at: new Date() },
+  });
+  revalidatePath('/workspace/sensibility');
+}
+
 // ─── Impacts ──────────────────────────────────────────────────────────────────
 
 const impactSchema = z.object({

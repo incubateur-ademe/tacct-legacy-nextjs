@@ -1,0 +1,108 @@
+@import "bases";
+
+/* ─── Page « Analyse du climat futur » ─── */
+.sc-future-climate-analysis__text-bloc {
+  ul {
+    padding-left: $size-default;
+    list-style: initial;
+  }
+  ol {
+    padding-left: $size-default;
+  }
+  li {
+    margin-bottom: $size-default;
+  }
+}
+
+/* ─── Page « Capture de l'exposition future » ─── */
+
+/* Card complète d'un aléa (card-info + form en dessous) */
+.c-exposure {
+  /* Le `.row.mt-5` apporte déjà le margin-top */
+}
+
+/* Layout horizontal info aléa | panneau exposition observée */
+.cord-two-cols {
+  display: flex;
+  flex-direction: row;
+
+  .content {
+    flex: 1;
+    padding: $size-medium;
+    word-wrap: break-word;
+  }
+
+  .card-right {
+    width: 16rem;
+  }
+}
+
+/* Labels intermédiaires (gris clair, petit) */
+.title-disabled {
+  font-size: $txt-size-small;
+  color: $color-txt-empty;
+  margin-top: $size-default;
+  display: block;
+}
+
+.title-normal {
+  font-size: $txt-size-lower;
+  line-height: $size-default;
+}
+
+/* Panneau info exposition observée (à droite de la card-info) */
+.o-section-info {
+  background: $color-project-secondary-very-light;
+  width: 100%;
+  padding: $size-medium;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.o-section--right__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.icon-nb {
+  font-size: $txt-size-regular * 2;
+  margin-right: $size-small;
+}
+
+.o-observed-exposure__nb {
+  font-weight: $txt-bold;
+  font-size: $txt-size-medium;
+}
+
+.o-observed-exposure__type-exposition {
+  font-weight: $txt-bold;
+  text-align: center;
+}
+
+.o-observed-exposure__type-exposition-2 {
+  text-align: center;
+  word-break: break-word;
+  font-size: $txt-size-lower;
+}
+
+.sc-capture__justification-text {
+  word-break: break-word;
+}
+
+/* Deuxième card (form évolution future + exposition future + justification) */
+.c-second-block {
+  margin-top: 0.063rem; // 1px séparateur (cf. legacy)
+}
+
+.c-select__future_evolution {
+  min-width: 50%;
+}
+
+.c-justification {
+  height: $size-large;
+  min-height: $size-large;
+  padding-left: $size-lower;
+  padding-right: $size-lower;
+}

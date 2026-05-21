@@ -1,0 +1,265 @@
+@import "bases";
+
+/* ─── Card d'une exposition observée (liste) ─── */
+.sc-exposure {
+  font-family: $font-default;
+  background-color: #fff;
+  border-radius: 0.1875rem;
+  box-shadow: $shadow-card;
+  display: flex;
+  margin-top: $size-large;
+  overflow: hidden;
+}
+
+.sc-exposure__content {
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - 16rem);
+  padding: $size-medium;
+  word-wrap: break-word;
+  transition: width 0.5s;
+
+  label {
+    font-size: $txt-size-small;
+    color: $color-txt-empty;
+    margin-top: $size-default;
+  }
+
+  p {
+    font-size: $txt-size-lower;
+    line-height: $size-default;
+  }
+
+  em {
+    font-size: $txt-size-regular * 2;
+    color: $color-project-primary-txt;
+    margin-right: $size-small;
+  }
+}
+
+.sc-exposure__title {
+  color: $color-project-primary-txt;
+  font-weight: $txt-bold;
+  display: flex;
+  align-items: center;
+}
+
+.sc-exposure__infos {
+  background: $color-project-secondary-very-light;
+  width: 16rem;
+  padding: $size-medium;
+
+  span {
+    font-weight: $txt-bold;
+  }
+}
+
+.sc-exposure__infos-expo {
+  display: flex;
+  align-items: center;
+
+  span {
+    font-size: $txt-size-medium;
+  }
+
+  em {
+    font-size: $txt-size-regular * 2;
+    color: $color-project-primary-txt;
+    margin-right: $size-small;
+  }
+}
+
+.sc-exposure__tools {
+  background: $color-project-primary;
+  margin-right: -3.75rem;
+  visibility: hidden;
+  padding: $size-lower;
+  transition:
+    margin-right 0.5s,
+    visibility 0.5s;
+  display: flex;
+  flex-direction: column;
+
+  button {
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    padding: 0;
+  }
+  button:first-child {
+    margin-bottom: $size-lower;
+  }
+}
+
+.sc-exposure:hover {
+  .sc-exposure__tools {
+    margin-right: 0;
+    visibility: visible;
+  }
+
+  .sc-exposure__content {
+    width: calc(100% - 16rem - 3.875rem);
+  }
+}
+
+/* ─── Sélecteur de catégorie d'aléa (page add) ─── */
+.c-add-exposure__list-categories {
+  padding: 0;
+  margin: 2em auto;
+  display: flex;
+  flex-wrap: wrap;
+  width: 30rem;
+}
+
+.o-climate-hazard-category {
+  width: 10rem;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+  margin-top: 2rem;
+
+  button {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+}
+
+/* ─── Footer de validation (fixed bottom) ─── */
+.sc-validation-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #ffffff;
+  z-index: 99;
+  color: #ffffff;
+  box-shadow: 0 -0.1875rem 6px 0 rgba(0, 0, 0, 0.2);
+
+  .o-section--right__body {
+    padding: $size-default $size-medium;
+  }
+
+  .sc-button__validation {
+    border-radius: 0;
+  }
+}
+
+/* ─── Alert form (bannière d'erreur) ─── */
+.alert-custom-danger {
+  color: $color-txt-default-secondary;
+  background-color: $color-warning;
+  border-color: $color-warning;
+  border-radius: 0;
+  padding: 2rem;
+  display: flex;
+  align-items: flex-start;
+  margin: 1.5rem -2rem 2rem -2rem;
+
+  .alert-custom-danger__oval {
+    box-sizing: border-box;
+    height: 3.75rem;
+    width: 3.75rem;
+    min-width: 3.75rem;
+    line-height: 3.75rem;
+    border: $border-default-secondary;
+    border-radius: 50%;
+    display: inline-block;
+    text-align: center;
+    font-size: $txt-size-xl;
+    font-weight: bolder;
+    margin-right: 1rem;
+  }
+
+  .alert-custom-danger__title {
+    font-weight: bolder;
+  }
+
+  .alert-custom-danger__detail {
+    padding-left: 1.5rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+
+    &::before {
+      content: '›';
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+/* ─── Onglets tendances climatiques ─── */
+.c-navbar-trend {
+  flex-wrap: nowrap;
+  height: 5.2rem;
+  padding-left: $size-default;
+  background-color: $color-project-secondary-very-light;
+  display: flex;
+  list-style: none;
+  margin: 0;
+
+  .nav-item {
+    display: block;
+  }
+
+  .nav-link {
+    @include h2-secondary;
+    display: block;
+    background-color: $color-project-secondary-very-light;
+    text-align: center;
+    width: min-content;
+    padding: $size-default ($size-lower + $size-small);
+    padding-left: 2rem;
+    padding-right: 2rem;
+    font-size: $txt-size-default;
+    color: $color-default-primary-light;
+    text-decoration: none;
+    border: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+
+    &.active {
+      font-weight: bold;
+      color: $color-txt-default-primary-very-light;
+      border-bottom: $size-small $border-type-default $color-project-secondary-dark;
+    }
+  }
+}
+
+/* ─── Tendance régionale (carte SVG + texte) ─── */
+.c-regional-climate {
+  img,
+  svg {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+  }
+}
+
+.c-map-france {
+  margin-bottom: -4rem;
+}
+
+.trend-map {
+  z-index: 1000;
+}
+
+.c-trend-global img,
+.c-trend-france img {
+  width: 100%;
+  height: auto;
+}
+
+/* ─── Input d'exposition (ng-select wrapper port) ─── */
+.o-observed-exposure {
+  .c-required {
+    color: $color-warning;
+    font-size: $txt-size-small;
+    margin-top: 0.25rem;
+  }
+}

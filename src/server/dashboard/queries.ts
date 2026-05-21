@@ -22,7 +22,12 @@ export async function getDashboardData(studyId: string) {
         thematic: true,
         impact: {
           include: {
-            observed_exposure: { include: { future_exposure: true } },
+            observed_exposure: {
+              include: {
+                future_exposure: true,
+                climate_hazard: true,
+              },
+            },
           },
         },
       },
@@ -42,11 +47,21 @@ export interface SynthesisCell {
   future: SynthesisItem[];
 }
 
-interface SynthesisItem {
+export interface SynthesisItem {
   impactId: string;
+  /** id du `observed_exposure` lié — sert au "dim effect" hover de la matrice */
+  observedExposureId: string | null;
   description: string;
   thematicName: string;
   thematicIcon: string | null;
+  /** Exposition observée (sur 4) */
+  observedExposure: number | null;
+  /** Exposition future (sur 4) */
+  futureExposure: number | null;
+  /** Tendance climatique (icône arrow-…) */
+  trendIcon: string;
+  /** Nom de l'aléa principal */
+  nameExposure: string;
 }
 
 /**
@@ -70,28 +85,53 @@ export function buildSynthesisMatrix(
     for (const impact of theme.impact) {
       const sensitivity = impact.sensitivity ? Number(impact.sensitivity) : 0;
       if (sensitivity < 1 || sensitivity > 4) continue;
-      const observedExposure = impact.observed_exposure?.exposure;
-      const futureExposure = impact.observed_exposure?.future_exposure?.exposure;
+      const observedExposureRaw = impact.observed_exposure?.exposure;
+      const futureExposureRaw = impact.observed_exposure?.future_exposure?.exposure;
+      const observedExposure =
+        observedExposureRaw === null || observedExposureRaw === undefined
+          ? null
+          : Number(observedExposureRaw);
+      const futureExposure =
+        futureExposureRaw === null || futureExposureRaw === undefined
+          ? null
+          : Number(futureExposureRaw);
+
       const item: SynthesisItem = {
         impactId: impact.id,
+        observedExposureId: impact.observed_exposure?.id ?? null,
         description: impact.description ?? '',
         thematicName: theme.name ?? '',
         thematicIcon: theme.thematic?.icon ?? null,
+        observedExposure,
+        futureExposure,
+        trendIcon: trendIcon(observedExposure, futureExposure),
+        nameExposure:
+          impact.observed_exposure?.climate_hazard?.name ??
+          impact.observed_exposure?.climate_hazard_custom ??
+          '',
       };
-      if (observedExposure !== null && observedExposure !== undefined) {
-        const e = Number(observedExposure);
+
+      if (observedExposure !== null) {
         const rowIdx = 4 - sensitivity;
-        if (e >= 0 && e <= 3) matrix[rowIdx]![e]!.observed.push(item);
+        if (observedExposure >= 0 && observedExposure <= 3)
+          matrix[rowIdx]![observedExposure]!.observed.push(item);
       }
-      if (futureExposure !== null && futureExposure !== undefined) {
-        const e = Number(futureExposure);
+      if (futureExposure !== null) {
         const rowIdx = 4 - sensitivity;
-        if (e >= 0 && e <= 3) matrix[rowIdx]![e]!.future.push(item);
+        if (futureExposure >= 0 && futureExposure <= 3)
+          matrix[rowIdx]![futureExposure]!.future.push(item);
       }
     }
   }
 
   return matrix;
+}
+
+function trendIcon(observed: number | null, future: number | null): string {
+  if (observed === null || future === null) return '';
+  if (future === observed) return 'arrow-holding';
+  if (future > observed) return 'arrow-increases';
+  return 'arrow-decreases';
 }
 
 /**

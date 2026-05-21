@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { sensibilityLabel } from '@/lib/sensibility';
+import { SecondaryExposuresSectionClient } from './SecondaryExposuresSectionClient';
 
 export interface ExposureOption {
   id: string;
@@ -15,14 +17,21 @@ export interface ImpactFormDefaults {
   actionPlan?: string | null;
 }
 
-const SENSITIVITY_OPTIONS = [
-  { value: '', label: '— Non renseignée —' },
-  { value: '1', label: '1 — Faible' },
-  { value: '2', label: '2 — Modérée' },
-  { value: '3', label: '3 — Forte' },
-  { value: '4', label: '4 — Très forte' },
-];
-
+/**
+ * Port des champs de form impact du legacy (add-impact + edit-impact).
+ *
+ * Structure :
+ *  – Description courte (input avec floating label, max 50)
+ *  – Sensibilité observée : select 1-4 + justification (en row flex-nowrap)
+ *  – Section "Aléa principal" (`o-section--even`) : select primary + liste
+ *    secondaires (input disabled + bouton supprimer) + select pour ajouter
+ *  – Description longue (textarea)
+ *  – Politiques/actions (textarea)
+ *  – Boutons Annuler/Enregistrer
+ *
+ * Les aléas secondaires sont gérés en client (état local) pour pouvoir
+ * supprimer/ajouter sans rechargement.
+ */
 export function ImpactFormFields({
   exposures,
   defaults,
@@ -30,126 +39,110 @@ export function ImpactFormFields({
   exposures: ExposureOption[];
   defaults?: ImpactFormDefaults;
 }) {
-  const selectedSecondary = new Set(defaults?.secondaryExposureIds ?? []);
-
   return (
     <>
-      <div className="o-card mb-3">
-        <h2 className="c-subtitle-black-bold">Description</h2>
-        <div className="c-input__group">
-          <label className="c-input__label" htmlFor="description">
-            Description courte (max 255 caractères)
-          </label>
-          <input
-            id="description"
-            name="description"
-            type="text"
-            maxLength={255}
-            defaultValue={defaults?.description ?? ''}
-            className="c-input w-100"
-          />
-        </div>
-        <div className="c-input__group mt-3">
-          <label className="c-input__label" htmlFor="observedImpact">
-            Description longue de l&apos;impact observé
-          </label>
-          <textarea
-            id="observedImpact"
-            name="observedImpact"
-            rows={4}
-            defaultValue={defaults?.observedImpact ?? ''}
-            className="c-input w-100"
-          />
-        </div>
-      </div>
-
-      <div className="o-card mb-3">
-        <h2 className="c-subtitle-black-bold">Sensibilité</h2>
-        <div className="c-input__group">
-          <label className="c-input__label" htmlFor="sensitivity">
-            Note de sensibilité (1 à 4)
-          </label>
-          <select
-            id="sensitivity"
-            name="sensitivity"
-            defaultValue={defaults?.sensitivity ?? ''}
-            className="c-input"
-          >
-            {SENSITIVITY_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="c-input__group mt-3">
-          <label className="c-input__label" htmlFor="justification">
-            Justification de la sensibilité
-          </label>
-          <textarea
-            id="justification"
-            name="justification"
-            rows={3}
-            defaultValue={defaults?.justification ?? ''}
-            className="c-input w-100"
-          />
-        </div>
-      </div>
-
-      <div className="o-card mb-3">
-        <h2 className="c-subtitle-black-bold">Aléa principal</h2>
-        <select
-          name="primaryExposureId"
-          defaultValue={defaults?.primaryExposureId ?? ''}
-          className="c-input w-100"
-        >
-          <option value="">— Aucun —</option>
-          {exposures.map((e) => (
-            <option key={e.id} value={e.id}>
-              {e.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="o-card mb-3">
-        <h2 className="c-subtitle-black-bold">Aléas secondaires</h2>
-        <p className="c-subtitle-grey">
-          Coche les aléas observés qui contribuent secondairement à cet impact.
-        </p>
-        {exposures.map((e) => (
-          <div key={e.id} className="c-checkbox__group">
+      <section>
+        <div className="row">
+          <div className="c-input__group col-sm-16 w-100">
             <input
-              id={`sec-${e.id}`}
-              type="checkbox"
-              name="secondaryExposureIds"
-              value={e.id}
-              defaultChecked={selectedSecondary.has(e.id)}
-              className="mr-2"
+              id="description"
+              name="description"
+              type="text"
+              maxLength={50}
+              className="c-input__large"
+              defaultValue={defaults?.description ?? ''}
             />
-            <label htmlFor={`sec-${e.id}`}>{e.label}</label>
+            <label className="c-input__label" htmlFor="description">
+              Description courte
+            </label>
+            <div className="c-required">*obligatoire</div>
           </div>
-        ))}
-      </div>
+        </div>
+      </section>
 
-      <div className="o-card mb-3">
-        <h2 className="c-subtitle-black-bold">Politiques et actions existantes</h2>
-        <textarea
-          name="actionPlan"
-          rows={3}
-          defaultValue={defaults?.actionPlan ?? ''}
-          className="c-input w-100"
-        />
-      </div>
+      <section>
+        <h2 className="c-legend-paragraphe mb-2">Sensibilité observée</h2>
+        <div className="row flex-nowrap col-md-16">
+          <div className="c-input__group col-sm-16" id="c-add-impact__sensitivity">
+            <select
+              id="sensitivity"
+              name="sensitivity"
+              className="c-input"
+              defaultValue={defaults?.sensitivity ?? ''}
+            >
+              <option value="" disabled>
+                Sensibilité du territoire
+              </option>
+              {[1, 2, 3, 4].map((v) => (
+                <option key={v} value={v}>
+                  {v} - {sensibilityLabel(v)}
+                </option>
+              ))}
+            </select>
+            <div className="c-required">*requis</div>
+            <label className="c-input__label" htmlFor="sensitivity">
+              Sensibilité du territoire
+            </label>
+          </div>
 
-      <div className="d-flex justify-content-between">
-        <Link href="/workspace/sensibility" className="c-btn--tertiary">
+          <div className="c-input__group col-sm-16 w-100">
+            <textarea
+              id="justification"
+              name="justification"
+              className="c-input__large"
+              defaultValue={defaults?.justification ?? ''}
+            />
+            <label className="c-input__label" htmlFor="justification">
+              Justification
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <SecondaryExposuresSectionClient
+        exposures={exposures}
+        initialPrimary={defaults?.primaryExposureId ?? null}
+        initialSecondaries={defaults?.secondaryExposureIds ?? []}
+      />
+
+      <section>
+        <div className="row">
+          <div className="c-input__group col-sm-16 w-100">
+            <textarea
+              id="observedImpact"
+              name="observedImpact"
+              className="c-input__large"
+              defaultValue={defaults?.observedImpact ?? ''}
+            />
+            <label className="c-input__label" htmlFor="observedImpact">
+              Description longue
+            </label>
+          </div>
+        </div>
+        <div className="row">
+          <div className="c-input__group col-sm-16 w-100">
+            <textarea
+              id="actionPlan"
+              name="actionPlan"
+              className="c-input__large"
+              defaultValue={defaults?.actionPlan ?? ''}
+            />
+            <label className="c-input__label" htmlFor="actionPlan">
+              Politiques, actions, projets existants
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <div className="o-btn--end">
+        <Link href="/workspace/sensibility" className="c-btn--tertiary" title="Annuler">
           Annuler
         </Link>
-        <button type="submit" className="c-btn--primary">
+        <button type="submit" className="c-btn--primary" title="Enregistrer">
           Enregistrer
         </button>
       </div>
     </>
   );
 }
+

@@ -2,14 +2,17 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { getCurrentStudy } from '@/server/study/current-study';
+import { getImpactThemesForStudy } from '@/server/sensibility/queries';
+import { validateSensibilityStep } from '@/server/sensibility/actions';
+import { BlockTitleIcon } from '@/components/ui/BlockTitleIcon';
+import { ContentLayout } from '@/components/layout/ContentLayout';
 import {
-  getImpactThemesForStudy,
-} from '@/server/sensibility/queries';
-import {
-  deleteImpactTheme,
-  deleteImpact,
-  validateSensibilityStep,
-} from '@/server/sensibility/actions';
+  SensibilityTheme,
+  type SensibilityThemeItem,
+} from '@/components/sensibility/SensibilityTheme';
+import type { SensibilityCardItem } from '@/components/sensibility/SensibilityCard';
+import { ValidationFooter } from '@/components/observed-climate/ValidationFooter';
+import { pluralize } from '@/lib/pluralize';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,165 +24,89 @@ export default async function SensibilityPage({
   searchParams: SearchParams;
 }) {
   const user = await requireCurrentUser();
-  const { study: studyIdParam } = await searchParams;
-  const study = await getCurrentStudy(user, studyIdParam);
+  const params = await searchParams;
+  const study = await getCurrentStudy(user, params.study);
   if (!study) redirect('/workspace/gestion/studies-management');
 
   const themes = await getImpactThemesForStudy(study.id);
   const totalImpacts = themes.reduce((sum, t) => sum + t.impact.length, 0);
-  const incomplete = themes
-    .flatMap((t) => t.impact)
-    .some((i) => i.sensitivity === null);
+  const qs = params.study ? `?study=${params.study}` : '';
+
+  const items: SensibilityThemeItem[] = themes.map((t) => ({
+    id: t.id,
+    name: t.thematic?.name ?? t.name ?? '',
+    icon: t.thematic?.icon ?? 'suspended',
+    justification: t.justification ?? '',
+    impacts: t.impact.map<SensibilityCardItem>((i) => {
+      const primary = i.observed_exposure;
+      const primaryName =
+        primary?.climate_hazard?.name ?? primary?.climate_hazard_custom ?? '';
+      const primaryIcon =
+        primary?.climate_hazard_custom !== null
+          ? 'suspended'
+          : (primary?.climate_hazard?.climate_hazard_category?.icon ?? 'suspended');
+      return {
+        id: i.id,
+        description: i.description ?? '',
+        sensitivity: i.sensitivity === null ? null : Number(i.sensitivity),
+        justification: i.justification ?? '',
+        observedImpact: i.observed_impact ?? null,
+        actionPlan: i.action_plan ?? null,
+        primaryHazardName: primaryName,
+        primaryHazardIcon: primaryIcon,
+        secondaryHazardNames: i.observed_exposure_impact
+          .map((oei) => oei.observed_exposure?.climate_hazard?.name ?? '')
+          .filter((s): s is string => Boolean(s)),
+      };
+    }),
+  }));
+
+  const studyId = study.id;
+  const validateAction = async () => {
+    'use server';
+    await validateSensibilityStep(studyId);
+  };
 
   return (
-    <div className="container page">
-      <div className="row">
-        <div className="col-lg-12 col-md-16">
-          <div className="o-card d-flex justify-content-between align-items-center">
-            <div>
-              <h1 className="c-title-black-bold m-0">Sensibilité</h1>
-              <div className="c-subtitle-grey mt-1">
-                {totalImpacts} impact{totalImpacts > 1 ? 's' : ''} qualifié{totalImpacts > 1 ? 's' : ''}
-                {' '}sur {themes.length} thématique{themes.length > 1 ? 's' : ''}
+    <ContentLayout helpKey="sensibility">
+      <div className="container page">
+        <div className="row">
+          <div className="col-lg-12 col-md-16">
+            <div className="o-card o-card__triangle">
+              <div className="row">
+                <BlockTitleIcon
+                  className="col-16"
+                  pageTitle="Identification des impacts"
+                  subtitle="Diagnostiquer vos impacts"
+                  icon="sensibilite"
+                />
+              </div>
+              <div className="o-centred-elements d-flex">
+                {totalImpacts > 0 && (
+                  <span className="ml-0 mr-auto subtitle">
+                    {totalImpacts} {pluralize(totalImpacts, 'impact', 'impacts')}
+                  </span>
+                )}
+                <Link
+                  href={`/workspace/sensibility/impact-theme/add${qs}`}
+                  className="ml-auto mr-0 c-btn--primary"
+                >
+                  Ajouter une thématique
+                </Link>
               </div>
             </div>
-            <Link
-              href="/workspace/sensibility/impact-theme/add"
-              className="c-btn--primary"
-            >
-              + Ajouter une thématique
-            </Link>
+          </div>
+          <div className="col-lg-12">
+            {items.map((t) => (
+              <SensibilityTheme key={t.id} theme={t} />
+            ))}
           </div>
         </div>
       </div>
 
-      {themes.length === 0 && (
-        <div className="o-card mt-4 text-center py-5">
-          Aucune thématique ajoutée. Commence par en créer une.
-        </div>
-      )}
-
-      {themes.map((theme) => (
-        <div key={theme.id} className="row mt-4">
-          <div className="col-lg-12 col-md-16">
-            <div className="o-card">
-              <div className="d-flex justify-content-between align-items-start">
-                <div>
-                  <h2 className="c-subtitle-black-bold m-0">
-                    {theme.thematic?.icon && (
-                      <em
-                        className={`c-icon medium project-primary ${theme.thematic.icon} mr-2`}
-                        aria-hidden="true"
-                      />
-                    )}
-                    {theme.name}
-                  </h2>
-                  {theme.justification && (
-                    <p className="c-subtitle-grey mt-1 mb-0">{theme.justification}</p>
-                  )}
-                </div>
-                <div className="d-flex gap-2">
-                  <Link
-                    href={`/workspace/sensibility/impact-theme/impact/add/${theme.id}`}
-                    className="c-btn--secondary"
-                  >
-                    + Impact
-                  </Link>
-                  <form
-                    action={async () => {
-                      'use server';
-                      await deleteImpactTheme(theme.id);
-                    }}
-                  >
-                    <button type="submit" className="c-btn--tertiary">
-                      Supprimer thématique
-                    </button>
-                  </form>
-                </div>
-              </div>
-
-              {theme.impact.length === 0 && (
-                <div className="mt-3 text-muted">Aucun impact dans cette thématique.</div>
-              )}
-
-              {theme.impact.map((impact) => {
-                const primaryHazard =
-                  impact.observed_exposure?.climate_hazard?.name ??
-                  '—';
-                return (
-                  <div key={impact.id} className="mt-3 pt-3" style={{ borderTop: '1px solid #eee' }}>
-                    <div className="d-flex justify-content-between align-items-start">
-                      <div className="flex-grow-1">
-                        <strong>{impact.description ?? '(sans description)'}</strong>
-                        <div className="c-subtitle-grey">
-                          Aléa principal : {primaryHazard}
-                          {' • '}
-                          Sensibilité :{' '}
-                          {impact.sensitivity === null ? (
-                            <span className="text-danger">Non renseignée</span>
-                          ) : (
-                            `${String(impact.sensitivity)} / 4`
-                          )}
-                          {impact.revoked_diagnostic && (
-                            <span className="badge bg-warning ms-2">
-                              Diagnostic révoqué (sensibilité × exposition future &lt; 8)
-                            </span>
-                          )}
-                        </div>
-                        {impact.observed_impact && (
-                          <p className="mt-2 mb-0 u-txt-word-break">{impact.observed_impact}</p>
-                        )}
-                      </div>
-                      <div className="d-flex gap-2 ms-3">
-                        <Link
-                          href={`/workspace/sensibility/impact-theme/impact/edit/${impact.id}`}
-                          className="c-btn--secondary"
-                        >
-                          Modifier
-                        </Link>
-                        <form
-                          action={async () => {
-                            'use server';
-                            await deleteImpact(impact.id);
-                          }}
-                        >
-                          <button type="submit" className="c-btn--tertiary">
-                            Supprimer
-                          </button>
-                        </form>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      ))}
-
       {totalImpacts > 0 && (
-        <div className="o-card mt-4">
-          {incomplete && (
-            <div className="text-danger mb-2">
-              Certains impacts n&apos;ont pas de note de sensibilité. La validation passera l&apos;étape en
-              « incomplet ».
-            </div>
-          )}
-          <form
-            action={async () => {
-              'use server';
-              await validateSensibilityStep(study.id);
-            }}
-          >
-            <button type="submit" className="c-btn--primary">
-              Valider la sensibilité
-            </button>
-          </form>
-          <div className="c-subtitle-grey mt-2">
-            Statut actuel : <strong>{study.sensibility_valid}</strong>
-          </div>
-        </div>
+        <ValidationFooter label="Valider la sensibilité" action={validateAction} />
       )}
-    </div>
+    </ContentLayout>
   );
 }

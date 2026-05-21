@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { saveImpactCompetences } from '@/server/skills-partners/actions';
 
 interface SkillOption {
@@ -9,11 +9,25 @@ interface SkillOption {
 }
 
 interface CompetenceLine {
-  id: string;
+  /** Identifiant local (rendu stable côté React). */
+  key: string;
+  /** Id en base si la ligne provient déjà d'une sauvegarde. */
+  dbId: string | null;
   skillTerritoryId: string;
   otherOrganization: string;
 }
 
+/**
+ * Port de `app-detail-synthese-impacts` (partie formulaire) + reset legacy.
+ *
+ * Comportement :
+ *  – Au moins une ligne visible en permanence.
+ *  – Quand l'utilisateur remplit la dernière ligne, on en ajoute une vide en
+ *    dessous automatiquement (cf. `addRowIfNecessary` legacy).
+ *  – Le bouton « Supprimer » apparaît dès qu'une ligne porte une valeur ET
+ *    qu'il existe plus d'une ligne au total.
+ *  – Le bouton « Enregistrer » est désactivé si la seule ligne est vide.
+ */
 export function CompetenceForm({
   impactId,
   skills,
@@ -21,94 +35,114 @@ export function CompetenceForm({
 }: {
   impactId: string;
   skills: SkillOption[];
-  initial: CompetenceLine[];
+  initial: { id: string; skillTerritoryId: string; otherOrganization: string }[];
 }) {
-  const [lines, setLines] = useState<CompetenceLine[]>(
-    initial.length > 0
-      ? initial
-      : [{ id: crypto.randomUUID(), skillTerritoryId: '', otherOrganization: '' }],
-  );
+  const [lines, setLines] = useState<CompetenceLine[]>(() => initialiseLines(initial));
 
   const saveAction = saveImpactCompetences.bind(null, impactId);
 
-  const updateLine = (index: number, patch: Partial<CompetenceLine>) => {
-    setLines((current) =>
-      current.map((l, i) => (i === index ? { ...l, ...patch } : l)),
-    );
+  // Ajoute une ligne vide quand la dernière a été remplie
+  useEffect(() => {
+    const last = lines[lines.length - 1];
+    if (!last) return;
+    const filled = last.skillTerritoryId || last.otherOrganization.trim();
+    if (filled) {
+      setLines((prev) => [...prev, emptyLine()]);
+    }
+  }, [lines]);
+
+  const update = (idx: number, patch: Partial<CompetenceLine>) => {
+    setLines((prev) => prev.map((l, i) => (i === idx ? { ...l, ...patch } : l)));
   };
 
-  const addLine = () => {
-    setLines((current) => [
-      ...current,
-      { id: crypto.randomUUID(), skillTerritoryId: '', otherOrganization: '' },
-    ]);
+  const remove = (idx: number) => {
+    setLines((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== idx) : prev));
   };
 
-  const removeLine = (index: number) => {
-    setLines((current) =>
-      current.length > 1 ? current.filter((_, i) => i !== index) : current,
-    );
-  };
+  const someFilled = lines.some((l) => l.skillTerritoryId || l.otherOrganization.trim());
 
   return (
-    <form action={saveAction} className="mt-3">
-      {lines.map((line, idx) => (
-        <div key={line.id} className="row align-items-start mb-2">
-          <div className="col-md-5">
-            <label className="c-input__label" htmlFor={`skill-${line.id}`}>
-              Compétence du territoire
-            </label>
-            <select
-              id={`skill-${line.id}`}
-              name="skillTerritoryId"
-              value={line.skillTerritoryId}
-              onChange={(e) => updateLine(idx, { skillTerritoryId: e.target.value })}
-              className="c-input w-100"
-            >
-              <option value="">— Aucune —</option>
-              {skills.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="col-md-6">
-            <label className="c-input__label" htmlFor={`other-${line.id}`}>
-              Autres partenaires / organisations
-            </label>
-            <textarea
-              id={`other-${line.id}`}
-              name="otherOrganization"
-              value={line.otherOrganization}
-              onChange={(e) => updateLine(idx, { otherOrganization: e.target.value })}
-              rows={2}
-              className="c-input w-100"
-            />
-          </div>
-          <div className="col-md-1 d-flex align-items-end">
-            {lines.length > 1 && (
-              <button
-                type="button"
-                onClick={() => removeLine(idx)}
-                className="c-btn--tertiary"
-                title="Supprimer la ligne"
+    <form action={saveAction} className="sc-detail-synthese-impacts__form">
+      {lines.map((line, idx) => {
+        const filled = !!(line.skillTerritoryId || line.otherOrganization.trim());
+        const canDelete = lines.length > 1 && filled;
+        return (
+          <div key={line.key} className="row">
+            <div className="c-input__group col-md-6 col-sm-16 input-size-small">
+              <select
+                name="skillTerritoryId"
+                className="c-input"
+                value={line.skillTerritoryId}
+                onChange={(e) => update(idx, { skillTerritoryId: e.target.value })}
               >
-                ×
-              </button>
-            )}
+                <option value="">Saisir une compétence</option>
+                {skills.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.label}
+                  </option>
+                ))}
+              </select>
+              <label className="c-input__label">Compétences du territoire</label>
+            </div>
+            <div className="c-input__group col-md-4 col-sm-16 input-size-small">
+              <textarea
+                name="otherOrganization"
+                className="c-input__large"
+                value={line.otherOrganization}
+                onChange={(e) => update(idx, { otherOrganization: e.target.value })}
+              />
+              <label className="c-input__label">Autres organismes compétents</label>
+            </div>
+            <div className="c-group-buttons col-md-2">
+              {canDelete && (
+                <button
+                  type="button"
+                  className="sc-detail-synthese-impacts__btn-delete"
+                  title="Supprimer"
+                  onClick={() => remove(idx)}
+                >
+                  <span aria-hidden="true" className="c-icon delete" />
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
 
-      <div className="d-flex justify-content-between mt-3">
-        <button type="button" onClick={addLine} className="c-btn--secondary">
-          + Ajouter une ligne
-        </button>
-        <button type="submit" className="c-btn--primary">
+      <div className="c-group-buttons c-group-buttons--end">
+        <button
+          type="submit"
+          className="c-btn--primary sc-detail-synthese-impacts__btn-save"
+          title="Enregistrer"
+          disabled={!someFilled}
+        >
           Enregistrer
         </button>
       </div>
     </form>
   );
+}
+
+function emptyLine(): CompetenceLine {
+  return {
+    key: crypto.randomUUID(),
+    dbId: null,
+    skillTerritoryId: '',
+    otherOrganization: '',
+  };
+}
+
+function initialiseLines(
+  initial: { id: string; skillTerritoryId: string; otherOrganization: string }[],
+): CompetenceLine[] {
+  if (initial.length === 0) return [emptyLine()];
+  const mapped: CompetenceLine[] = initial.map((c) => ({
+    key: c.id,
+    dbId: c.id,
+    skillTerritoryId: c.skillTerritoryId,
+    otherOrganization: c.otherOrganization,
+  }));
+  // Legacy : si une seule ligne, on en ajoute une vide en dessous
+  if (mapped.length === 1) mapped.push(emptyLine());
+  return mapped;
 }

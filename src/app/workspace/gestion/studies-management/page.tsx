@@ -1,38 +1,63 @@
-import { prisma } from '@/server/db';
+import {
+  getRegionsList,
+  getStudiesAdminList,
+} from '@/server/admin/queries';
+import { BlockTitleIcon } from '@/components/ui/BlockTitleIcon';
+import { ContentLayout } from '@/components/layout/ContentLayout';
+import { SortHeader } from '@/components/admin/SortHeader';
+import { Pagination } from '@/components/admin/Pagination';
+import { pluralize } from '@/lib/pluralize';
 
 export const dynamic = 'force-dynamic';
 
-const PAGE_SIZE = 10;
-
-type SearchParams = Promise<{ page?: string }>;
+type SearchParams = Promise<{
+  page?: string;
+  q?: string;
+  region?: string;
+  sort?: string;
+  dir?: 'asc' | 'desc';
+}>;
 
 export default async function StudiesAdminPage({
   searchParams,
 }: {
   searchParams: SearchParams;
 }) {
-  const params = await searchParams;
-  const page = Math.max(1, Number(params.page ?? '1'));
-  const skip = (page - 1) * PAGE_SIZE;
+  const { page, q, region, sort, dir } = await searchParams;
+  const pageNum = Math.max(1, Number(page ?? '1'));
+  const search = q?.trim() || undefined;
 
-  const [studies, total] = await Promise.all([
-    prisma.study.findMany({
-      orderBy: { created_at: 'desc' },
-      include: {
-        commune: { include: { department: { include: { region: true } } } },
-        user_study: {
-          where: { head_study: true },
-          take: 1,
-          include: { user: true },
-        },
-      },
-      skip,
-      take: PAGE_SIZE,
+  const [{ items, total, pageSize }, regions] = await Promise.all([
+    getStudiesAdminList({
+      page: pageNum,
+      search,
+      regionId: region || undefined,
+      sort,
+      dir,
     }),
-    prisma.study.count(),
+    getRegionsList(),
   ]);
+  const pageCount = Math.ceil(total / pageSize);
 
-  const pageCount = Math.ceil(total / PAGE_SIZE);
+  const buildSortHref = (newSort: string, newDir: 'asc' | 'desc') => {
+    const p = new URLSearchParams();
+    p.set('sort', newSort);
+    p.set('dir', newDir);
+    if (search) p.set('q', search);
+    if (region) p.set('region', region);
+    return `?${p.toString()}`;
+  };
+
+  const buildPageHref = (p: number) => {
+    const params = new URLSearchParams();
+    params.set('page', String(p));
+    if (search) params.set('q', search);
+    if (region) params.set('region', region);
+    if (sort) params.set('sort', sort);
+    if (dir) params.set('dir', dir);
+    return `?${params.toString()}`;
+  };
+
   const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
     day: '2-digit',
     month: '2-digit',
@@ -40,92 +65,158 @@ export default async function StudiesAdminPage({
   });
 
   return (
-    <div className="container page">
-      <div className="row">
-        <div className="col-lg-12 col-md-16">
-          <div className="o-card o-card__triangle">
-            <div className="row">
-              <div className="col-16 d-flex align-items-center">
-                <em
-                  className="c-icon medium project-primary folder mr-3"
-                  aria-hidden="true"
+    <ContentLayout helpKey="admin">
+      <div className="container page">
+        <div className="row">
+          <div className="col-lg-12 col-md-16">
+            <div className="o-card o-card__triangle">
+              <div className="row">
+                <BlockTitleIcon
+                  className="col-16"
+                  pageTitle="Études"
+                  subtitle="Administration"
+                  icon="folder"
                 />
-                <div>
-                  <h1 className="c-title-black-bold m-0">Études</h1>
-                  <div className="c-subtitle-grey">Administration</div>
-                </div>
+              </div>
+
+              <div className="o-centred-elements d-flex">
+                <form action="" className="sc-studies__form">
+                  <div className="c-input__group col-sm-16 w-100">
+                    <input
+                      id="firstName"
+                      name="q"
+                      className="c-input__large"
+                      type="text"
+                      defaultValue={search ?? ''}
+                    />
+                    <label className="c-input__label" htmlFor="firstName">
+                      Chargé de l&apos;étude
+                    </label>
+                  </div>
+
+                  <div className="c-input__group w-100">
+                    <select name="region" className="c-input" defaultValue={region ?? ''}>
+                      <option value="">— Toutes régions —</option>
+                      {regions.map((r) => (
+                        <option key={r.id} value={r.id}>
+                          {r.label}
+                        </option>
+                      ))}
+                    </select>
+                    <label className="c-input__label">Région</label>
+                  </div>
+
+                  <button type="submit" className="c-btn--secondary">
+                    Filtrer
+                  </button>
+                </form>
+
+                <span className="ml-3">
+                  {total} {pluralize(total, 'résultat', 'résultats')}
+                </span>
               </div>
             </div>
-            <div className="o-centred-elements mt-3">
-              <span className="ml-0 mr-auto subtitle">
-                {total} {total > 1 ? 'résultats' : 'résultat'}
-              </span>
-            </div>
+          </div>
+
+          {/* Filtre / tri */}
+          <div className="container-fluid">
+            <section>
+              <div className="row mt-2">
+                <div className="col-lg-12">
+                  <div className="admin-list-filter">
+                    <div className="row pt-2 pb-2">
+                      <div className="container w-100 o-centred-elements d-flex">
+                        <SortHeader
+                          label="Territoire de l'étude"
+                          sortKey="territoryName"
+                          currentSort={sort}
+                          currentDir={dir}
+                          buildHref={buildSortHref}
+                          className="sc-study-filter__territory-name pl-4"
+                        />
+                        <SortHeader
+                          label="Région"
+                          sortKey="region"
+                          currentSort={sort}
+                          currentDir={dir}
+                          buildHref={buildSortHref}
+                          className="sc-study-filter__region"
+                        />
+                        <SortHeader
+                          label="Date de création"
+                          sortKey="dateCreation"
+                          currentSort={sort}
+                          currentDir={dir}
+                          buildHref={buildSortHref}
+                          className="sc-study-filter__creation-date"
+                        />
+                        <div className="sc-study-filter__status" />
+                        <SortHeader
+                          label="Chargé de l'étude"
+                          sortKey="headStudy"
+                          currentSort={sort}
+                          currentDir={dir}
+                          buildHref={buildSortHref}
+                          className="sc-study-filter__head-study"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
         </div>
-      </div>
 
-      <section>
-        {studies.length === 0 && (
-          <div className="o-card mt-4 text-center py-5">Aucune étude.</div>
-        )}
+        <section>
+          {items.length === 0 && (
+            <div className="o-card mt-4 text-center py-5">Aucune étude.</div>
+          )}
 
-        {studies.map((study) => {
-          const headStudy = study.user_study[0]?.user;
-          const regionLabel = study.commune?.department?.region?.label ?? '—';
-          return (
-            <div className="row mt-4" key={study.id}>
-              <div className="col-lg-12 col-md-16">
-                <div className="o-card-p-0">
-                  <div className="row">
-                    <div className="container w-100 o-centred-elements">
-                      <div className="sc-studies__territory-name pb-2 pl-4 pt-2 c-subtitle-black-bold">
-                        {study.territory_name} {String(study.year)}
-                      </div>
-                      <div className="sc-studies__region d-flex align-items-center pt-2 pb-2">
-                        <em
-                          className="c-icon medium project-primary france mr-2"
-                          aria-hidden="true"
-                        />
-                        {regionLabel}
-                      </div>
-                      <div className="sc-studies__creation-date">
-                        {dateFormatter.format(study.created_at)}
-                      </div>
-                      <div className="sc-studies__head-study ml-auto section-ghost d-flex align-items-center h-100">
-                        <em
-                          className="c-icon medium project-primary people ml-2 mr-1"
-                          aria-hidden="true"
-                        />
-                        <div className="pr-5 pt-2 pb-2">
-                          {headStudy ? `${headStudy.firstname} ${headStudy.lastname}` : '—'}
+          {items.map((study) => {
+            const headStudy = study.user_study[0]?.user;
+            const regionLabel = study.commune?.department?.region?.label ?? '—';
+            return (
+              <div className="row mt-4" key={study.id}>
+                <div className="col-lg-12 col-md-16">
+                  <div className="o-card-p-0">
+                    <div className="row">
+                      <div className="container w-100 o-centred-elements d-flex">
+                        <div className="sc-studies__territory-name pb-2 pl-4 pt-2 c-subtitle-black-bold">
+                          {study.territory_name} {String(study.year)}
+                        </div>
+                        <div className="sc-studies__region d-flex align-items-center pt-2 pb-2">
+                          <em
+                            className="c-icon medium project-primary france mr-2"
+                            aria-hidden="true"
+                          />
+                          {regionLabel}
+                        </div>
+                        <div className="sc-studies__creation-date">
+                          {dateFormatter.format(study.created_at)}
+                        </div>
+                        <div className="sc-studies__head-study ml-auto section-ghost d-flex align-items-center h-100">
+                          <em
+                            className="c-icon medium project-primary people ml-2 mr-1"
+                            aria-hidden="true"
+                          />
+                          <div className="pr-5 pt-2 pb-2">
+                            {headStudy
+                              ? `${headStudy.firstname} ${headStudy.lastname}`
+                              : '—'}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
 
-        {pageCount > 1 && (
-          <nav className="d-flex justify-content-between p-2 c-ngx-pagination mt-5">
-            <ul className="pagination">
-              {Array.from({ length: pageCount }, (_, i) => i + 1).map((p) => (
-                <li
-                  key={p}
-                  className={`page-item ${p === page ? 'active' : ''}`}
-                >
-                  <a href={`?page=${p}`} className="page-link">
-                    {p}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        )}
-      </section>
-    </div>
+          <Pagination page={pageNum} pageCount={pageCount} buildHref={buildPageHref} />
+        </section>
+      </div>
+    </ContentLayout>
   );
 }

@@ -13,8 +13,15 @@ export async function getImpactThemesForStudy(studyId: string) {
         include: {
           observed_exposure: {
             include: {
-              climate_hazard: true,
+              climate_hazard: { include: { climate_hazard_category: true } },
               future_exposure: true,
+            },
+          },
+          observed_exposure_impact: {
+            include: {
+              observed_exposure: {
+                include: { climate_hazard: true },
+              },
             },
           },
         },
@@ -27,6 +34,28 @@ export async function getImpactThemesForStudy(studyId: string) {
 
 export async function getThematicsCatalog() {
   return prisma.thematic.findMany({ orderBy: { name: 'asc' } });
+}
+
+/**
+ * Catalogue des thématiques + flag `used` indiquant si l'étude a déjà une
+ * `impact_theme` qui pointe sur cette thématique. Permet de désactiver les
+ * tuiles déjà choisies dans la page « Ajouter une thématique ».
+ */
+export async function getThematicsCatalogForStudy(studyId: string) {
+  const [thematics, themes] = await Promise.all([
+    prisma.thematic.findMany({ orderBy: { name: 'asc' } }),
+    prisma.impact_theme.findMany({
+      where: { study_id: studyId },
+      select: { thematic_id: true },
+    }),
+  ]);
+  const used = new Set(themes.map((t) => t.thematic_id).filter(Boolean) as string[]);
+  return thematics.map((t) => ({
+    id: t.id,
+    name: t.name ?? '',
+    icon: t.icon ?? 'suspended',
+    used: used.has(t.id),
+  }));
 }
 
 export async function getImpactThemeById(id: string) {

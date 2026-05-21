@@ -3,10 +3,12 @@ import { redirect } from 'next/navigation';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { getCurrentStudy } from '@/server/study/current-study';
 import { getObservedExposuresForStudy } from '@/server/observed-exposure/queries';
-import {
-  deleteObservedExposure,
-  validateObservedExposureStep,
-} from '@/server/observed-exposure/actions';
+import { validateObservedExposureStep } from '@/server/observed-exposure/actions';
+import { BlockTitleIcon } from '@/components/ui/BlockTitleIcon';
+import { ContentLayout } from '@/components/layout/ContentLayout';
+import { Exposure, type ExposureItem } from '@/components/observed-climate/Exposure';
+import { ValidationFooter } from '@/components/observed-climate/ValidationFooter';
+import { pluralize } from '@/lib/pluralize';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,130 +20,71 @@ export default async function ObservedExposurePage({
   searchParams: SearchParams;
 }) {
   const user = await requireCurrentUser();
-  const { study: studyIdParam } = await searchParams;
-  const study = await getCurrentStudy(user, studyIdParam);
+  const params = await searchParams;
+  const study = await getCurrentStudy(user, params.study);
   if (!study) redirect('/workspace/gestion/studies-management');
 
   const exposures = await getObservedExposuresForStudy(study.id);
   const total = exposures.length;
-  const incomplete = exposures.some((e) => e.exposure === null);
+  const qs = params.study ? `?study=${params.study}` : '';
+
+  const items: ExposureItem[] = exposures.map((exp) => ({
+    id: exp.id,
+    categoryIcon:
+      exp.climate_hazard_custom !== null
+        ? 'suspended'
+        : (exp.climate_hazard?.climate_hazard_category?.icon ?? 'suspended'),
+    hazardName: exp.climate_hazard_custom ?? exp.climate_hazard?.name ?? '',
+    climateFeatures: exp.climate_features ?? null,
+    trends: exp.trends ?? null,
+    sources: exp.sources ?? null,
+    exposure: exp.exposure === null ? null : Number(exp.exposure),
+    justification: exp.justification ?? null,
+  }));
+
+  const studyId = study.id;
+  const validateAction = async () => {
+    'use server';
+    await validateObservedExposureStep(studyId);
+  };
 
   return (
-    <div className="container page">
-      <div className="row">
-        <div className="col-lg-12 col-md-16">
-          <div className="o-card">
-            <div className="d-flex align-items-center justify-content-between">
-              <h1 className="c-title-black-bold m-0">Saisie exposition observée</h1>
-              <Link
-                href="/workspace/observed-climate/observed-exposure/add"
-                className="c-btn--primary"
-              >
-                + Ajouter un aléa
-              </Link>
-            </div>
-            <div className="mt-2 c-subtitle-grey">
-              {total} {total > 1 ? 'aléas saisis' : 'aléa saisi'}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {total === 0 && (
-        <div className="o-card mt-4 text-center py-5">
-          Aucun aléa saisi pour le moment.
-        </div>
-      )}
-
-      {exposures.map((exp) => {
-        const hazardName = exp.climate_hazard_custom ?? exp.climate_hazard?.name ?? '—';
-        const categoryName = exp.climate_hazard?.climate_hazard_category?.name;
-        return (
-          <div key={exp.id} className="row mt-4">
-            <div className="col-lg-12 col-md-16">
-              <div className="o-card">
-                <div className="d-flex justify-content-between align-items-start">
-                  <div>
-                    <h3 className="c-subtitle-black-bold m-0">{hazardName}</h3>
-                    {categoryName && (
-                      <div className="c-subtitle-grey">{categoryName}</div>
-                    )}
-                  </div>
-                  <div className="d-flex gap-2">
-                    <Link
-                      href={`/workspace/observed-climate/observed-exposure/${exp.id}/edit`}
-                      className="c-btn--secondary"
-                    >
-                      Modifier
-                    </Link>
-                    <form
-                      action={async () => {
-                        'use server';
-                        await deleteObservedExposure(exp.id);
-                      }}
-                    >
-                      <button type="submit" className="c-btn--tertiary">
-                        Supprimer
-                      </button>
-                    </form>
-                  </div>
-                </div>
-
-                {exp.climate_features && (
-                  <Section title="Caractéristiques climatiques">{exp.climate_features}</Section>
+    <ContentLayout helpKey="observed-exposure">
+      <div className="container page">
+        <div className="row">
+          <div className="col-lg-12 col-md-16">
+            <div className="o-card o-card__triangle">
+              <div className="row">
+                <BlockTitleIcon
+                  className="col-16"
+                  pageTitle="Saisie de l'exposition observée aux aléas"
+                  subtitle="Diagnostiquer vos impacts"
+                  icon="eye"
+                />
+              </div>
+              <div className="o-centred-elements d-flex">
+                {total > 0 && (
+                  <span className="ml-0 mr-auto subtitle">
+                    {total} {pluralize(total, 'aléa', 'aléas')}
+                  </span>
                 )}
-                {exp.trends && <Section title="Tendances passées">{exp.trends}</Section>}
-                {exp.sources && <Section title="Sources">{exp.sources}</Section>}
-
-                <div className="mt-3">
-                  <strong>Notation exposition : </strong>
-                  {exp.exposure === null ? (
-                    <span className="text-danger">Non renseignée</span>
-                  ) : (
-                    <span>{String(exp.exposure)} / 3</span>
-                  )}
-                </div>
-                {exp.justification && (
-                  <Section title="Justification">{exp.justification}</Section>
-                )}
+                <Link
+                  href={`/workspace/observed-climate/observed-exposure/add${qs}`}
+                  className="ml-auto mr-0 c-btn--primary"
+                >
+                  Ajouter un aléa
+                </Link>
               </div>
             </div>
           </div>
-        );
-      })}
+        </div>
+
+        <Exposure items={items} />
+      </div>
 
       {total > 0 && (
-        <div className="o-card mt-4">
-          {incomplete && (
-            <div className="text-danger mb-2">
-              Certaines expositions n&apos;ont pas de notation. La validation passera l&apos;étape en
-              « incomplet ».
-            </div>
-          )}
-          <form
-            action={async () => {
-              'use server';
-              await validateObservedExposureStep(study.id);
-            }}
-          >
-            <button type="submit" className="c-btn--primary">
-              Valider l&apos;exposition
-            </button>
-          </form>
-          <div className="c-subtitle-grey mt-2">
-            Statut actuel : <strong>{study.observed_exposure_valid}</strong>
-          </div>
-        </div>
+        <ValidationFooter label="VALIDER L'EXPOSITION" action={validateAction} />
       )}
-    </div>
-  );
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="mt-3">
-      <div className="c-subtitle-grey">{title}</div>
-      <div className="u-txt-word-break">{children}</div>
-    </div>
+    </ContentLayout>
   );
 }

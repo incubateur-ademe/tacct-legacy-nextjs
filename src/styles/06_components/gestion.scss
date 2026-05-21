@@ -1,0 +1,303 @@
+@import "bases";
+
+/* ─── Account Management ─── */
+.sc-account-management__search {
+  display: flex;
+  align-items: center;
+  flex: 0 0 50%;
+}
+
+.c-account-management__name {
+  width: 30%;
+}
+.c-account-management__commune {
+  width: 35%;
+}
+.c-account-management__creation-date {
+  width: 20%;
+}
+.c-account-management__validation {
+  width: 25%;
+}
+.c-account {
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+/* Filter row (Account) */
+.f-account-management__name {
+  width: 30%;
+}
+.f-account-management__commune {
+  width: 35%;
+  padding-left: 0.625 * $size-default;
+}
+.f-account-management__creation-date {
+  width: 20%;
+}
+.f-account-management__validation {
+  width: 25%;
+}
+.c-account-management__status-enabled {
+  font-style: italic;
+}
+
+/* ─── Studies (liste admin) ─── */
+.sc-studies__form {
+  display: flex;
+  flex: 1;
+  gap: $size-default;
+}
+
+.sc-studies__territory-name {
+  width: 35%;
+}
+.sc-studies__region {
+  width: 20%;
+}
+.sc-studies__creation-date {
+  width: 15%;
+}
+.sc-studies__status-impact-strategy {
+  width: 5%;
+  img {
+    margin-top: 7px;
+  }
+}
+.sc-studies__status-construct-strategy {
+  width: 5%;
+  img {
+    width: 50px;
+  }
+}
+.sc-studies__head-study {
+  width: 20%;
+}
+
+/* Filter row (Studies) */
+.sc-study-filter__territory-name {
+  width: 35%;
+}
+.sc-study-filter__region {
+  width: 20%;
+  padding-left: 0.313 * $size-default;
+}
+.sc-study-filter__creation-date {
+  width: 20%;
+}
+.sc-study-filter__status {
+  width: 5%;
+}
+.sc-study-filter__head-study {
+  width: 20%;
+  padding-left: 1.25 * $size-default;
+}
+
+/* ─── Study Offices (liste admin) ─── */
+.c-study-office__name {
+  width: 30%;
+}
+.c-study-office__region {
+  width: 30%;
+}
+.c-study-office__creation-date {
+  width: 15%;
+}
+.c-study-office__user {
+  width: 30%;
+}
+
+/* Filter row (Study Offices) */
+.f-study-office__name {
+  width: 30%;
+}
+.f-study-office__region {
+  width: 30%;
+}
+.f-study-office__creation-date {
+  width: 15%;
+}
+
+/* ─── Project Sheets (admin list) ─── */
+.sc-project-sheets-management__search {
+  display: flex;
+  align-items: center;
+  flex: 0 0 50%;
+}
+
+.sc-project-sheets-management__group-buttons {
+  width: 100%;
+  display: flex;
+  height: $size-large;
+  justify-content: flex-end;
+}
+
+.sc-project-sheets-management__create-sheet-btn {
+  display: flex;
+  align-items: center;
+}
+
+/* Liste : item avec hover-reveal des actions */
+.sc-project-sheet-admin-list {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2 * $size-default;
+}
+
+.sc-project-sheet-admin-list__list-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding-left: $size-medium;
+  margin-bottom: $size-default + $size-lower;
+  background-color: $color-default-secondary;
+  overflow: hidden;
+}
+
+.sc-project-sheet-admin-list__name {
+  width: 35%;
+  color: $color-txt-default-primary-very-light;
+  margin: $size-lower 0;
+}
+
+.sc-project-sheet-admin-list__domain {
+  display: flex;
+  align-items: center;
+  width: 50%;
+  margin: $size-lower 0;
+  color: $color-txt-default-primary-very-light;
+}
+
+.sc-project-sheet-admin-list__actions-area {
+  display: flex;
+  flex-direction: row-reverse;
+  flex-grow: 1;
+}
+
+.sc-project-sheet-admin-list__actions {
+  visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 100%;
+  background-color: $color-ademe-blue;
+  margin: -1 * ($size-small + $size-medium) -100% -1 * ($size-small + $size-medium) auto;
+  transition: 0.8s;
+
+  button,
+  a {
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    padding: 0;
+  }
+}
+
+.sc-project-sheet-admin-list__list-item:hover {
+  .sc-project-sheet-admin-list__actions {
+    visibility: visible;
+    margin-right: 0;
+  }
+}
+
+/* Filter row Project Sheets */
+.sc-project-sheet-admin-filter {
+  display: flex;
+  align-items: center;
+  margin-bottom: $size-default;
+  color: $color-default-primary;
+}
+
+.sc-project-sheet-admin-filter__btn-name {
+  display: flex;
+  align-items: center;
+  width: 35%;
+  margin-left: 1.5rem;
+  text-align: start;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.sc-project-sheet-admin-filter__btn-domain {
+  display: flex;
+  align-items: center;
+  width: 50%;
+  padding-left: 2.5rem;
+  text-align: start;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.sc-project-sheet-admin-filter__label-actions {
+  flex-grow: 1;
+}
+
+/* Wrapper commun « ligne de tri / filtre » avec fond grisé */
+.admin-list-filter {
+  background-color: $color-project-secondary-very-light;
+  border-radius: $radius-default;
+
+  button {
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    text-align: left;
+    padding: 0;
+  }
+
+  .o-filter {
+    font-family: $font-default;
+    font-size: $txt-size-default;
+    color: $color-default-primary;
+  }
+}
+
+/* ─── Pagination ─── */
+.c-ngx-pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+
+  ul {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 0.25rem;
+  }
+
+  li {
+    a,
+    span {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      border: $border-empty-light;
+      border-radius: $radius-default;
+      color: $color-ademe-blue;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    &.active a,
+    &.active span {
+      background-color: $color-ademe-blue;
+      color: $color-default-secondary;
+      border-color: $color-ademe-blue;
+    }
+
+    &.disabled a,
+    &.disabled span {
+      color: $color-empty;
+      cursor: not-allowed;
+    }
+  }
+}
+
+/* ─── Status (badge "En attente de validation") ─── */
+.sc-status-account {
+  display: flex;
+  align-items: center;
+}

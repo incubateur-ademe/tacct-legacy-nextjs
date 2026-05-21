@@ -1,0 +1,66 @@
+@import "bases";
+
+/* ─── Page settings : layout des inputs et boutons inline ─── */
+.sc-settings__label {
+  padding-right: 15%;
+  margin-left: 0.6rem;
+  margin-bottom: $size-lower;
+  margin-top: $size-lower;
+}
+
+/* Composant Label (titre + valeur read-only) */
+.sc-label {
+  display: flex;
+  flex-direction: column;
+  padding-left: $size-small;
+  padding-right: $size-small;
+
+  .sc-label__title {
+    font-size: $font-size-small;
+    color: $color-empty;
+  }
+  .sc-label__value {
+    font-size: $font-size-medium;
+    font-family: $font-default;
+    color: $label;
+  }
+}
+
+/* Sous-titres dans la section Intervenants */
+.sc-settings__title {
+  margin-top: $size-lower;
+  margin-bottom: $size-lower;
+  color: $BLACK-OLIVE;
+}
+.sc-settings__subtitle {
+  font-weight: bold;
+  color: $subtitle;
+  font-family: $font-default;
+  font-size: $font-size-medium;
+}
+
+/* Largeurs d'input (cf. legacy) */
+.input-size-small {
+  width: 15%;
+}
+.input-size-large {
+  width: 70%;
+}
+.input-size-medium {
+  max-width: 45%;
+}
+
+/* Icône mail positionnée par-dessus l'input */
+.c-input__icone-mail {
+  margin-left: -3.5rem;
+  margin-right: $size-default;
+  padding-top: 0.5rem;
+}
+
+/* Bouton inline « TRANSFÉRER » / « INVITER » à droite des inputs */
+.c-input__setting {
+  @include btn;
+  @include btn-text;
+  @include btn-secondary;
+  margin-top: 0.459rem;
+}

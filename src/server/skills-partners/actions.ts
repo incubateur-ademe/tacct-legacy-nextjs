@@ -75,9 +75,11 @@ export async function saveImpactCompetences(
 }
 
 /**
- * Marque un impact comme révoqué (retiré de la liste des prioritaires).
+ * Toggle de l'état révoqué d'un impact. Port du `revokeImpact` legacy qui
+ * permet aussi bien de retirer (revoked=true) que de réajouter (false) un
+ * impact dans la section non-prioritaire.
  */
-export async function revokeImpactFromSkills(impactId: string) {
+export async function setImpactRevoked(impactId: string, revoked: boolean) {
   const impact = await prisma.impact.findUnique({
     where: { id: impactId },
     include: { impact_theme: { select: { study_id: true } } },
@@ -87,7 +89,7 @@ export async function revokeImpactFromSkills(impactId: string) {
 
   await prisma.impact.update({
     where: { id: impactId },
-    data: { revoked_diagnostic: true, updated_at: new Date() },
+    data: { revoked_diagnostic: revoked, updated_at: new Date() },
   });
 
   revalidatePath('/workspace/skills-partners-mobilised');

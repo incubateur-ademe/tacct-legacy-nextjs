@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { isAdmin } from '@/server/study/current-study';
@@ -7,6 +6,8 @@ import {
   getImpactThemeById,
 } from '@/server/sensibility/queries';
 import { addImpact } from '@/server/sensibility/actions';
+import { BlockTitleIcon } from '@/components/ui/BlockTitleIcon';
+import { ContentLayout } from '@/components/layout/ContentLayout';
 import { ImpactFormFields } from '@/components/sensibility/ImpactFormFields';
 
 export const dynamic = 'force-dynamic';
@@ -28,27 +29,30 @@ export default async function AddImpactPage({ params }: { params: Params }) {
     label: e.climate_hazard_custom ?? e.climate_hazard?.name ?? '—',
   }));
 
+  const icon = theme.thematic?.icon ?? 'suspended';
+
   return (
-    <div className="container page">
-      <div className="row">
-        <div className="col-lg-12 col-md-16">
-          <div className="o-card d-flex justify-content-between align-items-center">
-            <div>
-              <h1 className="c-title-black-bold m-0">
-                Ajouter un impact{theme.thematic && ` — ${theme.name}`}
-              </h1>
+    <ContentLayout helpKey="sensibility">
+      <div className="container page">
+        <div className="row">
+          <div className="col-lg-12 col-md-16">
+            <div className="o-card">
+              <div className="row">
+                <BlockTitleIcon
+                  className="col-16"
+                  pageTitle="Décrire l'impact"
+                  subtitle="Diagnostiquer vos impacts"
+                  icon={icon}
+                />
+              </div>
+              <form action={addImpact}>
+                <input type="hidden" name="impactThemeId" value={impactThemeId} />
+                <ImpactFormFields exposures={exposureOptions} />
+              </form>
             </div>
-            <Link href="/workspace/sensibility" className="c-btn--tertiary">
-              ← Retour
-            </Link>
           </div>
         </div>
       </div>
-
-      <form action={addImpact} className="mt-4">
-        <input type="hidden" name="impactThemeId" value={impactThemeId} />
-        <ImpactFormFields exposures={exposureOptions} />
-      </form>
-    </div>
+    </ContentLayout>
   );
 }

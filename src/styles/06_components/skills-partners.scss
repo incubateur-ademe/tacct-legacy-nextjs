@@ -1,0 +1,186 @@
+@import "bases";
+
+/* ─── Synthese impacts (liste compacte en haut) ─── */
+.sc-synthese-impacts__list {
+  display: flex;
+  flex-direction: column;
+}
+
+.sc-synthese-impacts__row {
+  display: flex;
+  align-items: center;
+  margin-bottom: $size-lower;
+}
+
+.sc-synthese-impacts__icon-label,
+.sc-synthese-impacts__indicateur {
+  display: flex;
+  align-items: center;
+}
+
+.sc-synthese-impacts__icon-label {
+  flex: 1;
+
+  .c-icon {
+    margin: 0 $size-default 0 0;
+  }
+}
+
+.sc-synthese-impacts__indicateur {
+  width: 15%;
+}
+
+.sc-synthese-impacts__item {
+  width: 2rem;
+}
+
+.sc-synthese-impacts__button {
+  border: 0;
+  background: none;
+  color: $color-project-primary;
+  font-weight: $txt-bold;
+  font-size: $txt-size-lower;
+  text-transform: uppercase;
+  margin-left: auto;
+  padding: 0 $size-medium;
+  cursor: pointer;
+}
+
+.sc-synthese-impacts__impact-title {
+  font-weight: $txt-medium;
+  line-height: $size-medium;
+  color: $color-txt-project-secondary;
+}
+
+/* Couleurs synthese impacts selon score (sensibilité × exposition) */
+.sc-synthese-impacts__red {
+  color: $color-tacct-red;
+}
+.sc-synthese-impacts__orange {
+  color: $color-tacct-orange;
+}
+.sc-synthese-impacts__yellow {
+  color: $color-tacct-yellow;
+}
+
+/* Bloc non-prioritaires (collapsible) */
+.sc-synthese-impacts__list-not-priority {
+  height: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s;
+
+  &.open {
+    height: auto;
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.sc-synthese-impacts__display-not-priority {
+  color: $color-ademe-blue;
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover {
+    color: $color-ademe-blue-hover;
+  }
+}
+
+/* ─── Detail synthese impacts (carte par impact prioritaire) ─── */
+.sc-detail-synthese-impacts__item {
+  margin-bottom: $size-medium;
+  padding: 0;
+}
+
+.sc-detail-synthese-impacts__header {
+  display: flex;
+  padding: $size-default;
+  position: relative;
+  font-weight: $txt-medium;
+  line-height: $size-medium;
+  color: $color-txt-default-primary-light;
+}
+
+.sc-detail-synthese-impacts__header-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding-top: $size-small;
+}
+
+.sc-detail-synthese-impacts__indicateurs {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 15%;
+  position: absolute;
+  top: $size-default;
+  right: $size-default - $size-small;
+}
+
+.sc-detail-synthese-impacts__indicateur {
+  width: 2rem;
+  margin: 0 ($size-lower + $size-small);
+}
+
+.sc-detail-synthese-impacts__sub-info {
+  color: $color-project-secondary-txt;
+}
+
+.sc-detail-synthese-impacts__form {
+  background: $color-project-secondary-very-light;
+  display: flex;
+  flex-direction: column;
+  padding: $size-default;
+
+  .c-input__label {
+    background: $color-project-secondary-very-light;
+  }
+
+  .row {
+    margin: 0;
+  }
+}
+
+.sc-detail-synthese-impacts__red {
+  color: $color-tacct-red;
+}
+.sc-detail-synthese-impacts__orange {
+  color: $color-tacct-orange;
+}
+.sc-detail-synthese-impacts__yellow {
+  color: $color-tacct-yellow;
+}
+
+.sc-detail-synthese-impacts__btn-revoked {
+  margin: ($size-medium * 2) ($size-default + $size-small) 0 0;
+  font-size: $txt-size-default;
+  border-radius: $size-small;
+  text-transform: uppercase;
+  border: $border-size-default $border-type-default $color-ademe-blue;
+  background: transparent;
+  padding: $size-lower $size-default;
+  cursor: pointer;
+}
+
+.sc-detail-synthese-impacts__btn-delete {
+  background: inherit;
+  border: $border-size-default $border-type-default $color-ademe-blue;
+  border-radius: $size-small;
+  padding: $size-small;
+  max-width: 50%;
+  cursor: pointer;
+
+  &:hover {
+    background: $color-project-primary;
+  }
+}
+
+.sc-detail-synthese-impacts__btn-save {
+  margin-right: $size-small;
+}

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getCurrentUser } from '@/server/auth/current-user';
 import { isAdmin } from '@/server/study/current-study';
 import { UserTerritorySelect } from './UserTerritorySelect';
+import { HeaderLogo } from './HeaderLogo';
 import styles from './Header.module.scss';
 
 export async function Header() {
@@ -27,11 +28,7 @@ export async function Header() {
       <div className="row">
         <div className={`o-card w-100 ${styles.cardHeader}`}>
           <div className={styles.header}>
-            <Link
-              href="/workspace"
-              aria-label="Accueil"
-              className={`justify-content-between ${styles.logoTacct}`}
-            />
+            <HeaderLogo />
             <UserTerritorySelect studies={studies} />
             <div className={styles.header}>
               <span className="mr-2 c-legend-action">{user.firstname}</span>

@@ -5,14 +5,21 @@ const DEFAULT_PAGE_SIZE = 10;
 
 // ─── Users ────────────────────────────────────────────────────────────────────
 
+export type SortDir = 'asc' | 'desc';
+
 export async function getUsersList({
   page = 1,
   pageSize = DEFAULT_PAGE_SIZE,
   search,
+  sort,
+  dir = 'asc',
 }: {
   page?: number;
   pageSize?: number;
   search?: string;
+  /** Clé de tri : `lastname` (Nom), `commune`, `creationDate`, `validated` */
+  sort?: string;
+  dir?: SortDir;
 }) {
   const where = search
     ? {
@@ -24,11 +31,21 @@ export async function getUsersList({
         ],
       }
     : {};
+
+  const orderBy =
+    sort === 'commune'
+      ? { commune: { label: dir } }
+      : sort === 'creationDate'
+        ? { created_at: dir }
+        : sort === 'validated'
+          ? { validated: dir }
+          : { lastname: (sort === 'lastname' ? dir : 'asc') as SortDir };
+
   const [items, total] = await Promise.all([
     prisma.user.findMany({
       where,
       include: { study_office: true, commune: true },
-      orderBy: { lastname: 'asc' },
+      orderBy,
       skip: (page - 1) * pageSize,
       take: pageSize,
     }),
@@ -48,25 +65,113 @@ export async function getUserById(id: string) {
   });
 }
 
+// ─── Studies (admin) ──────────────────────────────────────────────────────────
+
+export async function getStudiesAdminList({
+  page = 1,
+  pageSize = DEFAULT_PAGE_SIZE,
+  search,
+  regionId,
+  sort,
+  dir = 'asc',
+}: {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  regionId?: string;
+  sort?: string;
+  dir?: SortDir;
+}) {
+  const where = {
+    ...(search
+      ? {
+          OR: [
+            { territory_name: { contains: search, mode: 'insensitive' as const } },
+            {
+              user_study: {
+                some: {
+                  user: {
+                    OR: [
+                      { firstname: { contains: search, mode: 'insensitive' as const } },
+                      { lastname: { contains: search, mode: 'insensitive' as const } },
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+        }
+      : {}),
+    ...(regionId
+      ? { commune: { department: { region_id: regionId } } }
+      : {}),
+  };
+
+  const orderBy =
+    sort === 'territoryName'
+      ? { territory_name: dir }
+      : sort === 'region'
+        ? { commune: { department: { region: { label: dir } } } }
+        : sort === 'dateCreation'
+          ? { created_at: dir }
+          : { created_at: 'desc' as SortDir };
+
+  const [items, total] = await Promise.all([
+    prisma.study.findMany({
+      where,
+      include: {
+        commune: { include: { department: { include: { region: true } } } },
+        user_study: {
+          where: { head_study: true },
+          take: 1,
+          include: { user: true },
+        },
+      },
+      orderBy,
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
+    prisma.study.count({ where }),
+  ]);
+  return { items, total, page, pageSize };
+}
+
+export async function getRegionsList() {
+  return prisma.region.findMany({ orderBy: { label: 'asc' } });
+}
+
 // ─── Study offices ────────────────────────────────────────────────────────────
 
 export async function getStudyOfficesList({
   page = 1,
   pageSize = DEFAULT_PAGE_SIZE,
   search,
+  sort,
+  dir = 'asc',
 }: {
   page?: number;
   pageSize?: number;
   search?: string;
+  sort?: string;
+  dir?: SortDir;
 }) {
   const where = search
     ? { name: { contains: search, mode: 'insensitive' as const } }
     : {};
+  const orderBy =
+    sort === 'commune'
+      ? { commune: { label: dir } }
+      : sort === 'creationDate'
+        ? { created_at: dir }
+        : { name: (sort === 'name' ? dir : 'asc') as SortDir };
   const [items, total] = await Promise.all([
     prisma.study_office.findMany({
       where,
-      include: { commune: true, user: { select: { id: true } } },
-      orderBy: { name: 'asc' },
+      include: {
+        commune: true,
+        user: { select: { id: true, firstname: true, lastname: true } },
+      },
+      orderBy,
       skip: (page - 1) * pageSize,
       take: pageSize,
     }),
@@ -88,19 +193,27 @@ export async function getProjectSheetsList({
   page = 1,
   pageSize = DEFAULT_PAGE_SIZE,
   search,
+  sort,
+  dir = 'asc',
 }: {
   page?: number;
   pageSize?: number;
   search?: string;
+  sort?: string;
+  dir?: SortDir;
 }) {
   const where = search
     ? { name: { contains: search, mode: 'insensitive' as const } }
     : {};
+  const orderBy =
+    sort === 'domain'
+      ? { domain: { name: dir } }
+      : { name: (sort === 'name' ? dir : 'asc') as SortDir };
   const [items, total] = await Promise.all([
     prisma.project_sheet_detail.findMany({
       where,
       include: { domain: true },
-      orderBy: { name: 'asc' },
+      orderBy,
       skip: (page - 1) * pageSize,
       take: pageSize,
     }),

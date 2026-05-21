@@ -1,0 +1,203 @@
+@import "bases";
+
+/* Card spéciale dashboard (header EXPOSITION / SENSIBILITE) */
+.o-card__dashboard {
+  margin-bottom: 1px;
+  border-radius: $border-size-default;
+}
+
+/* ─── Liste expositions observées (grid 5 colonnes) ─── */
+.c-dashboard__list_exposures {
+  display: grid;
+  grid-template-columns: 10% 45% 12% 15% 12%;
+
+  .item {
+    height: auto;
+    min-height: 3rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .item-centred {
+    height: auto;
+    min-height: 2rem;
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* ─── Accordéon sensibilité par thématique ─── */
+.c-sensibility-theme {
+  .c-accordion__header {
+    min-height: 3rem;
+    padding: 0 1rem 0 1rem;
+    border-top: $border-empty-light;
+  }
+
+  .c-sensibility-theme__panel {
+    padding: 0 1.5rem 0 1rem;
+  }
+
+  .c-sensibility-theme__toggle {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+}
+
+/* ─── Matrice synthèse impacts (4×4 avec icônes circulaires + popover) ─── */
+.c-synthesis-impacts {
+  width: 100%;
+  position: relative;
+
+  .c-sensitivity {
+    transform: rotate(-90deg);
+    transform-origin: left top 0;
+    position: absolute;
+    top: 60%;
+  }
+
+  .c-container-icons {
+    display: grid;
+    grid-template-columns: 4% 24% 24% 24% 24%;
+  }
+
+  .x-ticks {
+    display: grid;
+    grid-template-columns: 4% 24% 24% 24% 24%;
+  }
+
+  .x-tick {
+    height: auto;
+    text-align: center;
+  }
+
+  .item {
+    height: auto;
+    text-align: center;
+    min-height: 3rem;
+    padding-left: 0.4rem;
+
+    em.c-icon {
+      color: white;
+    }
+    span {
+      border-color: white;
+    }
+  }
+
+  /* Lignes/colonnes du grid 4×4 (cellules en 4 lignes × 4 colonnes,
+     avec une 5e colonne tick à gauche). Bordures internes uniquement. */
+  .item:nth-child(7),
+  .item:nth-child(8),
+  .item:nth-child(9),
+  .item:nth-child(10),
+  .item:nth-child(12),
+  .item:nth-child(13),
+  .item:nth-child(14),
+  .item:nth-child(15),
+  .item:nth-child(17),
+  .item:nth-child(18),
+  .item:nth-child(19),
+  .item:nth-child(20) {
+    border-top: $border-empty-light;
+  }
+
+  .item:nth-child(2),
+  .item:nth-child(3),
+  .item:nth-child(4),
+  .item:nth-child(7),
+  .item:nth-child(8),
+  .item:nth-child(9),
+  .item:nth-child(12),
+  .item:nth-child(13),
+  .item:nth-child(14),
+  .item:nth-child(17),
+  .item:nth-child(18),
+  .item:nth-child(19) {
+    border-right: $border-empty-light;
+  }
+
+  .icons {
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .o-tick {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Effet dim quand un autre observed_exposure est survolé */
+  .c-icon__circle.green.disabled,
+  .c-icon__circle.orange.disabled {
+    opacity: 0.3;
+  }
+
+  /* Popover au hover d'une icône */
+  .c-synthesis-popover {
+    position: absolute;
+    z-index: 100;
+    background: $color-default-secondary;
+    border: $border-empty-light;
+    border-radius: $radius-default;
+    box-shadow: $shadow-card;
+    padding: $size-default;
+    min-width: 24rem;
+    max-width: 38rem;
+    pointer-events: none;
+
+    .container-tooltip {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .o-name-exposure {
+      margin-left: $size-lower;
+      margin-top: $size-lower;
+    }
+  }
+}
+
+/* ─── Niveau moyen impacts futurs potentiels ─── */
+.c-dashboard-potential-future {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  margin-top: 2rem;
+  position: relative;
+
+  .c-chart {
+    text-align: center;
+    width: 100%;
+    border-right: $border-empty-light;
+  }
+
+  .c-data {
+    margin-left: 0.75rem;
+  }
+
+  .o-legend {
+    position: absolute;
+    padding-bottom: 2rem;
+    margin-top: -2rem;
+    right: 2.5rem;
+  }
+}
+
+.c-thematic-list {
+  display: grid;
+  grid-template-columns: 13% 40% 21% 21%;
+
+  .item-list {
+    display: flex;
+    align-items: center;
+  }
+}

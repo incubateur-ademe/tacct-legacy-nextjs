@@ -1,24 +1,39 @@
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { existsSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { getCurrentStudy } from '@/server/study/current-study';
 import { prisma } from '@/server/db';
+import { BlockTitleIcon } from '@/components/ui/BlockTitleIcon';
+import { ContentLayout } from '@/components/layout/ContentLayout';
+import { ClimateTrendTabs } from '@/components/observed-climate/ClimateTrendTabs';
+import type { ClimateData } from '@/components/observed-climate/ClimateTrendContent';
 
 export const dynamic = 'force-dynamic';
 
-type SearchParams = Promise<{ study?: string; tab?: string }>;
+type SearchParams = Promise<{ study?: string }>;
 
-// IDs des anciennes régions outre-mer (Guadeloupe, Martinique, Guyane, Réunion, Mayotte…)
-// Le legacy utilise un check `isOverSeas(oldRegion.id)` — on utilise la même heuristique
-// avec l'ID 4 par défaut. À affiner si besoin selon les données réelles.
-const OVERSEAS_DEFAULT_TAB = 'overseas';
+const OVERSEAS_REGION_IDS = ['01', '02', '03', '04', '06'];
+const DEFAULT_METROPOLE_REGION = '11'; // Île-de-France
+const DEFAULT_OVERSEAS_REGION = '04';
 
-const TABS = [
-  { key: 'global', label: 'Tendances globales' },
-  { key: 'france', label: 'France' },
-  { key: 'regional', label: 'Régional' },
-  { key: 'overseas', label: 'Outre-mer' },
-] as const;
+/**
+ * Port de `Climate::getTemperatureImage()` / `getPrecipitationImage()` du
+ * backend Symfony : cherche un fichier `<regionId>_<kind>.{png,svg}` dans
+ * `public/assets/img/temp_precip/`. Retourne le chemin web ou `null`.
+ */
+function findImagePath(regionId: string, kind: 'temperature' | 'precipitation'): string | null {
+  const base = '/assets/img/temp_precip';
+  const dir = path.join(process.cwd(), 'public', base);
+  for (const ext of ['png', 'svg']) {
+    const fileName = `${regionId}_${kind}.${ext}`;
+    if (existsSync(path.join(dir, fileName))) {
+      return `${base}/${fileName}`;
+    }
+  }
+  return null;
+}
 
 export default async function ClimateTrendPage({
   searchParams,
@@ -26,157 +41,94 @@ export default async function ClimateTrendPage({
   searchParams: SearchParams;
 }) {
   const user = await requireCurrentUser();
-  const { study: studyIdParam, tab: tabParam } = await searchParams;
+  const { study: studyIdParam } = await searchParams;
   const study = await getCurrentStudy(user, studyIdParam);
   if (!study) redirect('/workspace/gestion/studies-management');
 
-  // Récupère l'ancienne région via la commune → department
+  // Région d'origine de l'étude (via commune → department → old_region)
   const department = study.commune?.department_id
     ? await prisma.department.findUnique({
         where: { id: study.commune.department_id },
-        include: { old_region: { include: { climate: true } } },
+        include: { old_region: true },
       })
     : null;
+  const oldRegionId = department?.old_region?.id ?? null;
+  const isOverseas = oldRegionId ? OVERSEAS_REGION_IDS.includes(oldRegionId) : false;
 
-  const oldRegion = department?.old_region ?? null;
-  const isOverseas = oldRegion ? isOverseasRegion(oldRegion.id) : false;
-  const defaultTab = isOverseas ? OVERSEAS_DEFAULT_TAB : 'regional';
-  const activeTab = (tabParam ?? defaultTab) as (typeof TABS)[number]['key'];
+  // Climats pour TOUTES les régions, indexés par region_id (pour les changements
+  // de région à la volée côté client).
+  const climates = await prisma.climate.findMany({
+    include: { old_region: true },
+  });
+  const climatesByRegion: Record<string, ClimateData> = {};
+  for (const c of climates) {
+    if (!c.region_id || !c.old_region) continue;
+    climatesByRegion[c.region_id] = {
+      regionId: c.region_id,
+      regionLabel: c.old_region.label,
+      temperatureEvolution: c.temperature_evolution,
+      levelPrecipitationFirst: c.level_precipitation_first,
+      levelPrecipitationSecond: c.level_precipitation_second,
+      temperatureImage: findImagePath(c.region_id, 'temperature'),
+      precipitationImage: findImagePath(c.region_id, 'precipitation'),
+    };
+  }
+
+  // Lit les SVG depuis le filesystem (cf. `public/assets/img/trend-climate/`).
+  // Les SVG ont été pré-nettoyés des bindings Angular et exposent
+  // `data-region="<id>"` sur chaque polygone/path.
+  const mapsDir = path.join(process.cwd(), 'public/assets/img/trend-climate');
+  const [metropoleMapSvg, overseasMapSvg] = await Promise.all([
+    readFile(path.join(mapsDir, 'map-france.svg'), 'utf8'),
+    readFile(path.join(mapsDir, 'map-outre-mer.svg'), 'utf8'),
+  ]);
+
+  // Sélection par défaut : la région de l'étude, sinon une région de fallback
+  // (mimique de `Utils.getIdRegion` / `Utils.getIdOverSeas` du legacy).
+  const defaultMetropoleRegionId =
+    oldRegionId && !isOverseas && climatesByRegion[oldRegionId]
+      ? oldRegionId
+      : DEFAULT_METROPOLE_REGION;
+  const defaultOverseasRegionId =
+    oldRegionId && isOverseas && climatesByRegion[oldRegionId]
+      ? oldRegionId
+      : DEFAULT_OVERSEAS_REGION;
+
+  const defaultTab = isOverseas ? 4 : 3;
 
   return (
-    <div className="container page">
-      <div className="row">
-        <div className="col-lg-12 col-md-16">
-          <div className="o-card">
-            <h1 className="c-title-black-bold">Tendances climatiques</h1>
-            <div className="c-subtitle-grey">
-              Région : {oldRegion?.label ?? '—'}
+    <ContentLayout helpKey="climate-trend">
+      <div className="container page">
+        <div className="row">
+          <div className="col-lg-12 col-md-16">
+            <div className="o-card">
+              <div className="row">
+                <BlockTitleIcon
+                  className="col-16"
+                  pageTitle="Tendances climatiques générales"
+                  subtitle="Diagnostiquer vos impacts"
+                  icon="eye"
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Onglets */}
-      <ul className="nav nav-tabs mt-4">
-        {TABS.map((t) => (
-          <li key={t.key} className="nav-item">
-            <Link
-              href={`?tab=${t.key}`}
-              className={`nav-link ${activeTab === t.key ? 'active' : ''}`}
-            >
-              {t.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
-
-      <div className="o-card mt-4">
-        {activeTab === 'global' && <GlobalTrend />}
-        {activeTab === 'france' && <FranceTrend />}
-        {activeTab === 'regional' && (
-          <RegionalTrend regionLabel={oldRegion?.label} climate={oldRegion?.climate} />
-        )}
-        {activeTab === 'overseas' && (
-          <RegionalTrend regionLabel={oldRegion?.label} climate={oldRegion?.climate} />
-        )}
+      <div className="container page">
+        <div className="row">
+          <div className="col-lg-12 col-md-16">
+            <ClimateTrendTabs
+              defaultTab={defaultTab as 1 | 2 | 3 | 4}
+              metropoleMapSvg={metropoleMapSvg}
+              overseasMapSvg={overseasMapSvg}
+              climatesByRegion={climatesByRegion}
+              defaultMetropoleRegionId={defaultMetropoleRegionId}
+              defaultOverseasRegionId={defaultOverseasRegionId}
+            />
+          </div>
+        </div>
       </div>
-    </div>
-  );
-}
-
-function isOverseasRegion(id: string): boolean {
-  // Codes anciennes régions outre-mer dans le référentiel ADEME.
-  // À ajuster si la liste exacte évolue.
-  return ['01', '02', '03', '04', '06'].includes(id);
-}
-
-function GlobalTrend() {
-  return (
-    <>
-      <h2 className="c-subtitle-black-bold">Tendances climatiques globales</h2>
-      <p>
-        Selon le GIEC, la température globale a augmenté d&apos;environ 1,1°C depuis l&apos;ère
-        préindustrielle. Les projections du rapport AR6 indiquent une poursuite du
-        réchauffement quelles que soient les trajectoires d&apos;émissions à court terme.
-      </p>
-      <p>
-        Pour consulter les données détaillées et les rapports complets, rends-toi sur le
-        site du GIEC.
-      </p>
-      <a
-        href="https://www.ipcc.ch/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="c-btn--secondary"
-      >
-        Site du GIEC
-      </a>
-    </>
-  );
-}
-
-function FranceTrend() {
-  return (
-    <>
-      <h2 className="c-subtitle-black-bold">Tendances climatiques — France</h2>
-      <p>
-        Depuis 1900, la température moyenne en France métropolitaine a augmenté de
-        +1,7°C, avec une accélération du réchauffement depuis les années 1980.
-      </p>
-      <a
-        href="https://meteofrance.com/changement-climatique"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="c-btn--secondary"
-      >
-        Météo-France — Changement climatique
-      </a>
-    </>
-  );
-}
-
-function RegionalTrend({
-  regionLabel,
-  climate,
-}: {
-  regionLabel: string | undefined;
-  climate:
-    | {
-        temperature_evolution: string | null;
-        level_precipitation_first: string | null;
-        level_precipitation_second: string | null;
-      }
-    | null
-    | undefined;
-}) {
-  if (!climate) {
-    return (
-      <p className="text-muted">
-        Aucune donnée climatique régionale disponible pour {regionLabel ?? 'cette région'}.
-      </p>
-    );
-  }
-  return (
-    <>
-      <h2 className="c-subtitle-black-bold">Tendances — {regionLabel}</h2>
-      <Section title="Évolution des températures">
-        {climate.temperature_evolution || <em className="text-muted">Non renseigné</em>}
-      </Section>
-      <Section title="Niveau de précipitations (1)">
-        {climate.level_precipitation_first || <em className="text-muted">Non renseigné</em>}
-      </Section>
-      <Section title="Niveau de précipitations (2)">
-        {climate.level_precipitation_second || <em className="text-muted">Non renseigné</em>}
-      </Section>
-    </>
-  );
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="mt-3">
-      <div className="c-subtitle-grey">{title}</div>
-      <div>{children}</div>
-    </div>
+    </ContentLayout>
   );
 }

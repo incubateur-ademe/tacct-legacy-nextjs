@@ -46,6 +46,119 @@ export async function updateStudyInfo(formData: FormData): Promise<void> {
   revalidatePath('/workspace/settings');
 }
 
+/**
+ * Patch d'un seul champ de l'étude (year ou territory_name). Sert l'auto-save
+ * sur blur des inputs du form Settings, à l'image du legacy.
+ */
+export async function patchStudyField(
+  studyId: string,
+  field: 'year' | 'territoryName',
+  value: string,
+): Promise<void> {
+  await assertCanEditStudy(studyId);
+
+  if (field === 'year') {
+    const year = Number(value);
+    if (!Number.isInteger(year) || year < 1900 || year > 2200) {
+      throw new Error('Année invalide');
+    }
+    await prisma.study.update({
+      where: { id: studyId },
+      data: { year, updated_at: new Date() },
+    });
+  } else if (field === 'territoryName') {
+    const territoryName = value.trim();
+    if (territoryName.length === 0 || territoryName.length > 255) {
+      throw new Error('Nom du territoire invalide');
+    }
+    await prisma.study.update({
+      where: { id: studyId },
+      data: { territory_name: territoryName, updated_at: new Date() },
+    });
+  }
+
+  revalidatePath('/workspace');
+  revalidatePath('/workspace/settings');
+}
+
+// ─── Transfert du « chargé d'étude » à un autre user ──────────────────────────
+
+const transferSchema = z.object({
+  studyId: z.uuid(),
+  lastname: z.string().min(1).max(255),
+  firstname: z.string().min(1).max(255),
+  mail: z.email(),
+});
+
+/**
+ * Port du `transfer` legacy : transfère le rôle « chargé d'étude » à un autre
+ * user identifié par email.
+ *
+ * - Si le user cible existe et n'est pas déjà head : le passe en head, dégrade
+ *   le head courant en co-utilisateur, et lui crée un user_study si nécessaire.
+ * - Si le user n'existe pas : le legacy envoie un email d'invitation (service
+ *   mail Symfony). Côté next, on remonte juste un statut pour V1.
+ */
+export async function transferStudyHead(
+  formData: FormData,
+): Promise<{ status: 'transferred' | 'mailSent' }> {
+  const parsed = transferSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) {
+    throw new Error(
+      `Formulaire invalide : ${parsed.error.issues.map((i) => i.message).join(', ')}`,
+    );
+  }
+  const { studyId, mail } = parsed.data;
+  const currentUser = await assertCanEditStudy(studyId);
+
+  const currentUs = await prisma.user_study.findFirst({
+    where: { study_id: studyId, user_id: currentUser.id, head_study: true },
+  });
+  if (!currentUs) {
+    throw new Error('Seul le chargé d’étude peut transférer l’étude.');
+  }
+
+  const target = await prisma.user.findUnique({ where: { email: mail } });
+  if (!target) {
+    // Legacy : envoi d'un email d'invitation. À porter quand le service mail
+    // sera branché côté next.
+    return { status: 'mailSent' };
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.user_study.update({
+      where: { id: currentUs.id },
+      data: { head_study: false, updated_at: new Date() },
+    });
+
+    const targetUs = await tx.user_study.findFirst({
+      where: { study_id: studyId, user_id: target.id },
+    });
+    const now = new Date();
+    if (targetUs) {
+      await tx.user_study.update({
+        where: { id: targetUs.id },
+        data: { head_study: true, updated_at: now },
+      });
+    } else {
+      await tx.user_study.create({
+        data: {
+          id: randomUUID(),
+          study_id: studyId,
+          user_id: target.id,
+          head_study: true,
+          created_at: now,
+          updated_at: now,
+        },
+      });
+    }
+  });
+
+  revalidatePath('/workspace/settings');
+  revalidatePath('/workspace');
+  return { status: 'transferred' };
+}
+
 // ─── Invitation d'un co-utilisateur sur l'étude ───────────────────────────────
 
 const inviteSchema = z.object({

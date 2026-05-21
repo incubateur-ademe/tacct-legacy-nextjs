@@ -1,0 +1,139 @@
+@import "bases";
+
+/* ─── Page principale : accordéons sensibility-theme ─── */
+.c-sensibility-theme {
+  .c-accordion__header {
+    min-height: 4.5rem;
+    padding: 0 1rem 0 1rem;
+    border-top: $border-empty-light;
+  }
+
+  .c-sensibility-theme__panel {
+    padding: 0 1.5rem 0 1rem;
+  }
+
+  .c-sensibility-theme__toggle {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+}
+
+.c-input__sensibilite {
+  @include btn;
+  @include btn-text;
+  @include btn-secondary;
+  margin-right: $size-default;
+}
+
+.c-box__sensibilite-bottom-theme {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 2rem;
+}
+
+.c-box__edit-theme {
+  padding-top: 4rem;
+}
+
+.c-sensibility-theme__edit-theme {
+  float: right;
+}
+
+/* ─── Card par impact (layout horizontal info + panneau sensitivity) ─── */
+.c-text__impact-description {
+  word-break: break-word;
+}
+
+.c-text__secondary-exposure {
+  font-size: $txt-size-lower;
+  padding-top: 0.5rem;
+}
+
+/* Section info ghost (panneau droit) avec colonnes verticales */
+.o-section-deletable {
+  display: flex;
+  flex-direction: row;
+}
+
+/* Section bleue avec boutons pen + delete (à droite de la section ghost) */
+.o-section-delete-edit {
+  background: $color-link;
+  width: 4rem;
+  padding: $size-lower;
+  display: flex;
+  flex-direction: column;
+
+  button {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+}
+
+/* ─── Page « Ajouter une thématique » : grille de tuiles ─── */
+.c-add-thematic__list-thematics {
+  padding: 0;
+  margin: 2em auto;
+  display: flex;
+  flex-wrap: wrap;
+  width: 49rem;
+}
+
+.o-thematic {
+  width: 9rem;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+  margin-top: 2rem;
+
+  button {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+}
+
+/* Pastille "sélectionné" en haut à droite d'une thématique cliquée */
+.container-selected {
+  position: relative;
+  width: 0;
+
+  .thematic-selected {
+    position: absolute;
+    right: -34px;
+    top: -2px;
+    height: 24px;
+    width: 24px;
+    background-size: 24px;
+    background-image: url("/assets/img/selectionne.svg");
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+}
+
+.o-thematic .selected {
+  .c-icon {
+    background-color: $color-project-primary;
+    color: $color-txt-default-secondary;
+    border-radius: 50%;
+  }
+}
+
+/* ─── Page « Ajouter / Modifier un impact » ─── */
+#c-add-impact__sensitivity {
+  min-width: 50%;
+}
+
+.o-btn--next-input__btn-zone {
+  display: flex;
+  align-items: center;
+}

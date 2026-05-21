@@ -27,3 +27,29 @@
   font-family: txt-marianne-regular;
   font-size: $txt-size-lower;
 }
+
+/* Variante compacte avec compteur "| N" (cf. BlockHeader) */
+.sc-block-title-title-with-element {
+  color: $YALE-BLUE;
+  font-family: $font-default;
+  font-weight: normal;
+  font-size: $txt-size-default;
+  margin-top: 0.4rem;
+}
+
+.sc-block-title-number-element {
+  color: $ADEME-GREEN;
+  font-family: $font-default;
+  font-size: $txt-size-small;
+  font-weight: bold;
+  margin-top: 0.4rem;
+  margin-left: -0.5rem;
+}
+
+.sc-block-title {
+  color: $BLACK-OLIVE;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 9rem;
+}
