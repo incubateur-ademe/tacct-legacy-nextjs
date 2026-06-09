@@ -158,3 +158,58 @@
     font-weight: $txt-bold;
   }
 }
+
+/* Badge de statut d'étape du diagnostic (port de menu-status.component.scss).
+   Pastille claire contenant un rond coloré (l'em) avec le glyphe centré. */
+.c-menu-status {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 1.5rem;
+  min-width: 1.5rem;
+  max-width: 1.5rem;
+  height: 1.5rem;
+  min-height: 1.5rem;
+  max-height: 1.5rem;
+  border-radius: 50%;
+  margin-right: $size-default;
+
+  em.c-icon {
+    // Dimensions verrouillées (min = max = width/height) pour que l'em reste un
+    // carré → rond, quelles que soient la police et le contexte flex.
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 1rem;
+    min-width: 1rem;
+    max-width: 1rem;
+    height: 1rem;
+    min-height: 1rem;
+    max-height: 1rem;
+    border-radius: 50%;
+    font-size: 1rem;
+    line-height: 1;
+    color: $color-default-secondary;
+  }
+
+  &.validated {
+    background-color: $color-background-blue;
+
+    em.c-icon {
+      background-color: $color-tacct-blue;
+    }
+  }
+
+  &.in-progress,
+  &.incomplete {
+    background-color: $color-background;
+
+    em.c-icon {
+      background-color: $color-empty-dark;
+    }
+  }
+}

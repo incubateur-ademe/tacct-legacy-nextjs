@@ -1,0 +1,116 @@
+@import "bases";
+
+/* Port de impact-level.component.scss (legacy) : formulaire des 3 niveaux d'impact
+   avec badges colorés en colonne et flèches triangulaires entre niveaux. */
+.sc-impact-level {
+  display: block;
+  width: auto;
+  margin-left: 0.95rem;
+
+  .o-card {
+    margin-bottom: $size-medium;
+    padding-bottom: 0;
+  }
+}
+
+.sc-impact-level__lvl {
+  display: flex;
+  margin: 0 (-$size-default * 2);
+}
+
+.sc-impact-level__lvl-bloc {
+  display: flex;
+  width: 100%;
+}
+
+.sc-impact-level__lvl-seuil {
+  width: 100%;
+  padding: 1.5rem 1.25rem 0 5rem;
+}
+
+.sc-impact-level__lvl-info {
+  background: $color-strategy-primary;
+  display: flex;
+  justify-content: center;
+  width: 4rem;
+  padding-top: 2rem;
+  position: relative;
+}
+
+.sc-impact-level__lvl-info--fc {
+  background: $color-strategy-primary-light;
+
+  &:before {
+    content: "";
+    border-style: solid;
+    border-width: 1.5rem 2rem 0 2rem;
+    border-color: $color-strategy-primary-light transparent transparent transparent;
+    position: absolute;
+    bottom: -1.5rem;
+  }
+}
+
+.sc-impact-level__lvl-info--sc {
+  background: $color-strategy-primary;
+
+  &:after {
+    content: "";
+    border-style: solid;
+    border-width: 1.5rem 2rem 0 2rem;
+    border-color: $color-default-secondary transparent transparent transparent;
+    position: absolute;
+    top: 0;
+  }
+
+  &:before {
+    content: "";
+    border-style: solid;
+    border-width: 1.5rem 2rem 0 2rem;
+    border-color: $color-strategy-primary transparent transparent transparent;
+    position: absolute;
+    bottom: -1.5rem;
+  }
+}
+
+.sc-impact-level__lvl-info--tc {
+  background: $color-strategy-primary-dark;
+
+  &:after {
+    content: "";
+    border-style: solid;
+    border-width: 1.5rem 2rem 0 2rem;
+    border-color: $color-default-secondary transparent transparent transparent;
+    position: absolute;
+    top: 0;
+  }
+}
+
+.sc-impact-level__lvl-number {
+  border: ($border-size-default * 2) $border-type-default $color-default-secondary;
+  color: $color-txt-default-secondary;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.sc-impact-level__lvl-impact {
+  background: $color-project-secondary-very-light;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: $size-default * 2;
+
+  label {
+    background: $color-project-secondary-very-light;
+  }
+}
+
+.sc-impact-level__lvl-title {
+  color: $color-strategy-primary-dark;
+  font-weight: $txt-bold;
+  text-transform: uppercase;
+  margin-bottom: $size-default;
+}

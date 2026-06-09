@@ -1,0 +1,35 @@
+@import "bases";
+
+/* Overlay générique pour modales React contrôlées (portal sur body). */
+.sc-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: $size-medium $size-default;
+  overflow-y: auto;
+}
+
+.sc-modal-box {
+  position: relative;
+  background-color: $color-default-secondary;
+  box-shadow: $shadow-card;
+  border-radius: $radius-default;
+  width: 40rem;
+  max-width: 90vw;
+  max-height: calc(100vh - 4rem);
+  padding: $size-medium;
+  display: flex;
+  flex-direction: column;
+}
+
+.sc-modal-box__title {
+  margin: 0 0 $size-default;
+}
+
+.sc-modal-box__body {
+  margin-bottom: $size-default;
+}

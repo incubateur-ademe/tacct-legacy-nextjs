@@ -1,0 +1,236 @@
+@import "bases";
+
+/* ── Page « Définition des actions » (host legacy) ── */
+.sc-define-actions {
+  display: block;
+  width: auto;
+  margin-left: 0.95rem;
+}
+
+/* ── Carte d'une action (legacy card-action.component.scss) ── */
+.sc-card-action {
+  display: flex;
+}
+
+.sc-card-action__action {
+  @include card-style;
+  display: flex;
+  flex: 1;
+  margin-bottom: $size-default;
+  overflow: hidden;
+}
+
+.sc-card-action__col {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 2 * $size-default;
+
+  .row {
+    align-items: center;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+.sc-card-action__dots {
+  display: flex;
+  width: 52%;
+  margin-right: $size-default;
+
+  .sc-dots {
+    width: calc(100% / 3);
+  }
+}
+
+.sc-card-action__type {
+  display: inline-flex;
+  align-items: center;
+  gap: $size-lower;
+}
+
+.sc-card-action__edit-delete {
+  background: $color-project-primary;
+  height: 100%;
+  margin-right: -3rem;
+  visibility: hidden;
+  padding: $size-lower;
+  transition: margin-right 0.5s, visibility 0.5s;
+  display: flex;
+  flex-direction: column;
+
+  button:first-child {
+    margin-bottom: auto;
+  }
+}
+
+.sc-card-action__action:hover {
+  .sc-card-action__edit-delete {
+    margin-right: 0;
+    visibility: visible;
+  }
+}
+
+/* ── Formulaire d'action (legacy form-action.component.scss) ── */
+.sc-form-action {
+  @include card-style;
+  display: block;
+  padding: $size-default * 2;
+  width: 100%;
+
+  .c-icon__circle {
+    margin-bottom: $size-lower;
+    position: relative;
+
+    span {
+      color: $color-project-primary;
+    }
+
+    &.selected {
+      background: $color-project-primary;
+
+      span {
+        color: $color-default-secondary;
+      }
+    }
+  }
+}
+
+.sc-form-action__row {
+  display: flex;
+}
+
+.sc-form-action__finalites {
+  flex-wrap: wrap;
+  margin-bottom: $size-medium;
+}
+
+.sc-form-action__finalite {
+  color: $color-project-primary;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: calc(100% / 3);
+  margin: $size-medium 0;
+
+  button {
+    background: none;
+    cursor: pointer;
+  }
+}
+
+.sc-form-action__add-icon,
+.sc-form-action__selected-icon {
+  position: absolute;
+  right: -0.125rem;
+  top: 0;
+}
+
+.sc-form-action__add-icon {
+  color: $color-project-primary;
+  background: $color-default-secondary;
+  border: $border-size-default $border-type-default $color-project-primary;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.sc-form-action__selected-icon {
+  background: $color-project-primary;
+  border: $border-size-default $border-type-default $color-default-secondary;
+}
+
+.sc-form-action__incompatibles {
+  display: flex;
+  flex-direction: column;
+  gap: $size-lower;
+  margin-top: $size-lower;
+}
+
+/* ── Dots (legacy dots.component.scss) ── */
+.sc-dots {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  position: relative;
+
+  .dot {
+    background: $color-empty-light;
+    border-radius: 50%;
+    width: $size-lower;
+    height: $size-lower;
+    z-index: 1;
+  }
+
+  .line {
+    background: $color-strategy-primary;
+    width: 100%;
+    height: $size-lower;
+    z-index: 2;
+  }
+
+  .line--left {
+    border-bottom-left-radius: $size-small;
+    border-top-left-radius: $size-small;
+  }
+
+  .line--right {
+    border-bottom-right-radius: $size-small;
+    border-top-right-radius: $size-small;
+  }
+
+  .color--light {
+    background: $color-strategy-primary-light;
+  }
+
+  .color--primary {
+    background: $color-strategy-primary;
+  }
+
+  .color--dark {
+    background: $color-strategy-primary-dark;
+  }
+
+  .color--empty-smile {
+    background: $color-project-secondary-txt;
+  }
+  .color--red-smile {
+    background: $color-tacct-red;
+  }
+  .color--orange-smile {
+    background: $color-tacct-orange;
+  }
+  .color--green-smile {
+    background: $color-strategy-primary;
+  }
+  .color--dark-green-smile {
+    background: $color-strategy-primary-dark;
+  }
+}
+
+/* Superposition des dots (timeline des niveaux dans les trajectoires). */
+.sc-dots__superpostion-1 {
+  margin-left: -1.06rem;
+}
+.sc-dots__superpostion-2 {
+  margin-left: -1.04rem;
+}
+
+.sc-dots__line-left,
+.sc-dots__line-right {
+  background: $color-empty-light;
+  width: $border-size-default;
+  position: absolute;
+  top: -0.75rem;
+  bottom: 0;
+  height: 2rem;
+}
+
+.sc-dots__line-left {
+  left: 0.5rem;
+}
+
+.sc-dots__line-right {
+  right: 0.5rem;
+}

@@ -1,0 +1,323 @@
+@import "bases";
+
+$traj-transition: 0.5s;
+
+/* ── Page « Construction de trajectoires » (host legacy) ── */
+.sc-build-trajectories {
+  display: block;
+  width: auto;
+  margin-left: 0.95rem;
+}
+
+/* ── Carte d'une trajectoire (legacy item-trajectory) ── */
+.sc-item-trajectory {
+  @include card-style;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin: 0 0 15px 0;
+  position: relative;
+
+  .sc-dots {
+    width: calc(100% / 3.5);
+    transition: width $traj-transition;
+  }
+
+  &:hover .sc-dots {
+    width: calc(100% / 3.235);
+  }
+}
+
+.sc-item-trajectory__header {
+  display: flex;
+  flex: 1;
+  margin: 0;
+  padding: ($size-default * 2) ($size-default * 2) $size-lower ($size-default * 2);
+  transition: margin-right $traj-transition;
+}
+
+.sc-item-trajectory__content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 0 ($size-default * 2) ($size-default * 2) ($size-default * 2);
+  transition: margin-right $traj-transition;
+}
+
+.sc-item-trajectory__levels {
+  display: flex;
+  justify-content: space-around;
+  width: 41%;
+  margin-left: 3.15rem;
+
+  .sc-item-trajectrory__lvl:nth-child(1) {
+    color: $color-success-light;
+    border: $border-size-default $border-type-default $color-success-light;
+  }
+  .sc-item-trajectrory__lvl:nth-child(2) {
+    color: $color-success;
+    border: $border-size-default $border-type-default $color-success;
+  }
+  .sc-item-trajectrory__lvl:nth-child(3) {
+    color: $color-success-dark;
+    border: $border-size-default $border-type-default $color-success-dark;
+  }
+}
+
+.sc-item-trajectrory__lvl {
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 2rem;
+  height: 2rem;
+}
+
+.sc-item-trajectory__row {
+  display: flex;
+  align-items: center;
+  width: 50%;
+}
+
+.sc-impact-trajectory__edit-delete {
+  background: $color-project-primary;
+  height: 100%;
+  margin-right: -3.1rem;
+  visibility: hidden;
+  padding: $size-lower;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  transition: margin-right $traj-transition, visibility $traj-transition;
+
+  a:first-child {
+    margin-bottom: $size-lower;
+  }
+}
+
+.sc-item-trajectory:hover {
+  .sc-impact-trajectory__edit-delete {
+    margin-right: 0;
+    visibility: visible;
+  }
+
+  .sc-item-trajectory__header,
+  .sc-item-trajectory__content {
+    margin-right: 3rem;
+  }
+}
+
+/* ── Listes d'actions (legacy list-actions / allocated-actions) ── */
+.sc-list-actions {
+  display: block;
+
+  .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+.sc-list-actions__levels,
+.sc-allocated-actions__levels {
+  display: flex;
+  justify-content: space-around;
+  width: 41%;
+  margin-left: 2.75rem;
+
+  span:nth-child(1) {
+    color: $color-success-light;
+    border: $border-size-default $border-type-default $color-success-light;
+  }
+  span:nth-child(2) {
+    color: $color-success;
+    border: $border-size-default $border-type-default $color-success;
+  }
+  span:nth-child(3) {
+    color: $color-success-dark;
+    border: $border-size-default $border-type-default $color-success-dark;
+  }
+}
+
+.sc-list-actions__lvl,
+.sc-allocated-actions__lvl {
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 2rem;
+  height: 2rem;
+}
+
+.sc-allocated-actions__row {
+  display: flex;
+}
+
+/* ── Ligne d'action add/remove (legacy item-action) ── */
+.sc-item-action {
+  display: flex;
+  margin-left: -15px;
+  margin-right: -15px;
+  padding-bottom: $size-default;
+
+  .sc-dots {
+    width: calc(100% / 3.61);
+  }
+
+  .sc-allocated-actions__row,
+  .sc-item-action__col {
+    display: flex;
+    width: 50%;
+  }
+
+  .sc-item-action__col {
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+  }
+}
+
+/* ── Récapitulatif des niveaux d'impact (legacy impact-level-abstract) ── */
+.sc-impact-level-abstract {
+  display: block;
+  margin: 0 (-2 * $size-default) $size-default (-2 * $size-default);
+}
+
+.sc-impact-level-abstract__header {
+  background-color: $color-default-secondary;
+  display: flex;
+  align-items: center;
+  padding: $size-lower ($size-default + $size-small);
+}
+
+.sc-impact-level-abstract__toggle {
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.sc-impact-level-abstract__flex,
+.sc-impact-level-abstract__flex-column {
+  display: flex;
+}
+
+.sc-impact-level-abstract__flex-column {
+  flex-direction: column;
+  padding: 0 ($size-default + $size-small);
+}
+
+.sc-impact-level-abstract__timeline {
+  margin: 0;
+}
+
+.sc-impact-level-abstract__timeline-elem {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  padding: $size-lower 0;
+}
+
+.sc-impact-level-abstract__timeline-number {
+  width: 2 * $size-default;
+  height: 2 * $size-default;
+  border-radius: 50%;
+  border: ($border-size-default * 2) $border-type-default;
+  color: $color-default-secondary;
+  font-family: $font-default;
+  justify-content: center;
+  align-items: center;
+}
+
+.sc-impact-level-abstract__timeline-1 {
+  background-color: $color-strategy-primary-light;
+  position: relative;
+  &:before {
+    content: "";
+    border-style: solid;
+    border-width: 1.5rem 0 1.5rem 1rem;
+    border-color: transparent transparent transparent $color-strategy-primary-light;
+    position: absolute;
+    right: -1rem;
+    top: 0;
+    z-index: 1;
+  }
+}
+
+.sc-impact-level-abstract__timeline-2 {
+  background-color: $color-strategy-primary;
+  position: relative;
+  &:before {
+    content: "";
+    border-style: solid;
+    border-width: 1.5rem 0 1.5rem 1rem;
+    border-color: transparent transparent transparent $color-strategy-primary;
+    position: absolute;
+    right: -1rem;
+    top: 0;
+    z-index: 1;
+  }
+}
+
+.sc-impact-level-abstract__timeline-3 {
+  background-color: $color-strategy-primary-dark;
+}
+
+.sc-impact-level-abstract__title {
+  text-transform: uppercase;
+  font-family: $font-default;
+  font-size: $txt-size-lower;
+  font-weight: $txt-bold;
+  color: $color-project-primary-txt;
+}
+
+.sc-impact-level-abstract__subtitle-group {
+  background-color: $color-background;
+  text-align: center;
+  font-family: $font-marianne-bold;
+  color: $color-default-primary-very-light;
+  padding: $size-lower 0;
+}
+
+.sc-impact-level-abstract__legend {
+  font-family: $font-default;
+  font-size: $txt-size-small;
+  color: $color-project-secondary-txt;
+}
+
+.sc-impact-level-abstract__limit {
+  padding: $size-default ($size-default + $size-small) 0;
+  justify-content: space-evenly;
+}
+
+.sc-impact-level-abstract__limit-text {
+  width: 49%;
+}
+
+.sc-impact-level-abstract__tracking-indicator {
+  background-color: $color-project-secondary-very-light;
+  padding: $size-lower ($size-default + $size-small);
+}
+
+.sc-impact-level-abstract__text-group {
+  width: calc(100% / 3);
+}
+
+.sc-impact-level-abstract__text-group:not(:first-child) {
+  padding-left: $size-default;
+  border-left: $border-size-default $border-type-default $color-background;
+  margin-left: $size-default;
+}
+
+.sc-impact-level-abstract__text {
+  font-family: $font-default;
+  font-size: $txt-size-lower;
+  margin: $size-small $size-small $size-small 0;
+  color: $color-default-primary-very-light;
+}
+
+/* ── Éditeur create-trajectory ── */
+.sc-create-trajectory .c-input__group {
+  padding: 0;
+}

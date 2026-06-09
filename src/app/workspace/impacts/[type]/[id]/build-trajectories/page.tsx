@@ -1,11 +1,18 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
+  DEFAULT_CRITERIA,
+  getActionsForOwner,
   getImpactOwner,
+  getReviewCriteriaForOwner,
   getTrajectoriesForOwner,
   type OwnerType,
 } from '@/server/strategies/impact-queries';
-import { deleteTrajectory } from '@/server/strategies/impact-actions';
+import { ContentLayout } from '@/components/layout/ContentLayout';
+import { BlockTitleIcon } from '@/components/ui/BlockTitleIcon';
+import { ImpactLevelAbstract } from '@/components/strategies/ImpactLevelAbstract';
+import { ItemTrajectory, type TrajectoryData } from '@/components/strategies/ItemTrajectory';
+import { pluralize } from '@/lib/pluralize';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,66 +25,77 @@ export default async function BuildTrajectoriesPage({ params }: { params: Params
   const owner = await getImpactOwner(ownerType, id);
   if (!owner) notFound();
 
-  const trajectories = await getTrajectoriesForOwner(ownerType, id);
+  const [trajectories, actions, savedCriteria] = await Promise.all([
+    getTrajectoriesForOwner(ownerType, id),
+    getActionsForOwner(ownerType, id),
+    getReviewCriteriaForOwner(ownerType, id),
+  ]);
+
+  const criteria =
+    savedCriteria.length === 8
+      ? savedCriteria.map((c) => ({ rank: c.rank, weighting: c.weighting }))
+      : DEFAULT_CRITERIA.map((d) => ({ rank: d.rank, weighting: 1 }));
+
+  const reviewsByAction = new Map(
+    actions.map((a) => [a.id, a.impact_action_review.map((r) => ({ rank: r.rank, value: r.value }))]),
+  );
+
+  const trajData: TrajectoryData[] = trajectories.map((t) => ({
+    id: t.id,
+    name: t.name,
+    actions: t.impact_trajectory_impact_action.map((j) => ({
+      id: j.impact_action.id,
+      intitule: j.impact_action.intitule,
+      typeAction: j.impact_action.type_action,
+      finalite1: j.impact_action.finalite1,
+      finalite2: j.impact_action.finalite2,
+      finalite3: j.impact_action.finalite3,
+      anticipe1: j.impact_action.anticipe1,
+      anticipe2: j.impact_action.anticipe2,
+      reviews: reviewsByAction.get(j.impact_action.id) ?? [],
+    })),
+  }));
 
   return (
-    <>
-      <div className="o-card mb-4 d-flex justify-content-between align-items-center">
-        <h2 className="c-subtitle-black-bold m-0">
-          Trajectoires ({trajectories.length})
-        </h2>
-        <Link
-          href={`/workspace/impacts/${type}/${id}/build-trajectories/create-trajectory`}
-          className="c-btn--primary"
-        >
-          + Ajouter une trajectoire
-        </Link>
-      </div>
-
-      {trajectories.length === 0 && (
-        <div className="o-card text-center py-5">
-          Aucune trajectoire. Crées-en une à partir des actions définies.
-        </div>
-      )}
-
-      {trajectories.map((t) => (
-        <div key={t.id} className="o-card mb-3">
-          <div className="d-flex justify-content-between align-items-start">
-            <div>
-              <strong>{t.name}</strong>
-              <div className="c-subtitle-grey">
-                {t.impact_trajectory_impact_action.length} action
-                {t.impact_trajectory_impact_action.length > 1 ? 's' : ''}
-              </div>
-              {t.impact_trajectory_impact_action.length > 0 && (
-                <ul className="mt-2 mb-0">
-                  {t.impact_trajectory_impact_action.map((a) => (
-                    <li key={a.id}>{a.impact_action.intitule}</li>
-                  ))}
-                </ul>
+    <ContentLayout helpKey="build-trajectories">
+      <div className="sc-build-trajectories">
+        <div className="o-card o-card__triangle u-margin__bottom-l">
+          <div className="row">
+            <BlockTitleIcon
+              className="col-16"
+              pageTitle="Construction de trajectoires"
+              subtitle={owner.title}
+              icon={owner.thematicIcon ?? 'suspended'}
+            />
+          </div>
+          <ImpactLevelAbstract impactLevel={owner.impactLevel} />
+          <div className="o-centred-elements">
+            <span className="ml-0 mr-auto">
+              {pluralize(
+                trajectories.length,
+                `${trajectories.length} trajectoire`,
+                `${trajectories.length} trajectoires`,
               )}
-            </div>
-            <div className="d-flex gap-2">
-              <Link
-                href={`/workspace/impacts/${type}/${id}/build-trajectories/${t.id}`}
-                className="c-btn--secondary"
-              >
-                Modifier
-              </Link>
-              <form
-                action={async () => {
-                  'use server';
-                  await deleteTrajectory(ownerType, id, t.id);
-                }}
-              >
-                <button type="submit" className="c-btn--tertiary">
-                  Supprimer
-                </button>
-              </form>
-            </div>
+            </span>
+            <Link
+              href={`/workspace/impacts/${type}/${id}/build-trajectories/create-trajectory`}
+              className="ml-auto mr-0 c-btn--primary"
+            >
+              Ajouter une trajectoire
+            </Link>
           </div>
         </div>
-      ))}
-    </>
+
+        {trajData.map((trajectory) => (
+          <ItemTrajectory
+            key={trajectory.id}
+            type={ownerType}
+            ownerId={id}
+            trajectory={trajectory}
+            criteria={criteria}
+          />
+        ))}
+      </div>
+    </ContentLayout>
   );
 }

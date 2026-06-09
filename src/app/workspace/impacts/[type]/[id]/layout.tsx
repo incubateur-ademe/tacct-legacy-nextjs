@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { isAdmin } from '@/server/study/current-study';
@@ -8,13 +7,12 @@ export const dynamic = 'force-dynamic';
 
 type Params = Promise<{ type: string; id: string }>;
 
-const TABS = [
-  { key: 'impact-level', label: "Niveau d'impact" },
-  { key: 'define-actions', label: 'Actions' },
-  { key: 'review-actions', label: 'Évaluation' },
-  { key: 'build-trajectories', label: 'Trajectoires' },
-];
-
+/**
+ * Layout des pages de travail d'un impact (niveau / actions / évaluation /
+ * trajectoires). La navigation entre ces étapes se fait via le menu de gauche
+ * (IMPACT_STRATEGIE) ; chaque page porte son propre titre. Ici on ne fait que
+ * les contrôles d'accès.
+ */
 export default async function ImpactWorkLayout({
   params,
   children,
@@ -36,46 +34,5 @@ export default async function ImpactWorkLayout({
     isAdmin(user) || user.user_study.some((us) => us.study_id === owner.studyId);
   if (!canEdit) redirect('/workspace');
 
-  return (
-    <div className="container page">
-      {/* Bandeau impact */}
-      <div className="row">
-        <div className="col-lg-12">
-          <div className="o-card d-flex justify-content-between align-items-center">
-            <div className="d-flex align-items-center">
-              {owner.thematicIcon && (
-                <em
-                  className={`c-icon project-primary medium ${owner.thematicIcon} mr-3`}
-                  aria-hidden="true"
-                />
-              )}
-              <div>
-                <div className="c-subtitle-grey">{owner.impactThemeName ?? ''}</div>
-                <h1 className="c-title-black-bold m-0">{owner.title}</h1>
-              </div>
-            </div>
-            <Link href="/workspace/impacts" className="c-btn--tertiary">
-              ← Retour
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Onglets */}
-      <ul className="nav nav-tabs mt-4">
-        {TABS.map((t) => (
-          <li key={t.key} className="nav-item">
-            <Link
-              href={`/workspace/impacts/${type}/${id}/${t.key}`}
-              className="nav-link"
-            >
-              {t.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
-
-      <div className="mt-4">{children}</div>
-    </div>
-  );
+  return <>{children}</>;
 }

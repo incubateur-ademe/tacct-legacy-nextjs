@@ -1,10 +1,19 @@
 import { notFound } from 'next/navigation';
 import { getImpactOwner, type OwnerType } from '@/server/strategies/impact-queries';
 import { saveImpactLevel } from '@/server/strategies/impact-actions';
+import { ContentLayout } from '@/components/layout/ContentLayout';
+import { BlockTitleIcon } from '@/components/ui/BlockTitleIcon';
 
 export const dynamic = 'force-dynamic';
 
 type Params = Promise<{ type: string; id: string }>;
+
+const LEVELS = [1, 2, 3] as const;
+const INFO_CLASS: Record<number, string> = {
+  1: 'sc-impact-level__lvl-info--fc',
+  2: 'sc-impact-level__lvl-info--sc',
+  3: 'sc-impact-level__lvl-info--tc',
+};
 
 export default async function ImpactLevelPage({ params }: { params: Params }) {
   const { type, id } = await params;
@@ -16,71 +25,110 @@ export default async function ImpactLevelPage({ params }: { params: Params }) {
   const level = owner.impactLevel;
   const saveAction = saveImpactLevel.bind(null, ownerType, id);
 
+  const description = (n: number) =>
+    (level as Record<string, string> | null)?.[`description${n}`] ?? '';
+  const finalite = (n: number) =>
+    (level as Record<string, string> | null)?.[`finalite${n}`] ?? '';
+  const seuil = (n: number) =>
+    (level as Record<string, string> | null)?.[`seuil${n}`] ?? '';
+
   return (
-    <form action={saveAction}>
-      <div className="o-card mb-3">
-        <h2 className="c-subtitle-black-bold">Indicateur de suivi global</h2>
-        <textarea
-          name="indicateurSuivi"
-          defaultValue={level?.indicateur_suivi ?? ''}
-          rows={2}
-          maxLength={500}
-          className="c-input w-100"
-        />
-      </div>
-
-      {[1, 2, 3].map((n) => (
-        <div key={n} className="o-card mb-3">
-          <h2 className="c-subtitle-black-bold">Niveau {n}</h2>
-          <div className="mb-2">
-            <label className="c-input__label" htmlFor={`description${n}`}>
-              Description
-            </label>
-            <textarea
-              id={`description${n}`}
-              name={`description${n}`}
-              defaultValue={(level as Record<string, string> | null)?.[`description${n}`] ?? ''}
-              rows={2}
-              maxLength={500}
-              className="c-input w-100"
+    <ContentLayout helpKey="impact-level">
+      <div className="sc-impact-level">
+        <div className="o-card u-margin__bottom--m">
+          <div className="row">
+            <BlockTitleIcon
+              pageTitle="Niveaux d'impact"
+              subtitle={owner.title}
+              icon={owner.thematicIcon ?? 'suspended'}
             />
           </div>
-          <div className="mb-2">
-            <label className="c-input__label" htmlFor={`finalite${n}`}>
-              Finalité
-            </label>
-            <textarea
-              id={`finalite${n}`}
-              name={`finalite${n}`}
-              defaultValue={(level as Record<string, string> | null)?.[`finalite${n}`] ?? ''}
-              rows={2}
-              maxLength={500}
-              className="c-input w-100"
-            />
-          </div>
-          {n < 3 && (
-            <div className="mb-2">
-              <label className="c-input__label" htmlFor={`seuil${n}`}>
-                Seuil de passage au niveau {n + 1}
-              </label>
-              <input
-                id={`seuil${n}`}
-                name={`seuil${n}`}
-                type="text"
-                defaultValue={(level as Record<string, string> | null)?.[`seuil${n}`] ?? ''}
-                maxLength={500}
-                className="c-input w-100"
-              />
-            </div>
-          )}
         </div>
-      ))}
 
-      <div className="d-flex justify-content-end">
-        <button type="submit" className="c-btn--primary">
-          Enregistrer
-        </button>
+        <form className="o-card" action={saveAction}>
+          <div className="c-input__group col-sm-16 w-100 u-margin__bottom--m">
+            <input
+              className="c-input__large"
+              type="text"
+              id="indicateur"
+              name="indicateurSuivi"
+              maxLength={500}
+              defaultValue={level?.indicateur_suivi ?? ''}
+            />
+            <label className="c-input__label" htmlFor="indicateur">
+              Indicateur de suivi
+            </label>
+            <div className="c-required">* requis</div>
+          </div>
+
+          {LEVELS.map((lvl, index) => (
+            <div className="row sc-impact-level__lvl" key={lvl}>
+              <div className="sc-impact-level__lvl-bloc">
+                <div className={`sc-impact-level__lvl-info ${INFO_CLASS[lvl]}`}>
+                  <div className="sc-impact-level__lvl-number">{lvl}</div>
+                </div>
+                <div className="sc-impact-level__lvl-impact">
+                  <span className="sc-impact-level__lvl-title">Niveau d&apos;impact {lvl}</span>
+                  <div className="row">
+                    <div className="c-input__group col-sm-16 w-50">
+                      <textarea
+                        className="c-input__large"
+                        id={`description-${lvl}`}
+                        name={`description${lvl}`}
+                        maxLength={500}
+                        defaultValue={description(lvl)}
+                      />
+                      <label className="c-input__label" htmlFor={`description-${lvl}`}>
+                        Description
+                      </label>
+                      <div className="c-required">* requis</div>
+                    </div>
+
+                    <div className="c-input__group col-sm-16 w-50">
+                      <textarea
+                        className="c-input__large"
+                        id={`finalite-${lvl}`}
+                        name={`finalite${lvl}`}
+                        maxLength={500}
+                        defaultValue={finalite(lvl)}
+                      />
+                      <label className="c-input__label" htmlFor={`finalite-${lvl}`}>
+                        Finalité
+                      </label>
+                      <div className="c-required">* requis</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {index < LEVELS.length - 1 && (
+                <div className="sc-impact-level__lvl-seuil">
+                  <div className="c-input__group col-sm-16 w-100">
+                    <input
+                      className="c-input__large"
+                      type="text"
+                      id={`seuil-${lvl}`}
+                      name={`seuil${lvl}`}
+                      maxLength={500}
+                      defaultValue={seuil(lvl)}
+                    />
+                    <label className="c-input__label" htmlFor={`seuil-${lvl}`}>
+                      Seuil {lvl} -&gt; {lvl + 1}
+                    </label>
+                    <div className="c-required">* requis</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+
+          <div className="c-group-buttons c-group-buttons--end">
+            <button type="submit" className="c-btn--primary">
+              Enregistrer
+            </button>
+          </div>
+        </form>
       </div>
-    </form>
+    </ContentLayout>
   );
 }

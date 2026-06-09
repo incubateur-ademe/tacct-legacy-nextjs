@@ -71,7 +71,7 @@ export default async function ProfilePage() {
                   </div>
                 </div>
 
-                <div className="c-group-buttons">
+                {/* <div className="c-group-buttons">
                   <button
                     type="button"
                     className="c-btn--primary"
@@ -80,15 +80,15 @@ export default async function ProfilePage() {
                   >
                     Réinitialiser mon mot de passe
                   </button>
-                </div>
+                </div> */}
               </section>
 
-              <div className="row pt-5 pb-5">
-                <span className="c-txt-marianne-regular c-empty">
+              {/* <div className="row pt-5 pb-5"> */}
+                {/* <span className="c-txt-marianne-regular c-empty">
                   Pour modifier votre nom/prénom, merci de{' '}
                   <Link href="/contact">contacter le support ADEME</Link>.
-                </span>
-              </div>
+                </span> */}
+              {/* </div> */}
             </div>
           </div>
         </div>

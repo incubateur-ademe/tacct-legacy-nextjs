@@ -1,0 +1,210 @@
+@import "bases";
+
+/* ── Page « Evaluation des actions » (legacy review-actions.component.scss) ── */
+.sc-review-actions {
+  display: block;
+  width: auto;
+  margin-left: 0.95rem;
+
+  .o-card {
+    padding-bottom: $size-lower;
+  }
+
+  .o-card:not(:first-child) {
+    padding: ($size-default + $size-medium) 0 $size-default 0;
+  }
+
+  .c-group-buttons {
+    margin-top: $size-default;
+    padding: 0 $size-default;
+  }
+}
+
+.sc-review-actions__evaluations {
+  position: relative;
+}
+
+/* ── En-tête de colonnes (legacy columns-header) ── */
+.sc-header {
+  display: flex;
+  width: 100%;
+}
+
+.sc-header__col {
+  display: flex;
+  flex-direction: column;
+  width: 3.75rem;
+
+  &:first-child {
+    flex: 1;
+
+    .sc-header__info,
+    .sc-header__weightings {
+      padding-left: $size-default;
+    }
+  }
+
+  &:not(:first-child) {
+    .sc-header__info {
+      position: relative;
+    }
+
+    .sc-header__weightings {
+      display: flex;
+      justify-content: center;
+    }
+  }
+
+  &:nth-child(even) .sc-header__weightings {
+    background-color: $color-project-secondary-very-light;
+  }
+
+  &:last-child .sc-header__weightings {
+    border-left: $border-size-default $border-type-default $color-strategy-primary-dark;
+    background-color: rgba($color-success-very-light, 0.6);
+  }
+}
+
+.sc-header__info {
+  display: flex;
+  height: 7.5rem;
+}
+
+.sc-header__weightings {
+  font-size: $txt-size-lower;
+  font-family: $font-default;
+  color: $color-txt-project-secondary;
+  height: 1.25rem;
+  border-top: $border-empty-light;
+  border-bottom: $border-empty-light;
+}
+
+.sc-header__button {
+  @include btn;
+  @include btn-text;
+  @include btn-secondary;
+  align-self: center;
+  max-height: 4rem;
+  height: 4rem;
+  width: 8.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.sc-header__criteria {
+  position: absolute;
+  bottom: 2rem;
+  width: 10rem;
+  transform: rotate(45deg) translate(-6rem, 3.65rem);
+  text-align: right;
+  line-height: 1rem;
+  font-family: $font-default;
+  font-size: $txt-size-lower;
+  color: $color-txt-project-primary;
+}
+
+/* ── Ligne d'évaluation (legacy table-row) ── */
+.sc-table-row {
+  display: flex;
+  border-bottom: $border-empty-light;
+  align-items: stretch;
+}
+
+.sc-table-row__elem {
+  display: flex;
+  align-items: center;
+  width: 3.75rem;
+
+  &:first-child {
+    padding: $size-default 0 $size-default $size-default;
+    flex: 1;
+    font-family: $font-default;
+    color: $color-txt-project-secondary;
+  }
+
+  &:not(:first-child) {
+    justify-content: center;
+  }
+
+  &:nth-child(even) {
+    background-color: $color-project-secondary-very-light;
+  }
+
+  &:last-child {
+    border-left: $border-size-default $border-type-default $color-strategy-primary-dark;
+    background-color: rgba($color-success-very-light, 0.6);
+  }
+}
+
+/* ── Cellule de notation (legacy review-item) ── */
+.sc-review-item {
+  border: $border-empty-light;
+  border-radius: $radius-small;
+  display: flex;
+  height: 3rem;
+  width: 3rem;
+  position: relative;
+}
+
+.sc-review-item__button {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.sc-review-item__select-box {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 20;
+  min-width: 14rem;
+  background: $color-default-secondary;
+  border: $border-empty-light;
+  border-radius: $radius-small;
+  box-shadow: $shadow-card;
+  padding: $size-lower 0;
+}
+
+.sc-review-item__select-review-btn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: $size-lower $size-default;
+  gap: $size-lower;
+
+  &:hover {
+    background-color: $color-project-secondary-very-light;
+  }
+}
+
+.sc-review-item__select-review-label {
+  font-family: $font-default;
+}
+
+/* ── Sous-page « Modifier les critères » (legacy actions-criteria) ── */
+.sc-actions-criteria {
+  display: block;
+  width: auto;
+  margin-left: 0.95rem;
+}
+
+.sc-actions-criteria__info {
+  font-size: $txt-size-small;
+  display: flex;
+  align-items: center;
+  margin: 0 (-$size-default * 2) $size-default (-$size-default * 2);
+  padding: $size-lower $size-default * 2;
+
+  img {
+    margin-right: $size-lower;
+  }
+}

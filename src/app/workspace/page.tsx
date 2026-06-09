@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { requireCurrentUser } from '@/server/auth/current-user';
-import { getCurrentStudy } from '@/server/study/current-study';
+import { getCurrentStudy, isAdmin } from '@/server/study/current-study';
 import { prisma } from '@/server/db';
 import { BlockTitleIcon } from '@/components/ui/BlockTitleIcon';
 import { StepStatus } from '@/components/ui/StepStatus';
@@ -22,7 +22,34 @@ export default async function WorkspaceHomePage({
   const study = await getCurrentStudy(user, studyIdParam);
 
   if (!study) {
-    redirect('/workspace/gestion/studies-management');
+    // Un admin sans étude courante est dirigé vers la gestion des études.
+    // Un non-admin n'a pas accès à cette zone (cf. gestion/layout) : on lui
+    // affiche un état vide plutôt que de boucler en redirection.
+    if (isAdmin(user)) {
+      redirect('/workspace/gestion/studies-management');
+    }
+    return (
+      <ContentLayout helpKey="main-page">
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-12">
+              <div className="o-card text-center py-5">
+                <BlockTitleIcon
+                  className="col-16"
+                  pageTitle="Aucune étude"
+                  subtitle="Dossier TACCT"
+                  icon="dashboard"
+                />
+                <p className="mt-4">
+                  Aucune étude ne vous est rattachée pour le moment. Rapprochez-vous
+                  d&apos;un administrateur pour être ajouté à une étude.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ContentLayout>
+    );
   }
 
   const [nbObservedExposures, nbImpacts, allStudiedImpacts] = await Promise.all([

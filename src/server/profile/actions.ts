@@ -6,6 +6,11 @@ import { z } from 'zod';
 import { prisma } from '@/server/db';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { isAdmin } from '@/server/study/current-study';
+import {
+  sendDeactivationEmail,
+  sendInviteEmail,
+  sendTransferEmail,
+} from '@/server/mail/study-emails';
 
 async function assertCanEditStudy(studyId: string) {
   const user = await requireCurrentUser();
@@ -92,12 +97,14 @@ const transferSchema = z.object({
 
 /**
  * Port du `transfer` legacy : transfère le rôle « chargé d'étude » à un autre
- * user identifié par email.
+ * user identifié par email, et envoie les emails associés.
  *
- * - Si le user cible existe et n'est pas déjà head : le passe en head, dégrade
- *   le head courant en co-utilisateur, et lui crée un user_study si nécessaire.
- * - Si le user n'existe pas : le legacy envoie un email d'invitation (service
- *   mail Symfony). Côté next, on remonte juste un statut pour V1.
+ * - Compte cible déjà responsable d'une étude → refus (409 legacy).
+ * - Compte cible existant : il devient head, l'ancien head est retiré de
+ *   l'étude, et sa commune de rattachement devient celle de l'étude. Email
+ *   « transfert » au nouveau ; si l'ancien head n'a plus d'étude, email de
+ *   désactivation.
+ * - Compte inexistant : email d'invitation (statut `mailSent`).
  */
 export async function transferStudyHead(
   formData: FormData,
@@ -108,7 +115,7 @@ export async function transferStudyHead(
       `Formulaire invalide : ${parsed.error.issues.map((i) => i.message).join(', ')}`,
     );
   }
-  const { studyId, mail } = parsed.data;
+  const { studyId, mail, firstname, lastname } = parsed.data;
   const currentUser = await assertCanEditStudy(studyId);
 
   const currentUs = await prisma.user_study.findFirst({
@@ -118,23 +125,41 @@ export async function transferStudyHead(
     throw new Error('Seul le chargé d’étude peut transférer l’étude.');
   }
 
+  const study = await prisma.study.findUnique({
+    where: { id: studyId },
+    select: { commune_id: true, territory_name: true },
+  });
+  if (!study) throw new Error('NOT_FOUND');
+
   const target = await prisma.user.findUnique({ where: { email: mail } });
+
+  // Compte existant déjà responsable d'une étude → transfert impossible.
+  if (target) {
+    const targetIsHead = await prisma.user_study.findFirst({
+      where: { user_id: target.id, head_study: true },
+    });
+    if (targetIsHead) {
+      throw new Error('Transfert impossible. Compte existant avec un diagnostic en cours.');
+    }
+  }
+
+  const emailParams = {
+    firstname,
+    headStudyFirstname: currentUser.firstname ?? '',
+    headStudyLastname: currentUser.lastname ?? '',
+    territoryName: study.territory_name,
+  };
+
   if (!target) {
-    // Legacy : envoi d'un email d'invitation. À porter quand le service mail
-    // sera branché côté next.
+    await sendTransferEmail(mail, { ...emailParams, userExists: false });
     return { status: 'mailSent' };
   }
 
+  const now = new Date();
   await prisma.$transaction(async (tx) => {
-    await tx.user_study.update({
-      where: { id: currentUs.id },
-      data: { head_study: false, updated_at: new Date() },
-    });
-
     const targetUs = await tx.user_study.findFirst({
       where: { study_id: studyId, user_id: target.id },
     });
-    const now = new Date();
     if (targetUs) {
       await tx.user_study.update({
         where: { id: targetUs.id },
@@ -152,7 +177,27 @@ export async function transferStudyHead(
         },
       });
     }
+    if (study.commune_id) {
+      await tx.user.update({
+        where: { id: target.id },
+        data: { commune_id: study.commune_id, updated_at: now },
+      });
+    }
+    // L'ancien chargé d'étude est retiré de l'étude (legacy : suppression).
+    await tx.user_study.delete({ where: { id: currentUs.id } });
   });
+
+  await sendTransferEmail(mail, { ...emailParams, userExists: true });
+
+  const remaining = await prisma.user_study.count({ where: { user_id: currentUser.id } });
+  if (remaining === 0 && currentUser.email) {
+    await sendDeactivationEmail(currentUser.email, {
+      firstname: currentUser.firstname ?? '',
+      recipientFirstname: firstname,
+      recipientLastname: lastname,
+      territoryName: study.territory_name,
+    });
+  }
 
   revalidatePath('/workspace/settings');
   revalidatePath('/workspace');
@@ -167,41 +212,48 @@ const inviteSchema = z.object({
 });
 
 /**
- * Invite un utilisateur existant à co-piloter l'étude. Si l'email n'existe pas
- * en base, on lève une erreur (l'envoi d'email d'invitation est reporté à plus
- * tard avec le service mail).
+ * Port du `sendInviteMail` legacy : invite un utilisateur à co-piloter l'étude.
+ * Si le compte existe, il est lié à l'étude (s'il ne l'est pas déjà). Un email
+ * d'invitation est envoyé dans tous les cas (compte connu ou non).
  */
 export async function inviteCoUserToStudy(formData: FormData): Promise<void> {
   const parsed = inviteSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) throw new Error('Formulaire invalide');
-  await assertCanEditStudy(parsed.data.studyId);
+  const { studyId, email } = parsed.data;
+  const currentUser = await assertCanEditStudy(studyId);
 
-  const invitee = await prisma.user.findUnique({
-    where: { email: parsed.data.email },
+  const study = await prisma.study.findUnique({
+    where: { id: studyId },
+    select: { territory_name: true },
   });
-  if (!invitee) {
-    throw new Error(
-      `Aucun compte trouvé pour ${parsed.data.email}. Le user doit avoir été créé au préalable.`,
-    );
+  if (!study) throw new Error('NOT_FOUND');
+
+  const invitee = await prisma.user.findUnique({ where: { email } });
+
+  if (invitee) {
+    const existing = await prisma.user_study.findFirst({
+      where: { user_id: invitee.id, study_id: studyId },
+    });
+    if (!existing) {
+      const now = new Date();
+      await prisma.user_study.create({
+        data: {
+          id: randomUUID(),
+          user_id: invitee.id,
+          study_id: studyId,
+          head_study: false,
+          created_at: now,
+          updated_at: now,
+        },
+      });
+    }
   }
 
-  const existing = await prisma.user_study.findFirst({
-    where: { user_id: invitee.id, study_id: parsed.data.studyId },
-  });
-  if (existing) {
-    throw new Error('Cet utilisateur est déjà membre de l’étude.');
-  }
-
-  const now = new Date();
-  await prisma.user_study.create({
-    data: {
-      id: randomUUID(),
-      user_id: invitee.id,
-      study_id: parsed.data.studyId,
-      head_study: false,
-      created_at: now,
-      updated_at: now,
-    },
+  await sendInviteEmail(email, {
+    headStudyFirstname: currentUser.firstname ?? '',
+    headStudyLastname: currentUser.lastname ?? '',
+    territoryName: study.territory_name,
+    userExists: Boolean(invitee),
   });
 
   revalidatePath('/workspace/settings');

@@ -8,6 +8,12 @@
   }
 }
 
+// Ancre le triangle décoratif sur sa carte (sinon, en position:absolute sans
+// parent positionné, il s'affiche par rapport au viewport — « rectangle » égaré).
+.o-card.o-card__triangle {
+  position: relative;
+}
+
 .o-card.o-card__triangle::after {
   content: "";
   position: absolute;

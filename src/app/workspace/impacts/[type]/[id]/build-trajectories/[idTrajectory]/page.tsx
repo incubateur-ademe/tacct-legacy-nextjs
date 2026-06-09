@@ -1,13 +1,18 @@
 import { notFound } from 'next/navigation';
 import {
+  DEFAULT_CRITERIA,
   getActionsForOwner,
   getImpactOwner,
+  getReviewCriteriaForOwner,
+  getTrajectoriesForOwner,
   getTrajectoryById,
   parseIncompatibles,
   type OwnerType,
 } from '@/server/strategies/impact-queries';
 import { updateTrajectory } from '@/server/strategies/impact-actions';
-import { TrajectoryForm } from '@/components/strategies/TrajectoryForm';
+import { ContentLayout } from '@/components/layout/ContentLayout';
+import { BlockTitleIcon } from '@/components/ui/BlockTitleIcon';
+import { TrajectoryForm, type EditorAction } from '@/components/strategies/TrajectoryForm';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,28 +28,59 @@ export default async function EditTrajectoryPage({ params }: { params: Params })
   const trajectory = await getTrajectoryById(idTrajectory);
   if (!trajectory) notFound();
 
-  const actions = await getActionsForOwner(ownerType, id);
-  const actionsForForm = actions.map((a) => ({
+  const [actionsRaw, trajectories, savedCriteria] = await Promise.all([
+    getActionsForOwner(ownerType, id),
+    getTrajectoriesForOwner(ownerType, id),
+    getReviewCriteriaForOwner(ownerType, id),
+  ]);
+
+  const criteria =
+    savedCriteria.length === 8
+      ? savedCriteria.map((c) => ({ rank: c.rank, weighting: c.weighting }))
+      : DEFAULT_CRITERIA.map((d) => ({ rank: d.rank, weighting: 1 }));
+
+  const actions: EditorAction[] = actionsRaw.map((a) => ({
     id: a.id,
     intitule: a.intitule,
+    description: a.description,
+    typeAction: a.type_action,
+    finalite1: a.finalite1,
+    finalite2: a.finalite2,
+    finalite3: a.finalite3,
+    anticipe1: a.anticipe1,
+    anticipe2: a.anticipe2,
     incompatibles: parseIncompatibles(a.incompatibles),
+    reviews: a.impact_action_review.map((r) => ({ rank: r.rank, value: r.value })),
   }));
-  const initialActionIds = trajectory.impact_trajectory_impact_action.map(
-    (x) => x.action_id,
-  );
+
+  const initial = {
+    name: trajectory.name,
+    actionIds: trajectory.impact_trajectory_impact_action.map((x) => x.action_id),
+  };
+  const existingNames = trajectories.filter((t) => t.id !== idTrajectory).map((t) => t.name);
 
   const submitAction = updateTrajectory.bind(null, ownerType, id, idTrajectory);
 
   return (
-    <>
-      <h2 className="c-subtitle-black-bold mb-3">Modifier la trajectoire</h2>
-      <TrajectoryForm
-        type={ownerType}
-        ownerId={id}
-        actions={actionsForForm}
-        initial={{ name: trajectory.name, actionIds: initialActionIds }}
-        action={submitAction}
-      />
-    </>
+    <ContentLayout helpKey="build-trajectories">
+      <div className="o-card sc-create-trajectory-card">
+        <BlockTitleIcon
+          className="col-16"
+          pageTitle="Ajouter une trajectoire"
+          subtitle={owner.title}
+          icon={owner.thematicIcon ?? 'suspended'}
+        />
+        <TrajectoryForm
+          type={ownerType}
+          ownerId={id}
+          actions={actions}
+          criteria={criteria}
+          impactLevel={owner.impactLevel}
+          initial={initial}
+          existingNames={existingNames}
+          submitAction={submitAction}
+        />
+      </div>
+    </ContentLayout>
   );
 }

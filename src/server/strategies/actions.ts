@@ -37,6 +37,31 @@ export async function setImpactStudied(impactId: string, studied: boolean): Prom
   revalidatePath('/workspace/impacts/choose-impacts');
 }
 
+/**
+ * Valide la construction des stratégies de l'étude (passe
+ * `strategy_construction_valid` à `validated` si ce n'est pas déjà le cas).
+ * Déclenché à l'export du plan d'action — port du
+ * `valitadeStrategyConstructionAction` legacy.
+ */
+export async function validateStrategyConstruction(studyId: string): Promise<void> {
+  await assertCanEditStudy(studyId);
+
+  const study = await prisma.study.findUnique({
+    where: { id: studyId },
+    select: { strategy_construction_valid: true },
+  });
+  if (!study) throw new Error('NOT_FOUND');
+
+  if (study.strategy_construction_valid !== 'validated') {
+    await prisma.study.update({
+      where: { id: studyId },
+      data: { strategy_construction_valid: 'validated', updated_at: new Date() },
+    });
+    revalidatePath('/workspace');
+    revalidatePath('/workspace/impacts');
+  }
+}
+
 // ─── Impact strategy (créé ex nihilo) ─────────────────────────────────────────
 
 const impactStrategySchema = z.object({

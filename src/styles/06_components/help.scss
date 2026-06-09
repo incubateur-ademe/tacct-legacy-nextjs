@@ -34,13 +34,134 @@
   }
 }
 
-/* Modale d'aide ouverte au clic sur un item (équiv. <app-page-info> legacy) */
-.sc-help-modal {
+/* Modale d'aide : overlay contrôlé (portal sur body), équiv. <app-page-info> legacy. */
+.sc-help-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: $size-medium $size-default;
+  overflow-y: auto;
+}
+
+.sc-help-modal-box {
+  position: relative;
+  background-color: $color-default-secondary;
+  box-shadow: $shadow-card;
+  border-radius: $radius-default;
   width: 60rem;
   max-width: 90vw;
+  // L'en-tête et la nav restent visibles, seul le contenu scrolle.
+  max-height: calc(100vh - 4rem);
+  padding: $size-medium;
+  display: flex;
+  flex-direction: column;
+}
 
-  .sc-help-modal__content {
-    padding-top: $size-default;
-    line-height: 1.5;
+.sc-help-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $size-default;
+  flex-shrink: 0;
+}
+
+.sc-help-modal__close {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+}
+
+.sc-help-modal__content {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding-top: $size-default;
+  line-height: 1.5;
+  overflow-y: auto;
+  word-break: break-word;
+
+  h1 {
+    @include h1-secondary;
   }
+
+  h2 {
+    @include h2-secondary;
+    margin-bottom: $size-lower;
+    text-transform: uppercase;
+  }
+
+  // Le contenu Quill peut contenir des h3–h6 (notes, sous-titres). Sans la CSS
+  // de Quill, Bootstrap les rend trop gros : on les ramène à une taille sobre.
+  h3 {
+    font-size: $txt-size-legend;
+    font-weight: $txt-bold;
+    line-height: $size-medium;
+    margin: 0 0 $size-lower;
+    text-transform: none;
+    color: inherit;
+  }
+
+  h4,
+  h5,
+  h6 {
+    font-size: $txt-size-default;
+    font-weight: $txt-bold;
+    line-height: $size-medium;
+    margin: 0 0 $size-lower;
+    text-transform: none;
+    color: inherit;
+  }
+
+  ol,
+  ul {
+    font-size: $size-default;
+    padding-left: $size-medium;
+  }
+
+  p {
+    margin-bottom: $size-lower;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  a {
+    color: $color-link;
+    text-decoration: underline;
+  }
+
+  // Classes d'alignement produites par Quill (snow), sinon sans effet ici.
+  .ql-align-center {
+    text-align: center;
+  }
+  .ql-align-right {
+    text-align: right;
+  }
+  .ql-align-justify {
+    text-align: justify;
+  }
+}
+
+.sc-help-modal__nav {
+  display: flex;
+  justify-content: space-between;
+  gap: $size-default;
+  margin-top: $size-medium;
+  border-top: $border-size-default $border-type-default $color-empty-light;
+  padding-top: $size-default;
+  flex-shrink: 0;
+}
+
+.sc-help-modal__nav-item {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+  max-width: 17rem;
 }

@@ -1,0 +1,92 @@
+@import "bases";
+
+/* ── Page « Impacts étudiés » (legacy studied-impacts.component.scss) ── */
+.sc-studied-impacts {
+  display: block;
+  width: auto;
+  margin-left: 0.95rem;
+}
+
+.sc-studied-impacts__export-tet-button {
+  display: inline-flex;
+  align-items: center;
+  line-height: unset;
+
+  .c-icon {
+    // Sans classe de taille, .c-icon vaut $icon-size-default (2rem) et déforme le
+    // bouton : on le ramène à la taille d'une icône inline alignée au texte.
+    font-size: $icon-size-lower;
+    margin-right: 5px;
+  }
+}
+
+/* ── Carte d'un impact étudié (legacy impact-item.component.scss) ── */
+.sc-impact-item__card {
+  @include card-style;
+  height: $size-large + $size-large;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.sc-impact-item__button {
+  padding-left: $size-default;
+  display: flex;
+  flex: 1;
+  align-self: stretch;
+}
+
+.sc-impact-item__icon,
+.sc-impact-item__text {
+  align-self: center;
+}
+
+.sc-impact-item__text,
+.sc-impact-item__data-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.sc-impact-item__text {
+  flex: 1;
+  font-family: $font-default;
+}
+
+.sc-impact-item__data-item {
+  align-items: center;
+  font-family: $font-default;
+}
+
+.sc-impact-item__datas {
+  width: 33%;
+  align-self: stretch;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  background-color: $color-project-secondary-very-light;
+}
+
+.sc-impact-item__edit-delete {
+  background: $color-project-primary;
+  height: 100%;
+  margin-right: -3rem;
+  visibility: hidden;
+  padding: $size-lower;
+  transition: margin-right 0.5s, visibility 0.5s;
+
+  button:first-child {
+    margin-bottom: $size-lower;
+  }
+
+  .link-disabled,
+  button[disabled] {
+    opacity: $opacity-lower;
+  }
+}
+
+.sc-impact-item__card:hover {
+  .sc-impact-item__edit-delete {
+    margin-right: 0;
+    visibility: visible;
+  }
+}

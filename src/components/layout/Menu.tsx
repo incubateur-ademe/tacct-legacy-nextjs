@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import {
   getNavItemsForKey,
+  getImpactStrategyNavItems,
   resolveMenuKey,
   type NavItem,
 } from './menu-items';
@@ -41,9 +42,24 @@ export function Menu({
 
   const menuKey = resolveMenuKey(pathname);
 
-  if (!menuKey) return null;
+  // Placeholder qui réserve la largeur du menu (legacy : .sc-app__zone-menu, toujours
+  // présent même quand le menu lui-même est masqué — cf. accueil sans menuKey).
+  const zonePlaceholder = (
+    <div
+      className={`sc-app__zone-menu ${
+        smallMode === 'small' ? 'small' : smallMode === 'normal' ? 'normal' : ''
+      }`}
+    />
+  );
 
-  const navItems = getNavItemsForKey(menuKey).filter((item) => {
+  // Pas de menuKey (ex. /workspace accueil) : on garde l'espace réservé mais pas la nav.
+  if (!menuKey) return zonePlaceholder;
+
+  const navItems = (
+    menuKey === 'IMPACT_STRATEGIE'
+      ? getImpactStrategyNavItemsFromPath(pathname)
+      : getNavItemsForKey(menuKey)
+  ).filter((item) => {
     if (!item.roles || item.roles.length === 0) return true;
     return item.roles.some((r) => userRoles.includes(r));
   });
@@ -52,6 +68,9 @@ export function Menu({
     const fullPath = `/workspace${item.route ? `/${item.route}` : ''}`;
     if (item.route === '') {
       return pathname === '/workspace';
+    }
+    if (item.exact) {
+      return pathname === fullPath;
     }
     return pathname === fullPath || pathname.startsWith(`${fullPath}/`);
   };
@@ -62,12 +81,7 @@ export function Menu({
 
   return (
     <>
-      {/* Placeholder qui réserve la largeur du menu dans le flex (legacy .sc-app__zone-menu) */}
-      <div
-        className={`sc-app__zone-menu ${
-          smallMode === 'small' ? 'small' : smallMode === 'normal' ? 'normal' : ''
-        }`}
-      />
+      {zonePlaceholder}
       {/* Wrapper en position absolute (équivalent du host <app-menu class="sc-app__menu"> du legacy) */}
       <div className="sc-app__menu">
       <div
@@ -142,39 +156,28 @@ export function Menu({
   );
 }
 
-function MenuStatus({ status }: { status: string }) {
-  // 3 états dans le legacy : 'incomplete', 'in-progress', 'validated'
-  const label =
-    status === 'validated'
-      ? '✓'
-      : status === 'in-progress'
-        ? '…'
-        : '!';
-  const color =
-    status === 'validated'
-      ? '#198754'
-      : status === 'in-progress'
-        ? '#f9a825'
-        : '#dc3545';
+// Extrait type/id du chemin (/workspace/impacts/{type}/{id}/...) pour construire
+// les items du menu de travail d'un impact.
+function getImpactStrategyNavItemsFromPath(pathname: string): NavItem[] {
+  const segments = pathname.split('/').filter(Boolean);
+  const type = segments[2] ?? '';
+  const id = segments[3] ?? '';
+  return getImpactStrategyNavItems(type, id);
+}
 
+// Statuts des étapes du diagnostic (port de entity/stepstatus.ts du legacy).
+const STEP_STATUS = {
+  'in-progress': { label: 'En cours', icon: 'status-inprogress' },
+  incomplete: { label: 'Incomplet', icon: 'status-suspended' },
+  validated: { label: 'Validé', icon: 'status-validate' },
+} as const;
+
+function MenuStatus({ status }: { status: string }) {
+  const { label, icon } =
+    STEP_STATUS[status as keyof typeof STEP_STATUS] ?? STEP_STATUS.incomplete;
   return (
-    <span
-      title={status}
-      style={{
-        display: 'inline-flex',
-        width: 18,
-        height: 18,
-        borderRadius: '50%',
-        background: color,
-        color: 'white',
-        fontSize: 11,
-        fontWeight: 700,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: 16,
-      }}
-    >
-      {label}
-    </span>
+    <div className={`c-menu-status ${status}`} title={label}>
+      <em className={`c-icon small ${icon}`} aria-hidden="true" />
+    </div>
   );
 }

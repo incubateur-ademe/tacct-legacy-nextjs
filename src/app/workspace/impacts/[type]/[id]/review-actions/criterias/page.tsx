@@ -7,6 +7,8 @@ import {
   type OwnerType,
 } from '@/server/strategies/impact-queries';
 import { saveReviewCriteria } from '@/server/strategies/impact-actions';
+import { ContentLayout } from '@/components/layout/ContentLayout';
+import { BlockTitleIcon } from '@/components/ui/BlockTitleIcon';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,8 +22,6 @@ export default async function ActionsCriteriaPage({ params }: { params: Params }
   if (!owner) notFound();
 
   const saved = await getReviewCriteriaForOwner(ownerType, id);
-
-  // 8 lignes : valeurs sauvegardées si présentes, sinon catalog par défaut.
   const rows = Array.from({ length: 8 }, (_, i) => {
     const rank = i + 1;
     const existing = saved.find((c) => c.rank === rank);
@@ -36,72 +36,68 @@ export default async function ActionsCriteriaPage({ params }: { params: Params }
   const saveAction = saveReviewCriteria.bind(null, ownerType, id);
 
   return (
-    <>
-      <div className="o-card mb-4 d-flex justify-content-between align-items-center">
-        <h2 className="c-subtitle-black-bold m-0">Critères d&apos;évaluation</h2>
-        <Link
-          href={`/workspace/impacts/${type}/${id}/review-actions`}
-          className="c-btn--tertiary"
-        >
-          ← Retour
-        </Link>
+    <ContentLayout helpKey="review-actions">
+      <div className="sc-actions-criteria">
+        <div className="o-card u-margin__bottom--m">
+          <div className="row">
+            <BlockTitleIcon
+              pageTitle="Modifier les critères d'évaluation"
+              subtitle={owner.title}
+              icon={owner.thematicIcon ?? 'suspended'}
+            />
+            <div className="sc-actions-criteria__info">
+              <img src="/assets/img/info.svg" alt="" width={20} height={20} />
+              <span>Pour supprimer un critère, mettez sa pondération à 0.</span>
+            </div>
+          </div>
+
+          <form action={saveAction}>
+            {rows.map((row) => (
+              <div className="row" key={row.rank}>
+                <div className="c-input__group w-75">
+                  <input
+                    className="c-input__large"
+                    type="text"
+                    id={`name${row.rank}`}
+                    name="criteriaName"
+                    maxLength={30}
+                    defaultValue={row.name}
+                  />
+                  <label className="c-input__label" htmlFor={`name${row.rank}`}>
+                    Intitulé
+                  </label>
+                </div>
+                <div className="c-input__group w-25">
+                  <input
+                    className="c-input__large w-100"
+                    type="number"
+                    id={`weighting${row.rank}`}
+                    name="criteriaWeighting"
+                    min={0}
+                    max={3}
+                    defaultValue={row.weighting}
+                  />
+                  <label className="c-input__label" htmlFor={`weighting${row.rank}`}>
+                    Pondération
+                  </label>
+                </div>
+              </div>
+            ))}
+
+            <div className="c-group-buttons c-group-buttons--end">
+              <Link
+                href={`/workspace/impacts/${type}/${id}/review-actions`}
+                className="c-btn--tertiary"
+              >
+                Annuler
+              </Link>
+              <button className="c-btn--primary" type="submit">
+                Enregistrer
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-
-      <p className="c-subtitle-grey">
-        Configure les 8 axes d&apos;évaluation. Mettre un poids à <strong>0</strong> ou laisser le nom
-        vide désactive le critère.
-      </p>
-
-      <form action={saveAction}>
-        <div className="o-card">
-          <table className="table">
-            <thead>
-              <tr>
-                <th scope="col" style={{ width: 60 }}>
-                  #
-                </th>
-                <th scope="col">Nom du critère</th>
-                <th scope="col" style={{ width: 140 }} className="text-center">
-                  Pondération (0-3)
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.rank}>
-                  <th scope="row">{row.rank}</th>
-                  <td>
-                    <input
-                      type="text"
-                      name="criteriaName"
-                      defaultValue={row.name}
-                      maxLength={255}
-                      className="c-input w-100"
-                    />
-                  </td>
-                  <td className="text-center">
-                    <input
-                      type="number"
-                      name="criteriaWeighting"
-                      defaultValue={row.weighting}
-                      min={0}
-                      max={3}
-                      className="c-input"
-                      style={{ width: 60, textAlign: 'center' }}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="d-flex justify-content-end mt-3">
-          <button type="submit" className="c-btn--primary">
-            Enregistrer
-          </button>
-        </div>
-      </form>
-    </>
+    </ContentLayout>
   );
 }

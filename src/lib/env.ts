@@ -22,7 +22,12 @@ const serverEnvSchema = z.object({
   PROCONNECT_CLIENT_SECRET: z.string().optional(),
 
   // ── Mail ──
+  // Soit MAILER_DSN (URL complète), soit les variables séparées ci-dessous.
   MAILER_DSN: z.string().optional(),
+  MAILER_HOST: z.string().optional(),
+  MAILER_PORT: z.coerce.number().int().positive().optional(),
+  MAILER_USER: z.string().optional(),
+  MAILER_PASSWORD: z.string().optional(),
   ADMIN_MAIL: z.email().optional(),
   APP_EMAIL_CONTACT_ADEME: z.email().optional(),
   RECEPTION_TEST_EMAIL_ADDRESS: z.email().optional(),
