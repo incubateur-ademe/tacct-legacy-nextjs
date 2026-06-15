@@ -141,7 +141,7 @@
     border-color: $color-ademe-blue;
     border-radius: 2 * $radius-xl;
     .c-btn__icon {
-      background: url(/assets/img/arrow-droite-white.svg) no-repeat;
+      background: url(/workspace-tacct/assets/img/arrow-droite-white.svg) no-repeat;
       background-position-x: 5px;
       padding: $size-default 1.5 * $size-default $size-default 2 * $size-default;
     }
@@ -149,7 +149,7 @@
 }
 
 .c-btn__icon {
-  background: url(/assets/img/arrow-droite-blue.svg) no-repeat;
+  background: url(/workspace-tacct/assets/img/arrow-droite-blue.svg) no-repeat;
   background-position-x: 5px;
   padding: $size-default 1.5 * $size-default $size-default 2 * $size-default;
 }

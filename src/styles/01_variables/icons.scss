@@ -189,11 +189,11 @@ $zipcode: "\e9b9";
 
 @font-face {
   font-family: "font-icon";
-  src: url("/assets/fonts/Font-icon/font-icon.eot");
-  src: url("/assets/fonts/Font-icon/font-icon.eot") format("embedded-opentype"),
-    url("/assets/fonts/Font-icon/font-icon.ttf") format("truetype"),
-    url("/assets/fonts/Font-icon/font-icon.woff") format("woff"),
-    url("/assets/fonts/Font-icon/font-icon.svg") format("svg");
+  src: url("/workspace-tacct/assets/fonts/Font-icon/font-icon.eot");
+  src: url("/workspace-tacct/assets/fonts/Font-icon/font-icon.eot") format("embedded-opentype"),
+    url("/workspace-tacct/assets/fonts/Font-icon/font-icon.ttf") format("truetype"),
+    url("/workspace-tacct/assets/fonts/Font-icon/font-icon.woff") format("woff"),
+    url("/workspace-tacct/assets/fonts/Font-icon/font-icon.svg") format("svg");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -202,37 +202,37 @@ $zipcode: "\e9b9";
 /* Marianne font */
 @font-face {
   font-family: $font-marianne-bold;
-  src: url("/assets/fonts/Marianne/Marianne-Bold.otf");
+  src: url("/workspace-tacct/assets/fonts/Marianne/Marianne-Bold.otf");
   font-display: swap;
 }
 
 @font-face {
   font-family: $font-marianne-extra-bold;
-  src: url("/assets/fonts/Marianne/Marianne-ExtraBold.otf");
+  src: url("/workspace-tacct/assets/fonts/Marianne/Marianne-ExtraBold.otf");
   font-display: swap;
 }
 
 @font-face {
   font-family: $font-marianne-light;
-  src: url("/assets/fonts/Marianne/Marianne-Light.otf");
+  src: url("/workspace-tacct/assets/fonts/Marianne/Marianne-Light.otf");
   font-display: swap;
 }
 
 @font-face {
   font-family: $font-marianne-medium;
-  src: url("/assets/fonts/Marianne/Marianne-Medium.otf");
+  src: url("/workspace-tacct/assets/fonts/Marianne/Marianne-Medium.otf");
   font-display: swap;
 }
 
 @font-face {
   font-family: $font-marianne-regular;
-  src: url("/assets/fonts/Marianne/Marianne-Regular.otf");
+  src: url("/workspace-tacct/assets/fonts/Marianne/Marianne-Regular.otf");
   font-display: swap;
 }
 
 @font-face {
   font-family: $font-marianne-thin;
-  src: url("/assets/fonts/Marianne/Marianne-Thin.otf");
+  src: url("/workspace-tacct/assets/fonts/Marianne/Marianne-Thin.otf");
   font-display: swap;
 }
 

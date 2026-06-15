@@ -46,7 +46,7 @@ export default async function ActionsCriteriaPage({ params }: { params: Params }
               icon={owner.thematicIcon ?? 'suspended'}
             />
             <div className="sc-actions-criteria__info">
-              <img src="/assets/img/info.svg" alt="" width={20} height={20} />
+              <img src="/workspace-tacct/assets/img/info.svg" alt="" width={20} height={20} />
               <span>Pour supprimer un critère, mettez sa pondération à 0.</span>
             </div>
           </div>

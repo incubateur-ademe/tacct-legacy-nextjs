@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getCurrentUser } from '@/server/auth/current-user';
+import { getEnv } from '@/lib/env';
 import { isAdmin } from '@/server/study/current-study';
 import { UserTerritorySelect } from './UserTerritorySelect';
 import { HeaderLogo } from './HeaderLogo';
@@ -13,6 +14,7 @@ export async function Header() {
   const admin = isAdmin(user);
   const isHeadOfAStudy = user.user_study.some((us) => us.head_study);
   const settingsHref = admin ? '/gestion/studies-management' : '/settings';
+  const logoutUrl = `${getEnv().APP_URL}/api/proconnect/logout`;
 
   const studies = user.user_study
     .map((us) => us.study)
@@ -54,12 +56,11 @@ export async function Header() {
                 </Link>
               )}
 
-              {/* Logout : sera branché sur ProConnect en phase finale */}
-              <Link href="/logout" aria-label="Déconnexion" className="mr-5">
+              <a href={logoutUrl} aria-label="Déconnexion" className="mr-5">
                 <span className="c-icon__circle project-primary">
                   <em className="c-icon logout project-primary medium" title="Déconnexion" />
                 </span>
-              </Link>
+              </a>
             </div>
           </div>
         </div>

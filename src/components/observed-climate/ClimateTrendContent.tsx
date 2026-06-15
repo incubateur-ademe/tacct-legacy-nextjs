@@ -42,7 +42,7 @@ export function GlobalTrend() {
         </p>
         <img
           alt="Evolution des températures moyennes annuelles"
-          src="/assets/img/trend-climate/global-trend/GLOBAL_TEMPERATURE.png"
+          src="/workspace-tacct/assets/img/trend-climate/global-trend/GLOBAL_TEMPERATURE.png"
           title="Anomalie de la température moyenne annuelle de l'air, en surface, par rapport à la normale de référence : température moyenne du globe (données du Climatic Research Unit, University of East Anglia). Le zéro correspond à la moyenne de l'indicateur sur la période 1961-1990, soit 14,0°C."
         />
       </div>
@@ -64,13 +64,13 @@ export function FranceTrend() {
         </p>
         <img
           alt="Evolution des températures moyennes annuelles"
-          src="/assets/img/trend-climate/trend-france/FRANCE_TEMPERATURE.png"
+          src="/workspace-tacct/assets/img/trend-climate/trend-france/FRANCE_TEMPERATURE.png"
           title="La normale est la moyenne des températures relevées sur les trente dernières années."
         />
         <h2 className="c-legend mt-5">Niveau des précipitations</h2>
         <img
           alt="Niveau des précipitations"
-          src="/assets/img/trend-climate/trend-france/FRANCE_PRECIPITATION.png"
+          src="/workspace-tacct/assets/img/trend-climate/trend-france/FRANCE_PRECIPITATION.png"
         />
       </div>
     </div>

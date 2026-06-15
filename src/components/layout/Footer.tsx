@@ -17,7 +17,7 @@ export function Footer({ showArtisanLogo = false }: { showArtisanLogo?: boolean 
           <div className="mr-auto pt-4 c-centred-elements">
             <div className="c-footer__logo">
               <img
-                src="/assets/img/logo_rf.png"
+                src="/workspace-tacct/assets/img/logo_rf.png"
                 height={74}
                 width={84}
                 className="d-inline-block align-top"
@@ -27,7 +27,7 @@ export function Footer({ showArtisanLogo = false }: { showArtisanLogo?: boolean 
             </div>
             <div className="c-footer-logo">
               <img
-                src="/assets/img/logo.svg"
+                src="/workspace-tacct/assets/img/logo.svg"
                 height={109}
                 width={92}
                 className="d-inline-block align-top"
@@ -38,7 +38,7 @@ export function Footer({ showArtisanLogo = false }: { showArtisanLogo?: boolean 
             {showArtisanLogo && (
               <div className="c-footer-logo ml-3">
                 <img
-                  src="/assets/img/logo-life-artisan.png"
+                  src="/workspace-tacct/assets/img/logo-life-artisan.png"
                   className="d-inline-block align-top"
                   title="Agence de la transition écologique"
                   alt="Agence de la transition écologique"

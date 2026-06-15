@@ -101,7 +101,7 @@ export function CardAction({
               {typeAction && (
                 <span className="u-txt-bold sc-card-action__type">
                   <img
-                    src={`/assets/img/impact-strategy/${typeAction.icon}`}
+                    src={`/workspace-tacct/assets/img/impact-strategy/${typeAction.icon}`}
                     alt=""
                     width={40}
                     height={40}

@@ -69,7 +69,7 @@ export function ItemTrajectory({
                 <div className="sc-item-trajectory__row">
                   {typeAction && (
                     <img
-                      src={`/assets/img/impact-strategy/${typeAction.icon}`}
+                      src={`/workspace-tacct/assets/img/impact-strategy/${typeAction.icon}`}
                       alt=""
                       width={40}
                       height={40}

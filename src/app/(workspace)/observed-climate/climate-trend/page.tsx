@@ -24,7 +24,7 @@ const DEFAULT_OVERSEAS_REGION = '04';
  * `public/assets/img/temp_precip/`. Retourne le chemin web ou `null`.
  */
 function findImagePath(regionId: string, kind: 'temperature' | 'precipitation'): string | null {
-  const base = '/assets/img/temp_precip';
+  const base = '/workspace-tacct/assets/img/temp_precip';
   const dir = path.join(process.cwd(), 'public', base);
   for (const ext of ['png', 'svg']) {
     const fileName = `${regionId}_${kind}.${ext}`;
