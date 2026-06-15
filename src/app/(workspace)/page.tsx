@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { getCurrentStudy, isAdmin } from '@/server/study/current-study';
@@ -214,14 +215,14 @@ function DiagnoseImpacts({
           </div>
 
           <div className="o-btn--end">
-            <a
+            <Link
               id="worskpace-acceder-diagnostic"
               className="c-btn--primary"
               href="/dashboard"
               title="Accéder au diagnostic"
             >
               Accéder au diagnostic
-            </a>
+            </Link>
           </div>
         </div>
       </div>

@@ -7,6 +7,7 @@ import {
   getDashboardData,
 } from '@/server/dashboard/queries';
 import { ContentLayout } from '@/components/layout/ContentLayout';
+import { BASE_PATH } from '@/lib/base-path';
 import { BlockHeader } from '@/components/ui/BlockHeader';
 import { StepStatus } from '@/components/ui/StepStatus';
 import {
@@ -192,7 +193,7 @@ export default async function DashboardPage({
                 <div className="c-legend">exporter la synthese</div>
                 <div className="d-flex">
                   <a
-                    href={`/api/dashboard/${study.id}/csv`}
+                    href={`${BASE_PATH}/api/dashboard/${study.id}/csv`}
                     className="c-btn--secondary"
                     download
                   >

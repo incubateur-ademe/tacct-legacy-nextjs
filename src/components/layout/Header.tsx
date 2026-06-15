@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { getCurrentUser } from '@/server/auth/current-user';
-import { getEnv } from '@/lib/env';
+import { getPublicOrigin } from '@/lib/public-origin';
 import { isAdmin } from '@/server/study/current-study';
 import { UserTerritorySelect } from './UserTerritorySelect';
 import { HeaderLogo } from './HeaderLogo';
@@ -14,7 +14,7 @@ export async function Header() {
   const admin = isAdmin(user);
   const isHeadOfAStudy = user.user_study.some((us) => us.head_study);
   const settingsHref = admin ? '/gestion/studies-management' : '/settings';
-  const logoutUrl = `${getEnv().APP_URL}/api/proconnect/logout`;
+  const logoutUrl = `${await getPublicOrigin()}/api/proconnect/logout`;
 
   const studies = user.user_study
     .map((us) => us.study)

@@ -3,7 +3,7 @@ import { cache } from 'react';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/server/db';
 import { auth } from '@/server/auth';
-import { getEnv } from '@/lib/env';
+import { getPublicOrigin } from '@/lib/public-origin';
 
 export const getCurrentUser = cache(async () => {
   const session = await auth();
@@ -23,7 +23,7 @@ export const getCurrentUser = cache(async () => {
 export async function requireCurrentUser() {
   const user = await getCurrentUser();
   if (!user) {
-    redirect(`${getEnv().APP_URL}/mon-compte`);
+    redirect(`${await getPublicOrigin()}/mon-compte`);
   }
   return user;
 }

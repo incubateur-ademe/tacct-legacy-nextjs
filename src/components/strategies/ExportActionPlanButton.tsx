@@ -2,6 +2,7 @@
 
 import { useRef, useTransition } from 'react';
 import { validateStrategyConstruction } from '@/server/strategies/actions';
+import { BASE_PATH } from '@/lib/base-path';
 
 /**
  * Port du bouton « Exporter mon plan d'action » + modale TeT (legacy
@@ -36,7 +37,7 @@ export function ExportActionPlanButton({
     startTransition(async () => {
       await validateStrategyConstruction(studyId);
       closeModal();
-      window.location.assign(`/api/export-tet/${studyId}`);
+      window.location.assign(`${BASE_PATH}/api/export-tet/${studyId}`);
     });
   };
 
