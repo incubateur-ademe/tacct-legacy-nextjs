@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { getCurrentStudy, isAdmin } from '@/server/study/current-study';
 import { prisma } from '@/server/db';
+import { getStudiedImpactsForStudy } from '@/server/strategies/queries';
 import { BlockTitleIcon } from '@/components/ui/BlockTitleIcon';
 import { StepStatus } from '@/components/ui/StepStatus';
 import { ContentLayout } from '@/components/layout/ContentLayout';
@@ -53,19 +54,12 @@ export default async function WorkspaceHomePage({
     );
   }
 
-  const [nbObservedExposures, nbImpacts, allStudiedImpacts] = await Promise.all([
+  const [nbObservedExposures, nbImpacts, { diagnosed, strategies }] = await Promise.all([
     prisma.observed_exposure.count({ where: { study_id: study.id } }),
     prisma.impact.count({
       where: { impact_theme: { study_id: study.id } },
     }),
-    prisma.impact_strategy.findMany({
-      where: { impact_theme: { study_id: study.id } },
-      include: {
-        impact_theme: { include: { thematic: true } },
-        impact_action: true,
-        impact_trajectory: true,
-      },
-    }),
+    getStudiedImpactsForStudy(study.id),
   ]);
 
   const diagnosticComplete =
@@ -73,14 +67,35 @@ export default async function WorkspaceHomePage({
     study.exposition_future_valid === 'validated' &&
     study.sensibility_valid === 'validated';
 
-  // Reproduit le `sortImpacts()` legacy : filtre les impacts avec ≥ 1 action,
-  // puis tri stable createdAt DESC → actions ASC → trajectories DESC, top 3.
-  const studiedImpacts = [...allStudiedImpacts]
-    .filter((s) => s.impact_action.length > 0)
-    .sort((a, b) => (b.created_at?.getTime() ?? 0) - (a.created_at?.getTime() ?? 0))
-    .sort((a, b) => a.impact_action.length - b.impact_action.length)
-    .sort((a, b) => b.impact_trajectory.length - a.impact_trajectory.length)
-    .slice(0, 3);
+  // Même logique que la page /impacts : impacts diagnostiqués non révoqués ET
+  // (choisis OU score sensibilité × exposition future ≥ 8) + impact_strategy.
+  const studyScore = (i: (typeof diagnosed)[number]) =>
+    Number(i.sensitivity ?? 0) *
+    Number(i.observed_exposure?.future_exposure?.exposure ?? 0);
+
+  const studiedDiagnosed = diagnosed.filter(
+    (i) => !i.revoked_diagnostic && (i.strategy_studied || studyScore(i) >= 8),
+  );
+
+  const totalStudiedCount = studiedDiagnosed.length + strategies.length;
+
+  // Aperçu des 3 premiers items pour l'affichage du bloc accueil.
+  const studiedImpacts = [
+    ...studiedDiagnosed.map((i) => ({
+      id: i.id,
+      description: i.description ?? '',
+      icon: i.impact_theme?.thematic?.icon ?? 'suspended',
+      nbActions: i.impact_action.length,
+      nbTrajectories: i.impact_trajectory.length,
+    })),
+    ...strategies.map((s) => ({
+      id: s.id,
+      description: s.description ?? '',
+      icon: s.impact_theme?.thematic?.icon ?? 'suspended',
+      nbActions: s.impact_action.length,
+      nbTrajectories: s.impact_trajectory.length,
+    })),
+  ].slice(0, 3);
 
   const regionLabel = study.commune?.department?.region?.label ?? '';
 
@@ -107,13 +122,8 @@ export default async function WorkspaceHomePage({
 
             {/* ── Construire des stratégies ── */}
             <ConstructStrategy
-              impacts={studiedImpacts.map((s) => ({
-                id: s.id,
-                description: s.description ?? '',
-                icon: s.impact_theme?.thematic?.icon ?? 'suspended',
-                nbActions: s.impact_action.length,
-                nbTrajectories: s.impact_trajectory.length,
-              }))}
+              impacts={studiedImpacts}
+              totalCount={totalStudiedCount}
               diagnosticComplete={diagnosticComplete}
             />
 
@@ -259,6 +269,7 @@ function DiagnoseItem({
 
 function ConstructStrategy({
   impacts,
+  totalCount,
   diagnosticComplete,
 }: {
   impacts: {
@@ -268,13 +279,13 @@ function ConstructStrategy({
     nbActions: number;
     nbTrajectories: number;
   }[];
+  totalCount: number;
   diagnosticComplete: boolean;
 }) {
-  const count = impacts.length;
   const summaryLabel =
-    count === 0
+    totalCount === 0
       ? 'Aucun impact étudié'
-      : `${count} ${pluralize(count, 'impact étudié', 'impacts étudiés')}`;
+      : `${totalCount} ${pluralize(totalCount, 'impact étudié', 'impacts étudiés')}`;
 
   return (
     <div className="row mt-4">
