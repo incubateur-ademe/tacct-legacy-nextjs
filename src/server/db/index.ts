@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { Pool, type PoolConfig } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient } from '@/generated/prisma/client';
+import { PrismaClient } from '../../generated/prisma/client';
 import { decryptField } from '@/server/crypto/user-crypto';
 
 const USER_ENCRYPTED_FIELDS = [
