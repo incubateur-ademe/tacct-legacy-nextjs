@@ -15,18 +15,6 @@ Réécriture from-scratch de l'outil **TACCT** (Symfony 5.4 + Angular 12, repo
 - **Chart.js / react-chartjs-2**, **react-quill-new**, **react-select**
 - **Vitest** pour les tests, **Prettier + ESLint** pour le formatage
 
-## Démarrer
-
-```bash
-pnpm install
-cp .env.example .env
-# remplir DATABASE_URL et générer AUTH_SECRET :
-#   openssl rand -base64 32
-pnpm db:pull       # introspection de la base Postgres → schema.prisma  (Phase 1)
-pnpm db:generate   # génère le client Prisma                            (Phase 1)
-pnpm dev
-```
-
 ## Structure
 
 ```text
@@ -45,30 +33,3 @@ src/
 │   └── services/         # Services métier (CRM Connect, Email, etc.)
 └── types/                # Types globaux
 ```
-
-## État d'avancement
-
-- [x] **Phase 0** — Bootstrap (Next.js, Prisma, deps, env, structure)
-- [ ] **Phase 1** — Modèle de données (`db pull` + nettoyage schema)
-- [ ] **Phase 2** — Auth ProConnect
-- [ ] **Phase 3** — Couche API + ACL
-- [ ] **Phase 4** — UI publique
-- [ ] **Phase 5** — UI workspace
-- [ ] **Phase 6** — UI project-sheets
-- [ ] **Phase 7** — Services annexes (email, jobs, CRM…)
-- [ ] **Phase 8** — Tests & déploiement
-
-## Commandes utiles
-
-| Commande              | Effet                                        |
-| --------------------- | -------------------------------------------- |
-| `pnpm dev`            | Lance le serveur Next.js en dev              |
-| `pnpm build`          | Build production                             |
-| `pnpm lint`           | Lint ESLint                                  |
-| `pnpm format`         | Formate avec Prettier                        |
-| `pnpm test`           | Vitest run                                   |
-| `pnpm test:watch`     | Vitest watch                                 |
-| `pnpm db:pull`        | Introspection de la base → `schema.prisma`   |
-| `pnpm db:generate`    | Génère le client Prisma                      |
-| `pnpm db:migrate`     | Crée et applique une migration               |
-| `pnpm db:studio`      | Ouvre Prisma Studio (GUI base)               |
