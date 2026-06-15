@@ -27,7 +27,7 @@ export function AddRemoveImpactButton({
     startTransition(async () => {
       await setImpactStudied(impactId, !studied);
       if (!studied) {
-        router.push(`/workspace/impacts${suffix}`);
+        router.push(`/impacts${suffix}`);
       } else {
         router.refresh();
       }

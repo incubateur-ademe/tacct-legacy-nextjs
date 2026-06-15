@@ -94,7 +94,7 @@ export function ReviewActions({
           <div className="sc-header__col">
             <div className="sc-header__info">
               <Link
-                href={`/workspace/impacts/${type}/${ownerId}/review-actions/criterias`}
+                href={`/impacts/${type}/${ownerId}/review-actions/criterias`}
                 className="sc-header__button c-btn--secondary"
               >
                 Modifier les critères

@@ -47,8 +47,8 @@ export async function updateStudyInfo(formData: FormData): Promise<void> {
     },
   });
 
-  revalidatePath('/workspace');
-  revalidatePath('/workspace/settings');
+  revalidatePath('/');
+  revalidatePath('/settings');
 }
 
 /**
@@ -82,8 +82,8 @@ export async function patchStudyField(
     });
   }
 
-  revalidatePath('/workspace');
-  revalidatePath('/workspace/settings');
+  revalidatePath('/');
+  revalidatePath('/settings');
 }
 
 // ─── Transfert du « chargé d'étude » à un autre user ──────────────────────────
@@ -199,8 +199,8 @@ export async function transferStudyHead(
     });
   }
 
-  revalidatePath('/workspace/settings');
-  revalidatePath('/workspace');
+  revalidatePath('/settings');
+  revalidatePath('/');
   return { status: 'transferred' };
 }
 
@@ -256,7 +256,7 @@ export async function inviteCoUserToStudy(formData: FormData): Promise<void> {
     userExists: Boolean(invitee),
   });
 
-  revalidatePath('/workspace/settings');
+  revalidatePath('/settings');
 }
 
 /**
@@ -272,5 +272,5 @@ export async function removeCoUserFromStudy(userStudyId: string): Promise<void> 
   await assertCanEditStudy(us.study_id);
 
   await prisma.user_study.delete({ where: { id: userStudyId } });
-  revalidatePath('/workspace/settings');
+  revalidatePath('/settings');
 }

@@ -17,7 +17,7 @@ export interface ExposureFormDefaults {
  */
 export function ExposureFormFields({
   defaults,
-  cancelHref = '/workspace/observed-climate/observed-exposure',
+  cancelHref = '/observed-climate/observed-exposure',
 }: {
   defaults?: ExposureFormDefaults;
   cancelHref?: string;

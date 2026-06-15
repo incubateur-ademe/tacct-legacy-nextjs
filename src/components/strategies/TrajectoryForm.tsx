@@ -62,7 +62,7 @@ export function TrajectoryForm({
   };
   const remove = (id: string) => setSelectedIds((cur) => cur.filter((x) => x !== id));
 
-  const cancelHref = `/workspace/impacts/${type}/${ownerId}/build-trajectories`;
+  const cancelHref = `/impacts/${type}/${ownerId}/build-trajectories`;
 
   return (
     <form className="sc-create-trajectory" action={submitAction}>

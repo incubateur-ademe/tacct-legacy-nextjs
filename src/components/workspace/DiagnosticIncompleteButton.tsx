@@ -11,7 +11,7 @@ import Link from 'next/link';
  * Port de `app-construct-strategy` (Angular legacy) :
  * - Si une des 3 étapes du diagnostic n'est pas `validated`, on affiche une
  *   modale "Vous n'avez pas fini votre diagnostic" au clic.
- * - Sinon le bouton est un lien direct vers `/workspace/impacts`.
+ * - Sinon le bouton est un lien direct vers `/impacts`.
  */
 export function DiagnosticIncompleteButton({
   diagnosticComplete,
@@ -26,8 +26,8 @@ export function DiagnosticIncompleteButton({
   // `queryParamsHandling="preserve"` Angular).
   const queryString = searchParams.toString();
   const suffix = queryString ? `?${queryString}` : '';
-  const impactsHref = `/workspace/impacts${suffix}`;
-  const dashboardHref = `/workspace/dashboard${suffix}`;
+  const impactsHref = `/impacts${suffix}`;
+  const dashboardHref = `/dashboard${suffix}`;
 
   // Verrouille le scroll de la page derrière la modale ouverte.
   useEffect(() => {

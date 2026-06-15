@@ -67,8 +67,8 @@ export async function createUser(formData: FormData): Promise<void> {
     },
   });
 
-  revalidatePath('/workspace/gestion/account-management');
-  redirect('/workspace/gestion/account-management');
+  revalidatePath('/gestion/account-management');
+  redirect('/gestion/account-management');
 }
 
 export async function updateUser(id: string, formData: FormData): Promise<void> {
@@ -97,14 +97,14 @@ export async function updateUser(id: string, formData: FormData): Promise<void> 
     },
   });
 
-  revalidatePath('/workspace/gestion/account-management');
-  redirect('/workspace/gestion/account-management');
+  revalidatePath('/gestion/account-management');
+  redirect('/gestion/account-management');
 }
 
 export async function deleteUser(id: string): Promise<void> {
   await assertAdmin();
   await prisma.user.delete({ where: { id } });
-  revalidatePath('/workspace/gestion/account-management');
+  revalidatePath('/gestion/account-management');
 }
 
 // ─── Study offices ────────────────────────────────────────────────────────────
@@ -131,7 +131,7 @@ export async function createStudyOffice(formData: FormData): Promise<void> {
       updated_at: now,
     },
   });
-  revalidatePath('/workspace/gestion/study-offices-management');
+  revalidatePath('/gestion/study-offices-management');
 }
 
 export async function updateStudyOffice(id: string, formData: FormData): Promise<void> {
@@ -149,13 +149,13 @@ export async function updateStudyOffice(id: string, formData: FormData): Promise
       updated_at: new Date(),
     },
   });
-  revalidatePath('/workspace/gestion/study-offices-management');
+  revalidatePath('/gestion/study-offices-management');
 }
 
 export async function deleteStudyOffice(id: string): Promise<void> {
   await assertAdmin();
   await prisma.study_office.delete({ where: { id } });
-  revalidatePath('/workspace/gestion/study-offices-management');
+  revalidatePath('/gestion/study-offices-management');
 }
 
 // ─── Project sheets ───────────────────────────────────────────────────────────
@@ -219,8 +219,8 @@ export async function createProjectSheet(formData: FormData): Promise<void> {
       updated_at: now,
     },
   });
-  revalidatePath('/workspace/gestion/project-sheet-management');
-  redirect('/workspace/gestion/project-sheet-management');
+  revalidatePath('/gestion/project-sheet-management');
+  redirect('/gestion/project-sheet-management');
 }
 
 export async function updateProjectSheet(id: string, formData: FormData): Promise<void> {
@@ -255,12 +255,12 @@ export async function updateProjectSheet(id: string, formData: FormData): Promis
       updated_at: new Date(),
     },
   });
-  revalidatePath('/workspace/gestion/project-sheet-management');
-  redirect('/workspace/gestion/project-sheet-management');
+  revalidatePath('/gestion/project-sheet-management');
+  redirect('/gestion/project-sheet-management');
 }
 
 export async function deleteProjectSheet(id: string): Promise<void> {
   await assertAdmin();
   await prisma.project_sheet_detail.delete({ where: { id } });
-  revalidatePath('/workspace/gestion/project-sheet-management');
+  revalidatePath('/gestion/project-sheet-management');
 }

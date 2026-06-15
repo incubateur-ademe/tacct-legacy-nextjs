@@ -39,7 +39,7 @@ export function SensibilityCard({ impact }: { impact: SensibilityCardItem }) {
 
   const qs = searchParams.toString();
   const suffix = qs ? `?${qs}` : '';
-  const editHref = `/workspace/sensibility/impact-theme/impact/edit/${impact.id}${suffix}`;
+  const editHref = `/sensibility/impact-theme/impact/edit/${impact.id}${suffix}`;
 
   // Sensitivity non renseignée = invalide (cf. `Utils.isValidImpact`)
   const valid = impact.sensitivity !== null;

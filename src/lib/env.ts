@@ -10,16 +10,9 @@ const serverEnvSchema = z.object({
   DATABASE_URL: z.string().min(1),
   DATABASE_CA_PATH: z.string().optional(),
 
-  // ── Dev impersonation ── (remplace ProConnect tant que l'auth n'est pas branchée)
-  DEV_AUTH_EMAIL: z.email().optional(),
+  AUTH_TACCT_SECRET: z.string().min(1),
 
-  // ── Auth (Phase 7) ──
-  AUTH_SECRET: z.string().optional(),
-  AUTH_URL: z.url().optional(),
-  AUTH_TRUST_HOST: z.string().optional(),
-  PROCONNECT_ISSUER: z.url().optional(),
-  PROCONNECT_CLIENT_ID: z.string().optional(),
-  PROCONNECT_CLIENT_SECRET: z.string().optional(),
+  USER_ENCRYPTION_KEY: z.string().optional(),
 
   // ── Mail ──
   // Soit MAILER_DSN (URL complète), soit les variables séparées ci-dessous.

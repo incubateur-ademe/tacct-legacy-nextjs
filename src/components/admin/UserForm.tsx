@@ -174,7 +174,7 @@ export function UserForm({
       </div>
 
       <div className="d-flex justify-content-between">
-        <Link href="/workspace/gestion/account-management" className="c-btn--tertiary">
+        <Link href="/gestion/account-management" className="c-btn--tertiary">
           Annuler
         </Link>
         <button type="submit" className="c-btn--primary">

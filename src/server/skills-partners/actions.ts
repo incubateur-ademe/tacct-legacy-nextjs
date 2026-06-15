@@ -71,7 +71,7 @@ export async function saveImpactCompetences(
     }
   });
 
-  revalidatePath('/workspace/skills-partners-mobilised');
+  revalidatePath('/skills-partners-mobilised');
 }
 
 /**
@@ -92,5 +92,5 @@ export async function setImpactRevoked(impactId: string, revoked: boolean) {
     data: { revoked_diagnostic: revoked, updated_at: new Date() },
   });
 
-  revalidatePath('/workspace/skills-partners-mobilised');
+  revalidatePath('/skills-partners-mobilised');
 }

@@ -207,7 +207,7 @@ export function ProjectSheetForm({
 
       <div className="d-flex justify-content-between">
         <Link
-          href="/workspace/gestion/project-sheet-management"
+          href="/gestion/project-sheet-management"
           className="c-btn--tertiary"
         >
           Annuler

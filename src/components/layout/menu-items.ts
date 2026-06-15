@@ -175,33 +175,29 @@ export const profileNavItems: NavItem[] = [accueilNavItem];
 export const settingsNavItems: NavItem[] = [accueilNavItem];
 
 export function resolveMenuKey(pathname: string): MenuKey | null {
-  // /workspace, /workspace/dashboard, /workspace/observed-climate, /workspace/future-climate,
-  // /workspace/sensibility, /workspace/skills-partners-mobilised → DIAGNOSTIC
-  // /workspace/gestion/... → ADMIN
-  // /workspace/profile → PROFILE
-  // /workspace/settings → SETTINGS
+  // /workspace, /dashboard, /observed-climate, /future-climate,
+  // /sensibility, /skills-partners-mobilised → DIAGNOSTIC
+  // /gestion/... → ADMIN
+  // /profile → PROFILE
+  // /settings → SETTINGS
 
   if (!pathname.startsWith('/')) return null;
   const segments = pathname.split('/').filter(Boolean);
 
-  // Hors workspace : pas de menu
-  if (segments[0] !== 'workspace') return null;
+  const second = segments[0];
 
-  const second = segments[1];
-
-  // Accueil (/workspace) : pas de menu, fidèle au legacy (menuKey: null sur la route accueil).
   if (!second) return null;
   if (second === 'gestion') return 'ADMIN';
   if (second === 'profile') return 'PROFILE';
   if (second === 'settings') return 'SETTINGS';
 
-  // /workspace/impacts (et /workspace/impacts/choose-impacts) → menu « Impacts étudiés ».
+  // /impacts (et /impacts/choose-impacts) → menu « Impacts étudiés ».
   // Les pages de travail d'un impact (/impacts/[type]/[id]/...) auront leur propre
   // menu (IMPACT_STRATEGIE) traité lors de la migration de ces pages.
   if (second === 'impacts') {
-    const third = segments[2];
+    const third = segments[1];
     if (!third || third === 'choose-impacts') return 'STUDIED_IMPACT';
-    // /workspace/impacts/{type}/{id}/... → menu de travail d'un impact.
+    // /impacts/{type}/{id}/... → menu de travail d'un impact.
     return 'IMPACT_STRATEGIE';
   }
 

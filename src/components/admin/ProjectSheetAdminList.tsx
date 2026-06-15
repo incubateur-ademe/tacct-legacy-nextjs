@@ -78,7 +78,7 @@ export function ProjectSheetAdminList({ items }: { items: ProjectSheetAdminItem[
             <div className="sc-project-sheet-admin-list__actions-area">
               <div className="sc-project-sheet-admin-list__actions">
                 <Link
-                  href={`/workspace/gestion/project-sheet-management/${item.id}`}
+                  href={`/gestion/project-sheet-management/${item.id}`}
                   className="c-icon__circle project-secondary"
                   aria-label="Modifier"
                 >

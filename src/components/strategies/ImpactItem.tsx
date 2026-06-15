@@ -34,8 +34,8 @@ export function ImpactItem({ impact }: { impact: ImpactItemData }) {
   const queryString = searchParams.toString();
   const suffix = queryString ? `?${queryString}` : '';
 
-  const levelHref = `/workspace/impacts/${impact.kind}/${impact.id}/impact-level${suffix}`;
-  const editHref = `/workspace/impacts/choose-impacts/${impact.id}${suffix}`;
+  const levelHref = `/impacts/${impact.kind}/${impact.id}/impact-level${suffix}`;
+  const editHref = `/impacts/choose-impacts/${impact.id}${suffix}`;
 
   const messageEdit = impact.editable
     ? "Modifier l'impact"

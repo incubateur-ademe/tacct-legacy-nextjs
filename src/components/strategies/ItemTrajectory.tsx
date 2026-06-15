@@ -37,7 +37,7 @@ export function ItemTrajectory({
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const editHref = `/workspace/impacts/${type}/${ownerId}/build-trajectories/${trajectory.id}`;
+  const editHref = `/impacts/${type}/${ownerId}/build-trajectories/${trajectory.id}`;
 
   const confirmDelete = () => {
     startTransition(async () => {

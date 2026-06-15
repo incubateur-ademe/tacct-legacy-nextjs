@@ -65,8 +65,8 @@ export async function addImpactTheme(formData: FormData): Promise<void> {
     },
   });
 
-  revalidatePath('/workspace/sensibility');
-  redirect('/workspace/sensibility');
+  revalidatePath('/sensibility');
+  redirect('/sensibility');
 }
 
 export async function deleteImpactTheme(id: string) {
@@ -78,7 +78,7 @@ export async function deleteImpactTheme(id: string) {
   await assertCanEditStudy(theme.study_id);
 
   await prisma.impact_theme.delete({ where: { id } });
-  revalidatePath('/workspace/sensibility');
+  revalidatePath('/sensibility');
 }
 
 /**
@@ -100,7 +100,7 @@ export async function updateImpactThemeJustification(
     where: { id },
     data: { justification, updated_at: new Date() },
   });
-  revalidatePath('/workspace/sensibility');
+  revalidatePath('/sensibility');
 }
 
 // ─── Impacts ──────────────────────────────────────────────────────────────────
@@ -192,8 +192,8 @@ export async function addImpact(formData: FormData): Promise<void> {
     },
   });
 
-  revalidatePath('/workspace/sensibility');
-  redirect('/workspace/sensibility');
+  revalidatePath('/sensibility');
+  redirect('/sensibility');
 }
 
 export async function updateImpact(impactId: string, formData: FormData): Promise<void> {
@@ -237,8 +237,8 @@ export async function updateImpact(impactId: string, formData: FormData): Promis
     });
   });
 
-  revalidatePath('/workspace/sensibility');
-  redirect('/workspace/sensibility');
+  revalidatePath('/sensibility');
+  redirect('/sensibility');
 }
 
 export async function deleteImpact(impactId: string) {
@@ -250,7 +250,7 @@ export async function deleteImpact(impactId: string) {
   await assertCanEditStudy(impact.impact_theme.study_id);
 
   await prisma.impact.delete({ where: { id: impactId } });
-  revalidatePath('/workspace/sensibility');
+  revalidatePath('/sensibility');
 }
 
 /**
@@ -275,6 +275,6 @@ export async function validateSensibilityStep(studyId: string) {
     },
   });
 
-  revalidatePath('/workspace/sensibility');
-  revalidatePath('/workspace');
+  revalidatePath('/sensibility');
+  revalidatePath('/');
 }

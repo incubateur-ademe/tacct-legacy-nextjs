@@ -115,7 +115,7 @@ export function Exposure({ items }: { items: ExposureItem[] }) {
           <div className="sc-exposure__tools">
             <a
               aria-label="Modifier"
-              href={`/workspace/observed-climate/observed-exposure/${item.id}/edit${suffix}`}
+              href={`/observed-climate/observed-exposure/${item.id}/edit${suffix}`}
               className="c-icon__circle project-secondary"
             >
               <em className="c-icon default-secondary pen" aria-hidden="true" />

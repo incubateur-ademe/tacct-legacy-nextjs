@@ -12,7 +12,7 @@ export async function Header() {
 
   const admin = isAdmin(user);
   const isHeadOfAStudy = user.user_study.some((us) => us.head_study);
-  const settingsHref = admin ? '/workspace/gestion/studies-management' : '/workspace/settings';
+  const settingsHref = admin ? '/gestion/studies-management' : '/settings';
 
   const studies = user.user_study
     .map((us) => us.study)
@@ -34,7 +34,7 @@ export async function Header() {
               <span className="mr-2 c-legend-action">{user.firstname}</span>
               <span className="mr-3 c-legend-action text-uppercase">{user.lastname}</span>
 
-              <Link href="/workspace/profile" aria-label="Profil">
+              <Link href="/profile" aria-label="Profil">
                 <span className="c-icon__circle project-primary mr-2">
                   <em className="c-icon people project-primary medium" title="Profil" />
                 </span>

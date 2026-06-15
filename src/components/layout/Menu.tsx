@@ -65,9 +65,9 @@ export function Menu({
   });
 
   const isItemActive = (item: NavItem) => {
-    const fullPath = `/workspace${item.route ? `/${item.route}` : ''}`;
+    const fullPath = item.route ? `/${item.route}` : '/';
     if (item.route === '') {
-      return pathname === '/workspace';
+      return pathname === '/';
     }
     if (item.exact) {
       return pathname === fullPath;
@@ -76,8 +76,8 @@ export function Menu({
   };
 
   const isSubNavActive = (item: NavItem, sub: { subRoute: string }) =>
-    pathname === `/workspace/${item.route}/${sub.subRoute}` ||
-    pathname.startsWith(`/workspace/${item.route}/${sub.subRoute}/`);
+    pathname === `/${item.route}/${sub.subRoute}` ||
+    pathname.startsWith(`/${item.route}/${sub.subRoute}/`);
 
   return (
     <>
@@ -112,7 +112,7 @@ export function Menu({
         {navItems.map((item) => {
           const active = isItemActive(item);
           const hasSubNav = (item.subNav?.length ?? 0) > 0;
-          const fullPath = `/workspace${item.route ? `/${item.route}` : ''}`;
+          const fullPath = item.route ? `/${item.route}` : '/';
           const statusValue =
             item.statusField && studyStatus ? studyStatus[item.statusField] : undefined;
 
@@ -139,7 +139,7 @@ export function Menu({
                 item.subNav!.map((sub) => (
                   <Link
                     key={sub.subRoute}
-                    href={`/workspace/${item.route}/${sub.subRoute}`}
+                    href={`/${item.route}/${sub.subRoute}`}
                     className={`sc-menu__subnav ${isSubNavActive(item, sub) ? 'active' : ''}`}
                     title={sub.subTitle}
                   >
@@ -156,12 +156,12 @@ export function Menu({
   );
 }
 
-// Extrait type/id du chemin (/workspace/impacts/{type}/{id}/...) pour construire
+// Extrait type/id du chemin (/impacts/{type}/{id}/...) pour construire
 // les items du menu de travail d'un impact.
 function getImpactStrategyNavItemsFromPath(pathname: string): NavItem[] {
   const segments = pathname.split('/').filter(Boolean);
-  const type = segments[2] ?? '';
-  const id = segments[3] ?? '';
+  const type = segments[1] ?? '';
+  const id = segments[2] ?? '';
   return getImpactStrategyNavItems(type, id);
 }
 

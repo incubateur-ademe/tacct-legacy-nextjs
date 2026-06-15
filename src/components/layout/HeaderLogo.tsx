@@ -30,7 +30,7 @@ export function HeaderLogo() {
 
   return (
     <Link
-      href="/workspace"
+      href="/"
       aria-label="Accueil"
       className={`justify-content-between ${className}`}
     />
@@ -38,10 +38,8 @@ export function HeaderLogo() {
 }
 
 function resolveLogoVariant(pathname: string): 'default' | 'diagnose' | 'strategy' {
-  // Sous /workspace, on regarde le 1er segment significatif
   const segments = pathname.split('/').filter(Boolean);
-  // ['workspace', '<segment>', ...]
-  const segment = segments[1] ?? '';
+  const segment = segments[0] ?? '';
 
   if (
     segment === 'dashboard' ||

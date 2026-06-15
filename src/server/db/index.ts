@@ -2,9 +2,27 @@ import { readFileSync } from 'node:fs';
 import { Pool, type PoolConfig } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@/generated/prisma/client';
+import { decryptField } from '@/server/crypto/user-crypto';
+
+const USER_ENCRYPTED_FIELDS = [
+  'email',
+  'username',
+  'firstname',
+  'lastname',
+  'authenticated_id',
+] as const;
+
+function decryptUserRow(row: Record<string, unknown>): void {
+  for (const field of USER_ENCRYPTED_FIELDS) {
+    const value = row[field];
+    if (typeof value === 'string') row[field] = decryptField(value);
+  }
+}
+
+type ExtendedPrismaClient = ReturnType<typeof createPrismaClient>;
 
 const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
+  prisma: ExtendedPrismaClient | undefined;
 };
 
 interface BuiltPool {
@@ -52,15 +70,35 @@ function buildPool(): BuiltPool {
   };
 }
 
-function createPrismaClient(): PrismaClient {
+function createPrismaClient() {
   const { config, schema } = buildPool();
   const pool = new Pool(config);
 
   const adapter = new PrismaPg(pool, schema ? { schema } : undefined);
-  return new PrismaClient({
+  const client = new PrismaClient({
     adapter,
     log:
       process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  });
+
+  return client.$extends({
+    query: {
+      user: {
+        async $allOperations({ args, query }) {
+          const result = await query(args);
+          if (Array.isArray(result)) {
+            for (const row of result) {
+              if (row && typeof row === 'object') {
+                decryptUserRow(row as Record<string, unknown>);
+              }
+            }
+          } else if (result && typeof result === 'object') {
+            decryptUserRow(result as Record<string, unknown>);
+          }
+          return result;
+        },
+      },
+    },
   });
 }
 

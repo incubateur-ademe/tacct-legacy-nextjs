@@ -80,7 +80,7 @@ export async function saveFutureExposure(formData: FormData): Promise<void> {
     });
   }
 
-  revalidatePath('/workspace/future-climate/capture-future-climate');
+  revalidatePath('/future-climate/capture-future-climate');
 }
 
 /**
@@ -153,7 +153,7 @@ export async function patchFutureExposureField(
     });
   }
 
-  revalidatePath('/workspace/future-climate/capture-future-climate');
+  revalidatePath('/future-climate/capture-future-climate');
 }
 
 /**
@@ -185,6 +185,6 @@ export async function validateFutureExposureStep(studyId: string) {
     },
   });
 
-  revalidatePath('/workspace/future-climate/capture-future-climate');
-  revalidatePath('/workspace');
+  revalidatePath('/future-climate/capture-future-climate');
+  revalidatePath('/');
 }

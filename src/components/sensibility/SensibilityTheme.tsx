@@ -41,7 +41,7 @@ export function SensibilityTheme({ theme }: { theme: SensibilityThemeItem }) {
 
   const qs = searchParams.toString();
   const suffix = qs ? `?${qs}` : '';
-  const addImpactHref = `/workspace/sensibility/impact-theme/impact/add/${theme.id}${suffix}`;
+  const addImpactHref = `/sensibility/impact-theme/impact/add/${theme.id}${suffix}`;
 
   const allImpactsValid = theme.impacts.every((i) => i.sensitivity !== null);
   const showThemeStatus = theme.impacts.length === 0 || !allImpactsValid;

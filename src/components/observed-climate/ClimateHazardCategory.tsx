@@ -26,7 +26,7 @@ export function ClimateHazardCategory({ id, name, icon, color, disabled = false 
     if (disabled) return;
     const qs = searchParams.toString();
     const suffix = qs ? `?${qs}` : '';
-    router.push(`/workspace/observed-climate/observed-exposure/add/${id}${suffix}`);
+    router.push(`/observed-climate/observed-exposure/add/${id}${suffix}`);
   };
 
   return (

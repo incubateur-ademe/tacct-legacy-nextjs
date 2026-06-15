@@ -33,8 +33,8 @@ export async function setImpactStudied(impactId: string, studied: boolean): Prom
     data: { strategy_studied: studied, updated_at: new Date() },
   });
 
-  revalidatePath('/workspace/impacts');
-  revalidatePath('/workspace/impacts/choose-impacts');
+  revalidatePath('/impacts');
+  revalidatePath('/impacts/choose-impacts');
 }
 
 /**
@@ -57,8 +57,8 @@ export async function validateStrategyConstruction(studyId: string): Promise<voi
       where: { id: studyId },
       data: { strategy_construction_valid: 'validated', updated_at: new Date() },
     });
-    revalidatePath('/workspace');
-    revalidatePath('/workspace/impacts');
+    revalidatePath('/');
+    revalidatePath('/impacts');
   }
 }
 
@@ -153,8 +153,8 @@ export async function createImpactStrategy(formData: FormData): Promise<void> {
     },
   });
 
-  revalidatePath('/workspace/impacts');
-  redirect('/workspace/impacts');
+  revalidatePath('/impacts');
+  redirect('/impacts');
 }
 
 const updateImpactStrategySchema = z.object({
@@ -183,8 +183,8 @@ export async function updateImpactStrategy(
     data: { description: parsed.data.description, updated_at: new Date() },
   });
 
-  revalidatePath('/workspace/impacts');
-  redirect('/workspace/impacts');
+  revalidatePath('/impacts');
+  redirect('/impacts');
 }
 
 export async function deleteImpactStrategy(id: string): Promise<void> {
@@ -196,5 +196,5 @@ export async function deleteImpactStrategy(id: string): Promise<void> {
   await assertCanEditStudy(strategy.impact_theme.study_id);
 
   await prisma.impact_strategy.delete({ where: { id } });
-  revalidatePath('/workspace/impacts');
+  revalidatePath('/impacts');
 }

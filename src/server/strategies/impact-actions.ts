@@ -93,7 +93,7 @@ export async function saveImpactLevel(
     }
   }
 
-  revalidatePath(`/workspace/impacts/${type}/${ownerId}/impact-level`);
+  revalidatePath(`/impacts/${type}/${ownerId}/impact-level`);
 }
 
 // ─── Actions ──────────────────────────────────────────────────────────────────
@@ -198,7 +198,7 @@ export async function createImpactAction(
   });
   await syncIncompatibilities(actionId, incompatibles);
 
-  revalidatePath(`/workspace/impacts/${type}/${ownerId}/define-actions`);
+  revalidatePath(`/impacts/${type}/${ownerId}/define-actions`);
 }
 
 export async function updateImpactAction(
@@ -230,7 +230,7 @@ export async function updateImpactAction(
   });
   await syncIncompatibilities(actionId, incompatibles);
 
-  revalidatePath(`/workspace/impacts/${type}/${ownerId}/define-actions`);
+  revalidatePath(`/impacts/${type}/${ownerId}/define-actions`);
 }
 
 export async function deleteImpactAction(
@@ -241,7 +241,7 @@ export async function deleteImpactAction(
   await loadAndAuthorizeOwner(type, ownerId);
   await syncIncompatibilities(actionId, []);
   await prisma.impact_action.delete({ where: { id: actionId } });
-  revalidatePath(`/workspace/impacts/${type}/${ownerId}/define-actions`);
+  revalidatePath(`/impacts/${type}/${ownerId}/define-actions`);
 }
 
 // ─── Review criteria ──────────────────────────────────────────────────────────
@@ -294,8 +294,8 @@ export async function saveReviewCriteria(
     }
   });
 
-  revalidatePath(`/workspace/impacts/${type}/${ownerId}/review-actions`);
-  redirect(`/workspace/impacts/${type}/${ownerId}/review-actions`);
+  revalidatePath(`/impacts/${type}/${ownerId}/review-actions`);
+  redirect(`/impacts/${type}/${ownerId}/review-actions`);
 }
 
 // ─── Action reviews (grille) ──────────────────────────────────────────────────
@@ -349,7 +349,7 @@ export async function saveActionReviews(
     }
   });
 
-  revalidatePath(`/workspace/impacts/${type}/${ownerId}/review-actions`);
+  revalidatePath(`/impacts/${type}/${ownerId}/review-actions`);
 }
 
 // ─── Trajectories ─────────────────────────────────────────────────────────────
@@ -388,8 +388,8 @@ export async function createTrajectory(
     },
   });
 
-  revalidatePath(`/workspace/impacts/${type}/${ownerId}/build-trajectories`);
-  redirect(`/workspace/impacts/${type}/${ownerId}/build-trajectories`);
+  revalidatePath(`/impacts/${type}/${ownerId}/build-trajectories`);
+  redirect(`/impacts/${type}/${ownerId}/build-trajectories`);
 }
 
 export async function updateTrajectory(
@@ -425,8 +425,8 @@ export async function updateTrajectory(
     }
   });
 
-  revalidatePath(`/workspace/impacts/${type}/${ownerId}/build-trajectories`);
-  redirect(`/workspace/impacts/${type}/${ownerId}/build-trajectories`);
+  revalidatePath(`/impacts/${type}/${ownerId}/build-trajectories`);
+  redirect(`/impacts/${type}/${ownerId}/build-trajectories`);
 }
 
 export async function deleteTrajectory(
@@ -436,5 +436,5 @@ export async function deleteTrajectory(
 ): Promise<void> {
   await loadAndAuthorizeOwner(type, ownerId);
   await prisma.impact_trajectory.delete({ where: { id: trajectoryId } });
-  revalidatePath(`/workspace/impacts/${type}/${ownerId}/build-trajectories`);
+  revalidatePath(`/impacts/${type}/${ownerId}/build-trajectories`);
 }

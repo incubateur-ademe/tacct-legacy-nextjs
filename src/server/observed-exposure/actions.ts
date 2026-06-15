@@ -67,8 +67,8 @@ export async function addObservedExposure(formData: FormData): Promise<void> {
     },
   });
 
-  revalidatePath('/workspace/observed-climate/observed-exposure');
-  redirect('/workspace/observed-climate/observed-exposure');
+  revalidatePath('/observed-climate/observed-exposure');
+  redirect('/observed-climate/observed-exposure');
 }
 
 export async function updateObservedExposure(
@@ -107,8 +107,8 @@ export async function updateObservedExposure(
     },
   });
 
-  revalidatePath('/workspace/observed-climate/observed-exposure');
-  redirect('/workspace/observed-climate/observed-exposure');
+  revalidatePath('/observed-climate/observed-exposure');
+  redirect('/observed-climate/observed-exposure');
 }
 
 export async function deleteObservedExposure(id: string) {
@@ -120,7 +120,7 @@ export async function deleteObservedExposure(id: string) {
   await assertCanEditStudy(exposure.study_id);
 
   await prisma.observed_exposure.delete({ where: { id } });
-  revalidatePath('/workspace/observed-climate/observed-exposure');
+  revalidatePath('/observed-climate/observed-exposure');
 }
 
 /**
@@ -146,6 +146,6 @@ export async function validateObservedExposureStep(studyId: string) {
     },
   });
 
-  revalidatePath('/workspace/observed-climate/observed-exposure');
-  revalidatePath('/workspace');
+  revalidatePath('/observed-climate/observed-exposure');
+  revalidatePath('/');
 }

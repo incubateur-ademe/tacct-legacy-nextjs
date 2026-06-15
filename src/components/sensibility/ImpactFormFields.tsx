@@ -135,7 +135,7 @@ export function ImpactFormFields({
       </section>
 
       <div className="o-btn--end">
-        <Link href="/workspace/sensibility" className="c-btn--tertiary" title="Annuler">
+        <Link href="/sensibility" className="c-btn--tertiary" title="Annuler">
           Annuler
         </Link>
         <button type="submit" className="c-btn--primary" title="Enregistrer">
