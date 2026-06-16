@@ -1,0 +1,466 @@
+@import "bases";
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Fiches projet (public) — port du module Angular legacy `project-sheets`.
+   Les styles `:host` des composants Angular sont reportés sur les classes
+   racines `sc-*` correspondantes.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ── Wrapper de contenu (legacy project-sheets.component) ──
+   Le `body` global est en `height: 100vh; overflow: hidden` (scroll confié au
+   shell workspace). Les pages fiches projet n'ayant pas ce shell, on fait du
+   wrapper leur propre conteneur scrollable. */
+.sc-project-sheets__content {
+  height: 100vh;
+  overflow-y: auto;
+  padding-top: $size-medium;
+  padding-bottom: $size-large;
+}
+
+/* ── Page liste ── */
+.sc-project-sheets-liste__title {
+  font-family: $font-marianne-extra-bold;
+  font-size: $txt-size-xl;
+  font-weight: $txt-black;
+  color: $color-ademe-blue;
+  text-transform: uppercase;
+  margin-bottom: $size-default;
+}
+
+.sc-project-sheets-list__intro-bloc {
+  display: flex;
+  margin-bottom: $size-medium;
+  height: auto;
+  justify-content: space-between;
+}
+
+.sc-project-sheets-list__intro-text {
+  text-align: justify;
+  color: $label-grey;
+  white-space: normal;
+}
+
+.sc-project-sheets-list__outro-bloc {
+  display: flex;
+  margin-top: $size-medium;
+  height: auto;
+  justify-content: space-between;
+}
+
+.sc-project-sheets-list__outro-text {
+  text-align: justify;
+  color: $label-grey;
+  white-space: normal;
+}
+
+/* ── Liste de cartes ── */
+.sc-project-sheet-card-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.sc-project-sheet-card-list__item-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  column-gap: 3.5%;
+}
+
+.sc-project-sheet-card-list__btn-group {
+  display: flex;
+  justify-content: center;
+}
+
+.sc-project-sheet-card-list__show-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 13rem;
+  height: 3rem;
+  background-color: $color-txt-default-secondary;
+  color: $color-ademe-blue;
+  border: $border-size-default $border-type-default $color-ademe-blue;
+  padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+  border-radius: 3rem;
+  margin: auto;
+}
+
+.sc-project-sheet-card-list__counter {
+  font-size: $size-medium;
+  color: $color-ademe-blue;
+  text-transform: capitalize;
+}
+
+@include responsive-breakpoints-max(lg) {
+  .sc-project-sheet-card-list__item-list {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ── Carte ── */
+.sc-project-sheets-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 14rem;
+  margin-bottom: 2rem;
+}
+
+.sc-project-sheets-card__image {
+  position: absolute;
+  top: 0;
+  left: 1rem;
+  height: 7rem;
+  width: 18.5rem;
+  z-index: 1;
+  object-fit: cover;
+}
+
+.sc-project-sheets-card__text-bloc {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  left: 0;
+  bottom: 0.5rem;
+  height: 8rem;
+  width: 18.5rem;
+  background: $color-background;
+  border-radius: 0.5rem;
+  z-index: 2;
+  padding: 1rem;
+}
+
+.sc-project-sheets-card__title {
+  font-size: $font-size-lower;
+  color: $color-ademe-blue;
+  margin-bottom: $size-lower;
+  text-transform: initial;
+}
+
+.sc-project-sheets-card__description {
+  font-size: $font-size-lower;
+  line-height: $size-small + $size-default;
+  padding-right: 1.25rem;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.sc-project-sheets-card__btn {
+  font-family: $font-icon;
+  font-weight: $txt-light * 2;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  background: $color-ademe-blue;
+  border-radius: 0.5rem;
+  bottom: 0;
+  right: 0;
+  z-index: 3;
+
+  &:hover {
+    background: $color-ademe-blue-hover;
+  }
+}
+
+/* ── Recherche / filtres ── */
+.sc-project-sheet-search__section-filter {
+  flex-wrap: wrap;
+}
+
+.sc-project-sheet-search__btn-filter {
+  @include btn-text;
+  @include btn-text-marianne;
+  @include btn-secondary;
+  border-radius: $radius-xxl;
+  border: $border-link;
+  text-transform: none;
+
+  &-active {
+    background: $color-ademe-blue;
+    color: $color-default-secondary;
+  }
+}
+
+.sc-project-sheet-search__select {
+  border-radius: $radius-xxl;
+  border: $border-link;
+  width: 100%;
+
+  &:disabled {
+    border-color: $color-empty-light;
+    background-color: $color-default-secondary;
+  }
+}
+
+.sc-project-sheet-search__input {
+  border-radius: $radius-xxl;
+  border: $border-link;
+  width: 100%;
+
+  &:disabled {
+    border: $border-link;
+    border-color: $color-empty-light;
+    background-color: $color-default-secondary;
+
+    &::placeholder {
+      color: $color-default-secondary;
+    }
+  }
+
+  &::placeholder {
+    color: $color-default-tertiary;
+  }
+}
+
+/* ── Détail : bouton retour ── */
+.sc-project-sheet-detail__back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  color: $color-ademe-blue;
+
+  &:hover {
+    color: $color-ademe-blue-hover;
+  }
+}
+
+/* ── Détail : bloc d'introduction ── */
+.sc-project-sheet-intro-bloc {
+  display: block;
+  margin-bottom: 2 * $size-default;
+
+  h1 {
+    color: $color-project-primary;
+    text-transform: uppercase;
+    font-size: 2 * $size-default;
+    font-family: $font-marianne-extra-bold;
+    margin-bottom: $size-default;
+  }
+}
+
+.sc-project-sheet-intro-bloc__main-bloc {
+  display: flex;
+  justify-content: space-between;
+  height: 20rem;
+  width: 100%;
+}
+
+.sc-project-sheet-intro-bloc__left {
+  position: relative;
+  width: 66%;
+}
+
+.sc-project-sheet-into-bloc__image-group {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+
+.sc-project-sheet-intro-bloc__image {
+  height: 16rem;
+  width: 100%;
+  border-radius: 0 0.5rem 0.5rem 0.5rem;
+  object-fit: cover;
+}
+
+.sc-project-sheet-intro-bloc__image-credit {
+  @include txt-marianne-light;
+}
+
+.sc-project-sheet-intro-bloc__abstract {
+  position: absolute;
+  z-index: 3;
+  width: 30rem;
+  padding: 0 1rem 1rem 0;
+  background-color: $color-default-secondary;
+  color: $label-grey;
+  border-radius: 0 0 1rem 0;
+  overflow-wrap: break-word;
+}
+
+.sc-project-sheet-intro-bloc__right {
+  width: 33%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-left: 1rem;
+  margin-top: 2rem;
+
+  dt {
+    color: $label-grey;
+    font-size: $size-lower + $size-small;
+  }
+
+  dl {
+    color: $color-project-primary;
+    font-size: $size-default;
+  }
+}
+
+.sc-project-sheet-intro-bloc__domain-bloc {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sc-project-sheet-intro-bloc__domain-text {
+  flex-grow: 1;
+  margin-left: 1rem;
+}
+
+.sc-project-sheet-intro-bloc__type-bloc {
+  dd {
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* ── Détail : effets / conséquences ── */
+.sc-project-sheet-effects-consequences {
+  display: block;
+  margin-bottom: 2 * $size-default;
+  padding: 3 * $size-default 0;
+  background-color: $color-project-primary-very-light;
+}
+
+.sc-project-sheet-effects-consequences__section {
+  display: flex;
+  justify-content: space-around;
+}
+
+.sc-project-sheet-effects-consequences__half-section {
+  width: 40%;
+}
+
+.sc-project-sheet-effects-consequences__section-list {
+  @include txt-marianne-regular;
+  line-height: 2 * $size-default;
+  list-style-type: initial;
+  margin-left: 2 * $size-default;
+  overflow-wrap: break-word;
+}
+
+/* ── Détail : questions ── */
+.sc-project-sheet-questions {
+  display: block;
+  margin-bottom: $size-large;
+}
+
+.sc-project-sheet-questions__thematic-bloc {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sc-project-sheet-questions__thematic {
+  color: $color-project-primary;
+  font-size: $size-medium;
+  font-family: $font-marianne-bold;
+  text-transform: initial;
+  margin-bottom: $size-medium;
+  margin-top: $size-default;
+}
+
+.sc-project-sheet-questions__thematic-legend {
+  text-align: center;
+  width: 10%;
+  margin-right: $size-default;
+  font-size: $font-size-lower;
+}
+
+.sc-project-sheet-questions__question-bloc {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: ($size-lower + $size-small) $size-default;
+  background-color: $color-background;
+  margin-bottom: $size-default;
+}
+
+.sc-project-sheet-questions__question {
+  color: $color-txt-regular;
+  width: 75%;
+  overflow-wrap: break-word;
+  margin-bottom: 0;
+}
+
+.sc-project-sheet-questions__steps {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 10%;
+}
+
+.sc-project-sheet-questions__step,
+.sc-project-sheet-questions__step1,
+.sc-project-sheet-questions__step2,
+.sc-project-sheet-questions__step3 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: $size-medium;
+  height: $size-medium;
+  border-radius: 50%;
+}
+
+.sc-project-sheet-questions__step {
+  background-color: $color-empty-light;
+}
+
+.sc-project-sheet-questions__step1 {
+  background-color: $color-ademe-rouge;
+}
+
+.sc-project-sheet-questions__step2 {
+  background-color: $color-tacct-yellow;
+}
+
+.sc-project-sheet-questions__step3 {
+  background-color: $color-tacct-green;
+}
+
+/* ── Détail : ressources ── */
+.sc-project-sheet-ressource {
+  display: block;
+  margin-bottom: $size-large;
+}
+
+.sc-project-sheet-ressource__list-item {
+  margin-bottom: $size-lower;
+
+  a {
+    word-wrap: break-word;
+    text-decoration: underline $color-project-primary;
+    color: $color-project-primary;
+
+    &:hover {
+      color: $color-project-primary-light;
+      text-decoration: underline $color-project-primary-light;
+    }
+  }
+}
+
+/* ── Détail : fiches liées ── */
+.sc-project-sheet-related-items {
+  display: block;
+  margin-top: $size-default;
+}
+
+.sc-project-sheet-related-items__card-list {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.sc-project-sheet-related-items__card {
+  margin-left: $size-medium;
+  width: 32%;
+
+  &:first-child {
+    margin-left: 0;
+  }
+}

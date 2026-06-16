@@ -1,170 +1,58 @@
-import Link from 'next/link';
 import { getDomainsList } from '@/server/admin/queries';
-import { getPublicProjectSheets } from '@/server/project-sheets/queries';
+import { getAllPublicProjectSheets } from '@/server/project-sheets/queries';
+import { ProjectSheetCardList } from '@/components/project-sheets/ProjectSheetCardList';
 
 export const dynamic = 'force-dynamic';
 
-type SearchParams = Promise<{
-  page?: string;
-  q?: string;
-  domain?: string;
-  area?: string;
-  activity?: string;
-}>;
-
-export default async function ProjectSheetsListPage({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
-  const { page, q, domain, area, activity } = await searchParams;
-  const pageNum = Math.max(1, Number(page ?? '1'));
-
-  const [{ items, total, pageSize }, domains] = await Promise.all([
-    getPublicProjectSheets({
-      page: pageNum,
-      search: q?.trim() || undefined,
-      domainId: domain || undefined,
-      areaType: area || undefined,
-      activityType: activity || undefined,
-    }),
+export default async function ProjectSheetsListPage() {
+  const [sheets, domains] = await Promise.all([
+    getAllPublicProjectSheets(),
     getDomainsList(),
   ]);
 
-  const pageCount = Math.ceil(total / pageSize);
+  const domainOptions = domains.map((domain) => ({
+    id: domain.id,
+    name: domain.name,
+    icon: domain.icon,
+  }));
 
   return (
-    <div className="container py-5">
-      <div className="row mb-4">
-        <div className="col-lg-12">
-          <h1 className="c-title-black-bold">Fiches projet</h1>
-          <p className="c-subtitle-grey mt-2" style={{ maxWidth: 800 }}>
-            Découvre des retours d&apos;expérience et fiches projet d&apos;adaptation au
-            changement climatique recensés par TACCT.
+    <div className="sc-project-sheets__content">
+      <div className="container">
+        <h1 className="sc-project-sheets-liste__title">Les Fiches Projet</h1>
+        <div className="sc-project-sheets-list__intro-bloc">
+          <p className="sc-project-sheets-list__intro-text">
+            Vous avez un projet d’aménagement pour votre territoire ? de développement
+            d’une nouvelle activité ? Vous vous interrogez sur la résilience des secteurs
+            économiques présents sur votre territoire ? Comment aborder la question de
+            l’impact des évolutions climatiques actuelles et à venir sur vos projets, vos
+            infrastructures, vos activités ?
+          </p>
+        </div>
+        <div className="sc-project-sheets-list__intro-bloc">
+          <p className="sc-project-sheets-list__intro-text">
+            Ces fiches ne visent pas à expliquer comment vous adapter mais vous proposent
+            un guide de questionnement par thématiques.
+          </p>
+        </div>
+
+        <ProjectSheetCardList sheets={sheets} domains={domainOptions} />
+
+        <div className="sc-project-sheets-list__outro-bloc">
+          <p className="sc-project-sheets-list__outro-text">
+            Cet espace est conçu sur la base de l’outil{' '}
+            <a href="https://outil-cactus.parc-golfe-morbihan.bzh/" target="_blank" rel="noopener noreferrer">
+              CACTUS
+            </a>{' '}
+            Parc naturel régional du Golfe du Morbihan / Université de Bretagne
+            Occidentale. Il est développé dans le cadre du projet européen{' '}
+            <a href="https://www.ofb.gouv.fr/le-projet-life-integre-artisan" target="_blank" rel="noopener noreferrer">
+              LIFE ARTISAN
+            </a>{' '}
+            qui vise à promouvoir les solutions d’adaptation fondées sur la nature.
           </p>
         </div>
       </div>
-
-      {/* Filtres */}
-      <form className="o-card mb-4" action="">
-        <div className="row align-items-end">
-          <div className="col-md-4 mb-2">
-            <label className="c-input__label" htmlFor="q">
-              Recherche
-            </label>
-            <input
-              id="q"
-              name="q"
-              type="text"
-              defaultValue={q ?? ''}
-              placeholder="Nom de fiche…"
-              className="c-input w-100"
-            />
-          </div>
-          <div className="col-md-3 mb-2">
-            <label className="c-input__label" htmlFor="domain">
-              Domaine
-            </label>
-            <select
-              id="domain"
-              name="domain"
-              defaultValue={domain ?? ''}
-              className="c-input w-100"
-            >
-              <option value="">Tous</option>
-              {domains.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="col-md-2 mb-2">
-            <label className="c-input__label" htmlFor="area">
-              Type de territoire
-            </label>
-            <input
-              id="area"
-              name="area"
-              type="text"
-              maxLength={4}
-              defaultValue={area ?? ''}
-              className="c-input w-100"
-            />
-          </div>
-          <div className="col-md-2 mb-2">
-            <label className="c-input__label" htmlFor="activity">
-              Type d&apos;activité
-            </label>
-            <input
-              id="activity"
-              name="activity"
-              type="text"
-              maxLength={4}
-              defaultValue={activity ?? ''}
-              className="c-input w-100"
-            />
-          </div>
-          <div className="col-md-1 mb-2">
-            <button type="submit" className="c-btn--primary w-100">
-              Filtrer
-            </button>
-          </div>
-        </div>
-      </form>
-
-      <div className="c-subtitle-grey mb-3">
-        {total} fiche{total > 1 ? 's' : ''}
-      </div>
-
-      <div className="row">
-        {items.length === 0 && (
-          <div className="col-lg-12">
-            <div className="o-card text-center py-5">
-              Aucune fiche ne correspond à ta recherche.
-            </div>
-          </div>
-        )}
-
-        {items.map((s) => (
-          <div key={s.id} className="col-md-4 mb-4">
-            <Link
-              href={`/project-sheets/${s.slug}`}
-              className="o-card d-block h-100 text-decoration-none"
-            >
-              <h2 className="c-subtitle-black-bold m-0">{s.name}</h2>
-              <div className="c-subtitle-grey">
-                {s.domain?.name ?? '—'}
-                {s.area_type && ` • ${s.area_type}`}
-                {s.activity_type && ` • ${s.activity_type}`}
-              </div>
-              <p className="mt-2 mb-0">{s.abstract}</p>
-            </Link>
-          </div>
-        ))}
-      </div>
-
-      {pageCount > 1 && (
-        <nav aria-label="pagination" className="d-flex justify-content-center mt-3">
-          <ul className="pagination">
-            {Array.from({ length: pageCount }, (_, i) => i + 1).map((p) => {
-              const params = new URLSearchParams();
-              params.set('page', String(p));
-              if (q) params.set('q', q);
-              if (domain) params.set('domain', domain);
-              if (area) params.set('area', area);
-              if (activity) params.set('activity', activity);
-              return (
-                <li key={p} className={`page-item ${p === pageNum ? 'active' : ''}`}>
-                  <a href={`?${params.toString()}`} className="page-link">
-                    {p}
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-      )}
     </div>
   );
 }
