@@ -1,5 +1,5 @@
-import 'server-only';
 import { prisma } from '@/server/db';
+import 'server-only';
 import { HelpSidebar, type HelpPage } from './HelpSidebar';
 
 /**
@@ -30,14 +30,14 @@ export async function ContentLayout({
     name: p.name,
     rank: Number(p.rank),
     page_type: p.page_type,
-    content: p.content,
+    content: p.content?.replace(/https:\/\/tacct\.ademe\.fr/g, '/workspace-tacct') ?? null,
     slug: p.slug,
   }));
 
   const hasHelp = helpPages.length > 0;
 
   return (
-    <div className="container page">
+    <div className="page container">
       <div className="row">
         <div className={`content-page ${hasHelp ? 'col-lg-9' : 'col-lg-12'}`}>{children}</div>
         {hasHelp && pageInfo && <HelpSidebar pageInfoTitle={pageInfo.title} pages={helpPages} />}
