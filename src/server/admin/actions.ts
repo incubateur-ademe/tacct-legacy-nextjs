@@ -8,6 +8,8 @@ import { prisma } from '@/server/db';
 import { blindIndex, encryptField } from '@/server/crypto/user-crypto';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { isAdmin } from '@/server/study/current-study';
+import { searchCommunes } from '@/server/admin/queries';
+import { sendAccountValidatedEmail } from '@/server/mail/account-emails';
 
 async function assertAdmin() {
   const user = await requireCurrentUser();
@@ -108,6 +110,143 @@ export async function deleteUser(id: string): Promise<void> {
   await assertAdmin();
   await prisma.user.delete({ where: { id } });
   revalidatePath('/gestion/account-management');
+}
+
+// ─── Gestion d'un compte (page /gestion/account-management/[id]) ──────────────
+// Port de `edit-account` legacy. L'activation déclenche, côté DB, la création de
+// l'étude + l'email de validation (Keycloak/CRM restent gérés par le legacy).
+
+/** Recherche de communes pour l'autocomplete (port de `select-communes`). */
+export async function searchCommunesAction(
+  query: string,
+): Promise<{ id: string; label: string; postalCode: string | null }[]> {
+  await assertAdmin();
+  const communes = await searchCommunes(query);
+  return communes.map((c) => ({ id: c.id, label: c.label, postalCode: c.postal_code }));
+}
+
+/**
+ * Création de l'étude rattachée à un utilisateur — port de `CreateStudy.php` :
+ * study (année courante, nom = libellé commune) + user_study (head) +
+ * natural_disaster_search (plage d'années des catastrophes de la commune).
+ */
+async function createStudyForUser(userId: string, communeId: string): Promise<void> {
+  const commune = await prisma.commune.findUnique({
+    where: { id: communeId },
+    select: { label: true },
+  });
+  if (!commune) throw new Error('Commune introuvable.');
+
+  const range = await prisma.$queryRaw<{ min_year: number | null; max_year: number | null }[]>`
+    SELECT MIN(EXTRACT(YEAR FROM start_date))::int AS min_year,
+           MAX(EXTRACT(YEAR FROM start_date))::int AS max_year
+    FROM tacct.natural_disaster
+    WHERE commune_id = ${communeId}`;
+  const startYear = range[0]?.min_year ?? 1982;
+  const endYear = range[0]?.max_year ?? new Date().getFullYear();
+
+  const now = new Date();
+  const studyId = randomUUID();
+  await prisma.$transaction([
+    prisma.study.create({
+      data: {
+        id: studyId,
+        commune_id: communeId,
+        year: BigInt(now.getFullYear()),
+        territory_name: commune.label,
+        created_at: now,
+        updated_at: now,
+      },
+    }),
+    prisma.user_study.create({
+      data: {
+        id: randomUUID(),
+        user_id: userId,
+        study_id: studyId,
+        head_study: true,
+        created_at: now,
+        updated_at: now,
+      },
+    }),
+    prisma.natural_disaster_search.create({
+      data: {
+        id: randomUUID(),
+        study_id: studyId,
+        start_year: BigInt(startYear),
+        end_year: BigInt(endYear),
+        created_at: now,
+        updated_at: now,
+        natural_disaster_search_commune: { create: [{ commune_id: communeId }] },
+      },
+    }),
+  ]);
+}
+
+/** « Activer le compte et créer l'étude » : validé + étude + email de validation. */
+export async function activateAccount(id: string, formData: FormData): Promise<void> {
+  await assertAdmin();
+  const communeId = String(formData.get('communeId') ?? '').trim();
+  if (!communeId) throw new Error('Veuillez renseigner une commune de rattachement.');
+
+  const user = await prisma.user.findUnique({
+    where: { id },
+    include: { user_study: { select: { id: true } } },
+  });
+  if (!user) throw new Error('NOT_FOUND');
+
+  await prisma.user.update({
+    where: { id },
+    data: {
+      commune_id: communeId,
+      validated: true,
+      validated_terms_of_use: true,
+      updated_at: new Date(),
+    },
+  });
+
+  if (user.user_study.length === 0) {
+    await createStudyForUser(id, communeId);
+  }
+
+  if (user.email) {
+    await sendAccountValidatedEmail(user.email, { firstname: user.firstname ?? '' });
+  }
+
+  revalidatePath('/gestion/account-management');
+  revalidatePath(`/gestion/account-management/${id}`);
+}
+
+/** « Enregistrer et créer l'étude » : compte déjà validé, sans étude. */
+export async function createStudyForAccount(id: string, formData: FormData): Promise<void> {
+  await assertAdmin();
+  const communeId = String(formData.get('communeId') ?? '').trim();
+  if (!communeId) throw new Error('Veuillez renseigner une commune de rattachement.');
+
+  const user = await prisma.user.findUnique({
+    where: { id },
+    include: { user_study: { select: { id: true } } },
+  });
+  if (!user) throw new Error('NOT_FOUND');
+
+  await prisma.user.update({
+    where: { id },
+    data: { commune_id: communeId, updated_at: new Date() },
+  });
+
+  if (user.user_study.length === 0) {
+    await createStudyForUser(id, communeId);
+  }
+
+  revalidatePath('/gestion/account-management');
+  revalidatePath(`/gestion/account-management/${id}`);
+}
+
+/** « Supprimer le compte » : disponible uniquement pour un compte non validé. */
+export async function deleteAccount(id: string): Promise<void> {
+  await assertAdmin();
+  await prisma.user.delete({ where: { id } });
+  revalidatePath('/gestion/account-management');
+  redirect('/gestion/account-management');
 }
 
 // ─── Study offices ────────────────────────────────────────────────────────────

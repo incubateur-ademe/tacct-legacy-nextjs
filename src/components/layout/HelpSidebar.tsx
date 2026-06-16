@@ -1,7 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { createPortal } from 'react-dom';
+import { RichTextEditor } from '@/components/ui/RichTextEditor';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import { deleteHelpPage, saveHelpIntro, saveHelpPage } from '@/server/help/actions';
 
 export type HelpPage = {
   id: string;
@@ -13,25 +16,42 @@ export type HelpPage = {
 };
 
 /**
- * Port de `app-help` du legacy (côté client pour rendre les items cliquables).
- *
- * Les items des sections `goal`, `step` et `resource` ouvrent une modale
- * affichant le contenu HTML de la page sélectionnée. La modale est un overlay
- * React contrôlé, rendu via portal sur `document.body` (et non un `<dialog>`
- * natif) pour être fiable quel que soit le contexte de mise en page des
- * ancêtres (transform, overflow…).
+ * Port de `app-help` + `app-page-info` du legacy. Lecture pour tous ; édition
+ * (titre + WYSIWYG + slug), suppression et édition de l'intro réservées aux
+ * admins, à l'identique de `page-info.component`.
  */
-export function HelpSidebar({ pageInfoTitle, pages }: { pageInfoTitle: string; pages: HelpPage[] }) {
+export function HelpSidebar({
+  pageInfoTitle,
+  pageInfoId,
+  pages,
+  isAdmin = false,
+}: {
+  pageInfoTitle: string;
+  pageInfoId: string;
+  pages: HelpPage[];
+  isAdmin?: boolean;
+}) {
   const [selected, setSelected] = useState<HelpPage | null>(null);
+  const [editing, setEditing] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [pending, startTransition] = useTransition();
+
+  // Champs d'édition d'une page.
+  const [formTitle, setFormTitle] = useState('');
+  const [formSlug, setFormSlug] = useState('');
+  const [formContent, setFormContent] = useState('');
+
+  // Édition de l'intro.
+  const [introEditing, setIntroEditing] = useState(false);
+  const [introContent, setIntroContent] = useState('');
+
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const intro = pages.filter((p) => p.page_type === 'intro')[0] ?? null;
   const goals = pages.filter((p) => p.page_type === 'goal');
   const steps = pages.filter((p) => p.page_type === 'step');
   const resources = pages.filter((p) => p.page_type === 'resource');
 
-  // Navigation précédent/suivant parmi les pages (hors intro), triées par rang —
-  // équivalent des boutons prevPage/nextPage du legacy page-info.
   const orderedPages = pages
     .filter((p) => p.page_type !== 'intro')
     .sort((a, b) => a.rank - b.rank);
@@ -44,29 +64,98 @@ export function HelpSidebar({ pageInfoTitle, pages }: { pageInfoTitle: string; p
       ? orderedPages[selectedIndex + 1]
       : null;
 
-  const open = (page: HelpPage) => setSelected(page);
-  const close = () => setSelected(null);
+  const open = (page: HelpPage) => {
+    setSelected(page);
+    setEditing(false);
+  };
+  const close = () => {
+    setSelected(null);
+    setEditing(false);
+  };
+
+  const startEdit = () => {
+    if (!selected) return;
+    setFormTitle(selected.name);
+    setFormSlug(selected.slug ?? '');
+    setFormContent(selected.content ?? '');
+    setEditing(true);
+  };
+
+  const submitPage = () => {
+    if (!selected) return;
+    const formData = new FormData();
+    formData.set('id', selected.id);
+    formData.set('title', formTitle);
+    formData.set('slug', formSlug);
+    formData.set('content', formContent);
+    startTransition(async () => {
+      await saveHelpPage(formData);
+      close();
+    });
+  };
+
+  const confirmDeletePage = () => {
+    if (!selected) return;
+    const id = selected.id;
+    startTransition(async () => {
+      await deleteHelpPage(id);
+      setConfirmDelete(false);
+      close();
+    });
+  };
+
+  const startIntroEdit = () => {
+    setIntroContent(intro?.content ?? '');
+    setIntroEditing(true);
+  };
+
+  const submitIntro = () => {
+    const formData = new FormData();
+    formData.set('pageInfoId', pageInfoId);
+    formData.set('introId', intro?.id ?? '');
+    formData.set('content', introContent);
+    startTransition(async () => {
+      await saveHelpIntro(formData);
+      setIntroEditing(false);
+    });
+  };
 
   useEffect(() => setMounted(true), []);
 
-  // Verrouille le scroll de fond + fermeture à Échap quand la modale est ouverte.
+  // Verrouille le scroll de fond + fermeture à Échap quand une modale est ouverte.
   useEffect(() => {
-    if (!selected) return undefined;
+    const modalOpen = Boolean(selected) || introEditing;
+    if (!modalOpen) return undefined;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') close();
+      if (e.key === 'Escape') {
+        if (introEditing) setIntroEditing(false);
+        else close();
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', onKey);
     };
-  }, [selected]);
+  }, [selected, introEditing]);
 
   return (
     <aside className="col-lg-3">
-      <div className="c-title-h2 ml-2">AIDE</div>
+      <div className="d-flex align-items-center justify-content-between">
+        <div className="c-title-h2 ml-2">AIDE</div>
+        {isAdmin && (
+          <button
+            type="button"
+            aria-label="Modifier l'intro"
+            className="sc-help-section__edit"
+            onClick={startIntroEdit}
+          >
+            <em className="c-icon pen large project-primary" aria-hidden="true" />
+          </button>
+        )}
+      </div>
 
       {intro && (
         <div className="sc-help-section">
@@ -100,11 +189,7 @@ export function HelpSidebar({ pageInfoTitle, pages }: { pageInfoTitle: string; p
       {mounted &&
         selected &&
         createPortal(
-          <div
-            className="sc-help-overlay"
-            role="presentation"
-            onClick={close}
-          >
+          <div className="sc-help-overlay" role="presentation" onClick={close}>
             <div
               className="sc-help-modal-box"
               role="dialog"
@@ -112,8 +197,6 @@ export function HelpSidebar({ pageInfoTitle, pages }: { pageInfoTitle: string; p
               aria-labelledby="sc-help-modal-title"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* En-tête : icône + sous-titre/titre à gauche, bouton fermer à droite
-                  (port de l'app-block-title-icon + bouton "cancel" du legacy page-info). */}
               <div className="sc-help-modal__header">
                 <div className="sc-block-title-icon-lower">
                   <span className="sc-block-title-icon__icon">
@@ -134,50 +217,189 @@ export function HelpSidebar({ pageInfoTitle, pages }: { pageInfoTitle: string; p
                     </h3>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  aria-label="Fermer"
-                  className="sc-help-modal__close project-link"
-                  onClick={close}
-                >
-                  <em className="c-icon cancel xl project-primary" aria-hidden="true" />
-                </button>
-              </div>
-
-              <div className="sc-help-modal__content">
-                {selected.content && (
-                  <div dangerouslySetInnerHTML={{ __html: selected.content }} />
-                )}
-              </div>
-
-              {(prevPage || nextPage) && (
-                <div className="sc-help-modal__nav">
-                  {prevPage ? (
+                <div className="d-flex">
+                  {isAdmin && !editing && selected.page_type !== 'intro' && (
                     <button
                       type="button"
-                      className="c-legend-action-bold text-uppercase sc-help-modal__nav-item"
-                      onClick={() => open(prevPage)}
+                      aria-label="Modifier"
+                      className="sc-help-modal__close mr-2"
+                      onClick={startEdit}
                     >
-                      {prevPage.rank}. {prevPage.name}
-                    </button>
-                  ) : (
-                    <span />
-                  )}
-                  {nextPage && (
-                    <button
-                      type="button"
-                      className="c-legend-action-bold text-uppercase sc-help-modal__nav-item"
-                      onClick={() => open(nextPage)}
-                    >
-                      {nextPage.rank}. {nextPage.name}
+                      <em className="c-icon pen xl project-primary" aria-hidden="true" />
                     </button>
                   )}
+                  <button
+                    type="button"
+                    aria-label="Fermer"
+                    className="sc-help-modal__close project-link"
+                    onClick={close}
+                  >
+                    <em className="c-icon cancel xl project-primary" aria-hidden="true" />
+                  </button>
                 </div>
+              </div>
+
+              {editing ? (
+                <div className="sc-help-modal__content">
+                  <div className="c-input__group w-100">
+                    <input
+                      className="c-input__large w-100"
+                      type="text"
+                      id="help-title"
+                      placeholder="Titre"
+                      value={formTitle}
+                      onChange={(e) => setFormTitle(e.target.value)}
+                    />
+                    <label className="c-input__label" htmlFor="help-title">
+                      Titre
+                    </label>
+                  </div>
+                  <RichTextEditor value={formContent} onChange={setFormContent} />
+                  <div className="c-input__group w-100 mt-3">
+                    <input
+                      className="c-input__large w-100"
+                      type="text"
+                      id="help-slug"
+                      placeholder="Id de marquage"
+                      value={formSlug}
+                      onChange={(e) => setFormSlug(e.target.value)}
+                    />
+                    <label className="c-input__label" htmlFor="help-slug">
+                      Id de marquage
+                    </label>
+                  </div>
+                  <div className="text-right mt-3">
+                    <button
+                      type="button"
+                      className="c-btn--primary mb-3"
+                      onClick={submitPage}
+                      disabled={pending || formTitle.trim().length === 0}
+                    >
+                      ENREGISTRER
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="sc-help-modal__content">
+                    {selected.content && (
+                      <div dangerouslySetInnerHTML={{ __html: selected.content }} />
+                    )}
+                  </div>
+
+                  {isAdmin && selected.page_type !== 'intro' && (
+                    <div className="text-right mt-3">
+                      <button
+                        type="button"
+                        className="c-btn--secondary mb-3"
+                        onClick={() => setConfirmDelete(true)}
+                      >
+                        Supprimer
+                      </button>
+                    </div>
+                  )}
+
+                  {(prevPage || nextPage) && (
+                    <div className="sc-help-modal__nav">
+                      {prevPage ? (
+                        <button
+                          type="button"
+                          className="c-legend-action-bold text-uppercase sc-help-modal__nav-item"
+                          onClick={() => open(prevPage)}
+                        >
+                          {prevPage.rank}. {prevPage.name}
+                        </button>
+                      ) : (
+                        <span />
+                      )}
+                      {nextPage && (
+                        <button
+                          type="button"
+                          className="c-legend-action-bold text-uppercase sc-help-modal__nav-item"
+                          onClick={() => open(nextPage)}
+                        >
+                          {nextPage.rank}. {nextPage.name}
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>,
           document.body,
         )}
+
+      {mounted &&
+        introEditing &&
+        createPortal(
+          <div
+            className="sc-help-overlay"
+            role="presentation"
+            onClick={() => setIntroEditing(false)}
+          >
+            <div
+              className="sc-help-modal-box"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Édition de l'intro"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="sc-help-modal__header">
+                <h3 className="p-bold-primary sc-block-title-icon__title">
+                  Que faire sur cet écran ?
+                </h3>
+                <button
+                  type="button"
+                  aria-label="Fermer"
+                  className="sc-help-modal__close project-link"
+                  onClick={() => setIntroEditing(false)}
+                >
+                  <em className="c-icon cancel xl project-primary" aria-hidden="true" />
+                </button>
+              </div>
+              <div className="sc-help-modal__content">
+                <div className="c-input__group w-100">
+                  <textarea
+                    className="c-input__large w-100"
+                    placeholder="Texte d'explication de la page en cours de lecture"
+                    maxLength={1000}
+                    rows={4}
+                    id="help-intro"
+                    value={introContent}
+                    onChange={(e) => setIntroContent(e.target.value)}
+                  />
+                  <label className="c-input__label" htmlFor="help-intro">
+                    Description
+                  </label>
+                </div>
+                <div className="text-right mt-3">
+                  <button
+                    type="button"
+                    className="c-btn--primary mb-3"
+                    onClick={submitIntro}
+                    disabled={pending}
+                  >
+                    ENREGISTRER
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
+
+      <ConfirmModal
+        open={confirmDelete}
+        title={selected?.name ?? ''}
+        confirmLabel="Oui"
+        cancelLabel="Non"
+        pending={pending}
+        onCancel={() => setConfirmDelete(false)}
+        onConfirm={confirmDeletePage}
+      >
+        <p>Confirmez-vous la suppression de la page ?</p>
+      </ConfirmModal>
     </aside>
   );
 }

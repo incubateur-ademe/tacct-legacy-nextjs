@@ -301,3 +301,38 @@
   display: flex;
   align-items: center;
 }
+
+/* ─── Autocomplete de communes (edit-account) ─── */
+.sc-commune-autocomplete {
+  position: relative;
+
+  &__list {
+    position: absolute;
+    z-index: 10;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    max-height: 16rem;
+    overflow-y: auto;
+    background: $color-default-secondary;
+    border: $border-empty;
+    border-radius: 0 0 $radius-default $radius-default;
+    box-shadow: $shadow-card;
+  }
+
+  &__item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: $size-lower $size-default;
+    background: none;
+    border: none;
+
+    &:hover {
+      background: $color-background;
+    }
+  }
+}

@@ -165,3 +165,12 @@
   text-align: left;
   max-width: 17rem;
 }
+
+/* ─── Édition admin de l'aide (port de page-info) ─── */
+.sc-help-section__edit {
+  cursor: pointer;
+}
+
+.sc-help-modal__content .ql-editor {
+  min-height: 12rem;
+}

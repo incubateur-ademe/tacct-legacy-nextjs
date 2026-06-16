@@ -1,4 +1,4 @@
-@import "bases";
+@import 'bases';
 
 /* Primary buttons */
 .c-btn--primary {
@@ -133,6 +133,7 @@
   display: flex;
   align-items: center;
   padding: $size-default;
+  align-self: center;
 
   &:hover {
     display: flex;

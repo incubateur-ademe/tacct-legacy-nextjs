@@ -1,4 +1,4 @@
-@import "../01_variables/index";
+@import '../01_variables/index';
 
 /* Reset and interaction basic */
 @mixin btn {
@@ -6,6 +6,7 @@
   position: relative;
   transition: background 0.2s;
   cursor: pointer;
+  align-self: center;
 
   &:focus,
   &:focus-within,
@@ -22,10 +23,10 @@
 }
 
 @mixin arrow-right-white {
-  background-image: url("/workspace-tacct/assets/img/arrow-right-white.svg");
+  background-image: url('/workspace-tacct/assets/img/arrow-right-white.svg');
 }
 @mixin arrow-right-blue {
-  background-image: url("/workspace-tacct/assets/img/arrow-right.svg");
+  background-image: url('/workspace-tacct/assets/img/arrow-right.svg');
 }
 
 @mixin btn-blue {

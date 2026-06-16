@@ -1,36 +1,12 @@
 import 'server-only';
 import { getEnv } from '@/lib/env';
 import { sendMail } from './mailer';
+import { emailLayout, escapeHtml } from './layout';
 
 // Port des emails Symfony (templates/email/*.html.twig) liés à l'invitation et
 // au transfert d'une étude. Le flux « compte inconnu » du legacy renvoyait un
 // lien tokenisé vers la création de compte ; cette page n'étant pas migrée, on
 // envoie un message simplifié invitant à contacter le support.
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-function layout(content: string): string {
-  const { APP_URL } = getEnv();
-  return `<!doctype html>
-<html lang="fr">
-  <body style="font-family: Arial, Helvetica, sans-serif; color: #1a1a1a; line-height: 1.5;">
-    <div style="max-width: 600px; margin: 0 auto; padding: 16px;">
-      ${content}
-      <hr style="margin-top: 24px; border: none; border-top: 1px solid #ddd;" />
-      <p style="font-size: 12px; color: #666;">
-        TACCT — Trajectoires d'Adaptation au Changement Climatique des Territoires<br />
-        <a href="${APP_URL}">${APP_URL}</a>
-      </p>
-    </div>
-  </body>
-</html>`;
-}
 
 const SUBJECT_INVITATION = '[TACCT] Invitation';
 const SUBJECT_TRANSFER = '[TACCT] Transfert étude';
@@ -64,7 +40,7 @@ export async function sendInviteEmail(
          du support ADEME via la page <a href="${APP_URL}/contact">contact</a> pour l'activer.</p></div>
        <div><p>À bientôt sur <a href="${APP_URL}">TACCT !</a></p></div>`;
 
-  await sendMail({ to, subject: SUBJECT_INVITATION, html: layout(body) });
+  await sendMail({ to, subject: SUBJECT_INVITATION, html: emailLayout(body) });
 }
 
 export async function sendTransferEmail(
@@ -99,7 +75,7 @@ export async function sendTransferEmail(
          du support ADEME via la page <a href="${APP_URL}/contact">contact</a> pour l'activer.</p></div>
        <div><p>À bientôt sur <a href="${APP_URL}">TACCT !</a></p></div>`;
 
-  await sendMail({ to, subject: SUBJECT_INVITATION, html: layout(body) });
+  await sendMail({ to, subject: SUBJECT_INVITATION, html: emailLayout(body) });
 }
 
 export async function sendDeactivationEmail(
@@ -123,5 +99,5 @@ export async function sendDeactivationEmail(
       de rattachement si vous souhaitez réactiver votre compte pour démarrer un nouveau diagnostic.</p></div>
     <div><p>À bientôt sur <a href="${APP_URL}">TACCT !</a></p></div>`;
 
-  await sendMail({ to, subject: SUBJECT_TRANSFER, html: layout(body) });
+  await sendMail({ to, subject: SUBJECT_TRANSFER, html: emailLayout(body) });
 }

@@ -1,5 +1,7 @@
 import { prisma } from '@/server/db';
 import 'server-only';
+import { getCurrentUser } from '@/server/auth/current-user';
+import { isAdmin } from '@/server/study/current-study';
 import { HelpSidebar, type HelpPage } from './HelpSidebar';
 
 /**
@@ -20,10 +22,15 @@ export async function ContentLayout({
   helpKey: string;
   children: React.ReactNode;
 }) {
-  const pageInfo = await prisma.page_info.findFirst({
-    where: { name: helpKey },
-    include: { page: { orderBy: { rank: 'asc' } } },
-  });
+  const [pageInfo, user] = await Promise.all([
+    prisma.page_info.findFirst({
+      where: { name: helpKey },
+      include: { page: { orderBy: { rank: 'asc' } } },
+    }),
+    getCurrentUser(),
+  ]);
+
+  const admin = user ? isAdmin(user) : false;
 
   const helpPages: HelpPage[] = (pageInfo?.page ?? []).map((p) => ({
     id: p.id,
@@ -40,7 +47,14 @@ export async function ContentLayout({
     <div className="page container">
       <div className="row">
         <div className={`content-page ${hasHelp ? 'col-lg-9' : 'col-lg-12'}`}>{children}</div>
-        {hasHelp && pageInfo && <HelpSidebar pageInfoTitle={pageInfo.title} pages={helpPages} />}
+        {hasHelp && pageInfo && (
+          <HelpSidebar
+            pageInfoTitle={pageInfo.title}
+            pageInfoId={pageInfo.id}
+            pages={helpPages}
+            isAdmin={admin}
+          />
+        )}
       </div>
     </div>
   );

@@ -1,11 +1,11 @@
-import Link from 'next/link';
-import { getUsersList } from '@/server/admin/queries';
-import { BlockTitleIcon } from '@/components/ui/BlockTitleIcon';
-import { ContentLayout } from '@/components/layout/ContentLayout';
-import { StatusAccount } from '@/components/admin/StatusAccount';
-import { SortHeader } from '@/components/admin/SortHeader';
 import { Pagination } from '@/components/admin/Pagination';
+import { SortHeader } from '@/components/admin/SortHeader';
+import { StatusAccount } from '@/components/admin/StatusAccount';
+import { ContentLayout } from '@/components/layout/ContentLayout';
+import { BlockTitleIcon } from '@/components/ui/BlockTitleIcon';
 import { pluralize } from '@/lib/pluralize';
+import { getUsersList } from '@/server/admin/queries';
+import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
@@ -58,7 +58,7 @@ export default async function AccountManagementPage({
 
   return (
     <ContentLayout helpKey="admin">
-      <div className="container page">
+      <div className="page container">
         <div className="row">
           <div className="col-lg-12 col-md-16">
             <div className="o-card o-card__triangle">
@@ -92,10 +92,7 @@ export default async function AccountManagementPage({
                 </div>
 
                 <div className="c-group-buttons c-group-buttons--end">
-                  <Link
-                    href="/gestion/account-management/create"
-                    className="c-btn--primary"
-                  >
+                  <Link href="/gestion/account-management/create" className="c-btn--primary">
                     Créer un compte
                   </Link>
                 </div>
@@ -106,11 +103,11 @@ export default async function AccountManagementPage({
           {/* Filtre / tri */}
           <div className="container-fluid">
             <section>
-              <div className="row mt-2">
+              <div className="row mt-4">
                 <div className="col-lg-12">
                   <div className="admin-list-filter">
-                    <div className="row pt-2 pb-2 pl-4 pr-4">
-                      <div className="container w-100 o-centred-elements d-flex">
+                    <div className="row pt-2 pr-4 pb-2 pl-4">
+                      <div className="o-centred-elements d-flex container w-100">
                         <SortHeader
                           label="Nom"
                           sortKey="lastname"
@@ -158,26 +155,23 @@ export default async function AccountManagementPage({
             <Link
               key={u.id}
               href={`/gestion/account-management/${u.id}`}
-              className="c-account row mt-4 d-block text-decoration-none"
+              className="c-account row d-block text-decoration-none mt-4"
             >
               <div className="col-lg-12 col-md-16">
                 <div className="o-card-p-0">
-                  <div className="row pt-2 pb-2 pl-4 pr-4">
-                    <div className="container w-100 o-centred-elements d-flex">
+                  <div className="row pt-2 pr-4 pb-2 pl-4">
+                    <div className="o-centred-elements d-flex container w-100">
                       <div className="c-account-management__name c-subtitle-black-bold text-uppercase">
                         {u.lastname} {u.firstname}
                       </div>
                       <div className="c-account-management__commune d-flex align-items-center mr-auto">
-                        <em
-                          className="c-icon medium project-primary position"
-                          aria-hidden="true"
-                        />{' '}
+                        <em className="c-icon medium project-primary position" aria-hidden="true" />{' '}
                         {u.commune?.label ?? ''} {u.commune?.postal_code ?? ''}
                       </div>
                       <div className="c-account-management__creation-date">
                         {dateFormatter.format(u.created_at)}
                       </div>
-                      <div className="c-subtitle-black-bold d-flex align-items-center ml-auto c-account-management__validation">
+                      <div className="c-subtitle-black-bold d-flex align-items-center c-account-management__validation ml-auto">
                         <StatusAccount status={u.validated} />
                       </div>
                     </div>

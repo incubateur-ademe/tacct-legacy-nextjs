@@ -1,9 +1,6 @@
 import { notFound } from 'next/navigation';
-import { prisma } from '@/server/db';
 import { getUserById } from '@/server/admin/queries';
-import { updateUser } from '@/server/admin/actions';
-import { userRoles } from '@/server/study/current-study';
-import { UserForm } from '@/components/admin/UserForm';
+import { EditAccount } from '@/components/admin/EditAccount';
 import { BlockTitleIcon } from '@/components/ui/BlockTitleIcon';
 import { ContentLayout } from '@/components/layout/ContentLayout';
 
@@ -16,13 +13,13 @@ export default async function EditUserPage({ params }: { params: Params }) {
   const user = await getUserById(id);
   if (!user) notFound();
 
-  const studyOffices = await prisma.study_office.findMany({
-    orderBy: { name: 'asc' },
-    select: { id: true, name: true },
-  });
-
-  const roles = userRoles(user);
-  const updateAction = updateUser.bind(null, id);
+  const studies = user.user_study
+    .map((us) => us.study)
+    .filter((study): study is NonNullable<typeof study> => study !== null)
+    .map((study) => ({
+      territoryName: study.territory_name,
+      year: Number(study.year),
+    }));
 
   return (
     <ContentLayout helpKey="admin">
@@ -38,22 +35,22 @@ export default async function EditUserPage({ params }: { params: Params }) {
                   icon="people"
                 />
               </div>
-              <UserForm
-                mode="edit"
-                studyOffices={studyOffices}
-                action={updateAction}
-                defaults={{
-                  firstname: user.firstname,
-                  lastname: user.lastname,
-                  email: user.email,
-                  username: user.username,
-                  communeId: user.commune_id ?? '',
-                  communeLabel: user.commune?.label ?? null,
-                  communePostalCode: user.commune?.postal_code ?? null,
-                  studyOfficeId: user.study_office_id ?? '',
-                  isAdmin: roles.includes('ROLE_ADMIN'),
-                  validated: user.validated,
-                }}
+              <EditAccount
+                id={user.id}
+                firstname={user.firstname ?? ''}
+                lastname={user.lastname ?? ''}
+                email={user.email ?? ''}
+                validated={user.validated}
+                commune={
+                  user.commune
+                    ? {
+                        id: user.commune.id,
+                        label: user.commune.label,
+                        postalCode: user.commune.postal_code,
+                      }
+                    : null
+                }
+                studies={studies}
               />
             </div>
           </div>
