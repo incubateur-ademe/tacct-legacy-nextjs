@@ -21,36 +21,42 @@ export async function getUsersList({
   sort?: string;
   dir?: SortDir;
 }) {
-  const where = search
-    ? {
-        OR: [
-          { firstname: { contains: search, mode: 'insensitive' as const } },
-          { lastname: { contains: search, mode: 'insensitive' as const } },
-          { email: { contains: search, mode: 'insensitive' as const } },
-          { username: { contains: search, mode: 'insensitive' as const } },
-        ],
-      }
-    : {};
+  // firstname/lastname/email/username sont chiffrés (AES-GCM) : ni recherche SQL
+  // (LIKE impossible), ni tri SQL (ordre du chiffré). On charge la liste
+  // déchiffrée (extension Prisma) puis on filtre/trie/pagine en mémoire. OK tant
+  // que le volume reste modéré (quelques milliers de comptes).
+  const all = await prisma.user.findMany({
+    include: { study_office: true, commune: true },
+  });
 
-  const orderBy =
-    sort === 'commune'
-      ? { commune: { label: dir } }
-      : sort === 'creationDate'
-        ? { created_at: dir }
-        : sort === 'validated'
-          ? { validated: dir }
-          : { lastname: (sort === 'lastname' ? dir : 'asc') as SortDir };
+  const needle = search?.trim().toLowerCase();
+  const filtered = needle
+    ? all.filter((u) =>
+        [u.firstname, u.lastname, u.email, u.username].some((v) =>
+          v.toLowerCase().includes(needle),
+        ),
+      )
+    : all;
 
-  const [items, total] = await Promise.all([
-    prisma.user.findMany({
-      where,
-      include: { study_office: true, commune: true },
-      orderBy,
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-    }),
-    prisma.user.count({ where }),
-  ]);
+  const factor = dir === 'desc' ? -1 : 1;
+  const cmpStr = (a: string, b: string) =>
+    a.localeCompare(b, 'fr', { sensitivity: 'base' });
+  const sorted = [...filtered].sort((a, b) => {
+    switch (sort) {
+      case 'commune':
+        return factor * cmpStr(a.commune?.label ?? '', b.commune?.label ?? '');
+      case 'creationDate':
+        return factor * (a.created_at.getTime() - b.created_at.getTime());
+      case 'validated':
+        return factor * (Number(a.validated) - Number(b.validated));
+      default:
+        return factor * cmpStr(a.lastname, b.lastname);
+    }
+  });
+
+  const total = sorted.length;
+  const start = (page - 1) * pageSize;
+  const items = sorted.slice(start, start + pageSize);
   return { items, total, page, pageSize };
 }
 
@@ -82,23 +88,33 @@ export async function getStudiesAdminList({
   sort?: string;
   dir?: SortDir;
 }) {
+  // Le nom du chargé d'étude est chiffré : on résout d'abord en mémoire les
+  // user_ids dont le nom matche (volume modéré), puis on filtre les études
+  // dessus en SQL — la pagination et le tri SQL des études sont conservés.
+  const needle = search?.trim();
+  let matchedUserIds: string[] = [];
+  if (needle) {
+    const low = needle.toLowerCase();
+    const users = await prisma.user.findMany({
+      select: { id: true, firstname: true, lastname: true },
+    });
+    matchedUserIds = users
+      .filter(
+        (u) =>
+          u.firstname.toLowerCase().includes(low) ||
+          u.lastname.toLowerCase().includes(low),
+      )
+      .map((u) => u.id);
+  }
+
   const where = {
-    ...(search
+    ...(needle
       ? {
           OR: [
-            { territory_name: { contains: search, mode: 'insensitive' as const } },
-            {
-              user_study: {
-                some: {
-                  user: {
-                    OR: [
-                      { firstname: { contains: search, mode: 'insensitive' as const } },
-                      { lastname: { contains: search, mode: 'insensitive' as const } },
-                    ],
-                  },
-                },
-              },
-            },
+            { territory_name: { contains: needle, mode: 'insensitive' as const } },
+            ...(matchedUserIds.length > 0
+              ? [{ user_study: { some: { user_id: { in: matchedUserIds } } } }]
+              : []),
           ],
         }
       : {}),

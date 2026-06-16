@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { prisma } from '@/server/db';
+import { blindIndex, encryptField } from '@/server/crypto/user-crypto';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { isAdmin } from '@/server/study/current-study';
 
@@ -53,10 +54,12 @@ export async function createUser(formData: FormData): Promise<void> {
   await prisma.user.create({
     data: {
       id: randomUUID(),
-      firstname: data.firstname,
-      lastname: data.lastname,
-      email: data.email,
-      username,
+      firstname: encryptField(data.firstname),
+      lastname: encryptField(data.lastname),
+      email: encryptField(data.email),
+      email_bidx: blindIndex(data.email),
+      username: encryptField(username),
+      encryption_version: 1,
       commune_id: data.communeId ?? null,
       study_office_id: data.studyOfficeId ?? null,
       roles: rolesJson(data.isAdmin),

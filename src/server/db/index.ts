@@ -4,18 +4,36 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../../generated/prisma/client';
 import { decryptField } from '@/server/crypto/user-crypto';
 
-const USER_ENCRYPTED_FIELDS = [
+const USER_ENCRYPTED_FIELDS = new Set([
   'email',
   'username',
   'firstname',
   'lastname',
   'authenticated_id',
-] as const;
+]);
 
-function decryptUserRow(row: Record<string, unknown>): void {
-  for (const field of USER_ENCRYPTED_FIELDS) {
-    const value = row[field];
-    if (typeof value === 'string') row[field] = decryptField(value);
+/**
+ * Déchiffre en place, récursivement, tout champ user sensible préfixé `enc:v1:`
+ * dans un résultat Prisma — y compris les `user` imbriqués via des `include`
+ * (que l'extension par modèle ne couvre pas). Sûr : on ne tente le
+ * déchiffrement que sur ces noms de champs ET quand la valeur est bien un
+ * chiffré `enc:v1:`. Les résultats Prisma sont des arbres (pas de cycle).
+ */
+function deepDecryptUsers(value: unknown): void {
+  if (!value || typeof value !== 'object') return;
+  if (value instanceof Date || Buffer.isBuffer(value)) return;
+  if (Array.isArray(value)) {
+    for (const item of value) deepDecryptUsers(item);
+    return;
+  }
+  for (const [key, v] of Object.entries(value)) {
+    if (typeof v === 'string') {
+      if (USER_ENCRYPTED_FIELDS.has(key) && v.startsWith('enc:v1:')) {
+        (value as Record<string, unknown>)[key] = decryptField(v);
+      }
+    } else if (v && typeof v === 'object') {
+      deepDecryptUsers(v);
+    }
   }
 }
 
@@ -83,18 +101,10 @@ function createPrismaClient() {
 
   return client.$extends({
     query: {
-      user: {
+      $allModels: {
         async $allOperations({ args, query }) {
           const result = await query(args);
-          if (Array.isArray(result)) {
-            for (const row of result) {
-              if (row && typeof row === 'object') {
-                decryptUserRow(row as Record<string, unknown>);
-              }
-            }
-          } else if (result && typeof result === 'object') {
-            decryptUserRow(result as Record<string, unknown>);
-          }
+          deepDecryptUsers(result);
           return result;
         },
       },

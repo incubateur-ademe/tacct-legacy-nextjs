@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { prisma } from '@/server/db';
+import { blindIndex } from '@/server/crypto/user-crypto';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { isAdmin } from '@/server/study/current-study';
 import {
@@ -131,7 +132,9 @@ export async function transferStudyHead(
   });
   if (!study) throw new Error('NOT_FOUND');
 
-  const target = await prisma.user.findUnique({ where: { email: mail } });
+  const target = await prisma.user.findUnique({
+    where: { email_bidx: blindIndex(mail) },
+  });
 
   // Compte existant déjà responsable d'une étude → transfert impossible.
   if (target) {
@@ -228,7 +231,9 @@ export async function inviteCoUserToStudy(formData: FormData): Promise<void> {
   });
   if (!study) throw new Error('NOT_FOUND');
 
-  const invitee = await prisma.user.findUnique({ where: { email } });
+  const invitee = await prisma.user.findUnique({
+    where: { email_bidx: blindIndex(email) },
+  });
 
   if (invitee) {
     const existing = await prisma.user_study.findFirst({
