@@ -81,7 +81,7 @@ export default async function StudyOfficesPage({
           {/* Filtre / tri */}
           <div className="container-fluid">
             <section>
-              <div className="row mt-2">
+              <div className="row mt-4">
                 <div className="col-lg-12">
                   <div className="admin-list-filter">
                     <div className="row pt-2 pb-2">
