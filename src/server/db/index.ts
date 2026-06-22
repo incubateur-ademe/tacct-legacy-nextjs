@@ -83,6 +83,15 @@ function buildPool(): BuiltPool {
       ...(ssl !== undefined && { ssl }),
       max: 5,
       idleTimeoutMillis: 20_000,
+      // Échoue vite si aucune connexion ne peut être acquise (au lieu d'attendre
+      // indéfiniment et de laisser le proxy parent timeouter à 30s).
+      connectionTimeoutMillis: 10_000,
+      // Garde les sockets TCP vivantes et détecte celles coupées par le réseau
+      // après inactivité.
+      keepAlive: true,
+      // Filet de sécurité : annule côté serveur une requête bloquée plutôt que
+      // de monopoliser une connexion du pool.
+      statement_timeout: 30_000,
     },
     schema,
   };
@@ -91,6 +100,14 @@ function buildPool(): BuiltPool {
 function createPrismaClient() {
   const { config, schema } = buildPool();
   const pool = new Pool(config);
+
+  // CRITIQUE : sans ce handler, une erreur sur une connexion *idle* (fermée par
+  // le serveur PG / le réseau après inactivité) est émise comme événement
+  // 'error' non capturé → exception non gérée → crash du process. C'est la
+  // cause des freezes après quelques minutes d'inactivité.
+  pool.on('error', (err) => {
+    console.error('[pg] erreur sur une connexion idle du pool :', err.message);
+  });
 
   const adapter = new PrismaPg(pool, schema ? { schema } : undefined);
   const client = new PrismaClient({
