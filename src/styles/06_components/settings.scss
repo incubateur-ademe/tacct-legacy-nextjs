@@ -1,4 +1,4 @@
-@import "bases";
+@import 'bases';
 
 /* ─── Page settings : layout des inputs et boutons inline ─── */
 .sc-settings__label {
@@ -62,5 +62,4 @@
   @include btn;
   @include btn-text;
   @include btn-secondary;
-  margin-top: 0.459rem;
 }

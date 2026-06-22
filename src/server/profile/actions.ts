@@ -8,11 +8,7 @@ import { setFlash } from '@/server/flash';
 import { blindIndex } from '@/server/crypto/user-crypto';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { isAdmin } from '@/server/study/current-study';
-import {
-  sendDeactivationEmail,
-  sendInviteEmail,
-  sendTransferEmail,
-} from '@/server/mail/study-emails';
+import { sendDeactivationEmail, sendTransferEmail } from '@/server/mail/study-emails';
 
 async function assertCanEditStudy(studyId: string) {
   const user = await requireCurrentUser();
@@ -98,19 +94,19 @@ const transferSchema = z.object({
 });
 
 /**
- * Port du `transfer` legacy : transfère le rôle « chargé d'étude » à un autre
- * user identifié par email, et envoie les emails associés.
+ * Transfère le rôle « chargé d'étude » à un autre user identifié par email.
  *
- * - Compte cible déjà responsable d'une étude → refus (409 legacy).
+ * - Compte cible inexistant → retour `not_found` (message affiché à l'écran ;
+ *   plus aucune invitation par email).
+ * - Compte cible déjà responsable d'une étude → refus.
  * - Compte cible existant : il devient head, l'ancien head est retiré de
  *   l'étude, et sa commune de rattachement devient celle de l'étude. Email
  *   « transfert » au nouveau ; si l'ancien head n'a plus d'étude, email de
  *   désactivation.
- * - Compte inexistant : email d'invitation (statut `mailSent`).
  */
 export async function transferStudyHead(
   formData: FormData,
-): Promise<{ status: 'transferred' | 'mailSent' }> {
+): Promise<{ status: 'transferred' | 'not_found' }> {
   const parsed = transferSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) {
     throw new Error(
@@ -133,18 +129,23 @@ export async function transferStudyHead(
   });
   if (!study) throw new Error('NOT_FOUND');
 
+  // Recherche par blind index (l'email est chiffré en base).
   const target = await prisma.user.findUnique({
     where: { email_bidx: blindIndex(mail) },
   });
 
+  // Plus d'invitation par email : si le compte n'existe pas, on le signale à
+  // l'écran (le formulaire affiche le message).
+  if (!target) {
+    return { status: 'not_found' };
+  }
+
   // Compte existant déjà responsable d'une étude → transfert impossible.
-  if (target) {
-    const targetIsHead = await prisma.user_study.findFirst({
-      where: { user_id: target.id, head_study: true },
-    });
-    if (targetIsHead) {
-      throw new Error('Transfert impossible. Compte existant avec un diagnostic en cours.');
-    }
+  const targetIsHead = await prisma.user_study.findFirst({
+    where: { user_id: target.id, head_study: true },
+  });
+  if (targetIsHead) {
+    throw new Error('Transfert impossible. Compte existant avec un diagnostic en cours.');
   }
 
   const emailParams = {
@@ -153,12 +154,6 @@ export async function transferStudyHead(
     headStudyLastname: currentUser.lastname ?? '',
     territoryName: study.territory_name,
   };
-
-  if (!target) {
-    await sendTransferEmail(mail, { ...emailParams, userExists: false });
-    await setFlash('Compte inexistant - Email envoyé.');
-    return { status: 'mailSent' };
-  }
 
   const now = new Date();
   await prisma.$transaction(async (tx) => {
@@ -192,7 +187,7 @@ export async function transferStudyHead(
     await tx.user_study.delete({ where: { id: currentUs.id } });
   });
 
-  await sendTransferEmail(mail, { ...emailParams, userExists: true });
+  await sendTransferEmail(mail, emailParams);
 
   const remaining = await prisma.user_study.count({ where: { user_id: currentUser.id } });
   if (remaining === 0 && currentUser.email) {
@@ -208,64 +203,6 @@ export async function transferStudyHead(
   revalidatePath('/settings');
   revalidatePath('/');
   return { status: 'transferred' };
-}
-
-// ─── Invitation d'un co-utilisateur sur l'étude ───────────────────────────────
-
-const inviteSchema = z.object({
-  studyId: z.uuid(),
-  email: z.email(),
-});
-
-/**
- * Port du `sendInviteMail` legacy : invite un utilisateur à co-piloter l'étude.
- * Si le compte existe, il est lié à l'étude (s'il ne l'est pas déjà). Un email
- * d'invitation est envoyé dans tous les cas (compte connu ou non).
- */
-export async function inviteCoUserToStudy(formData: FormData): Promise<void> {
-  const parsed = inviteSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) throw new Error('Formulaire invalide');
-  const { studyId, email } = parsed.data;
-  const currentUser = await assertCanEditStudy(studyId);
-
-  const study = await prisma.study.findUnique({
-    where: { id: studyId },
-    select: { territory_name: true },
-  });
-  if (!study) throw new Error('NOT_FOUND');
-
-  const invitee = await prisma.user.findUnique({
-    where: { email_bidx: blindIndex(email) },
-  });
-
-  if (invitee) {
-    const existing = await prisma.user_study.findFirst({
-      where: { user_id: invitee.id, study_id: studyId },
-    });
-    if (!existing) {
-      const now = new Date();
-      await prisma.user_study.create({
-        data: {
-          id: randomUUID(),
-          user_id: invitee.id,
-          study_id: studyId,
-          head_study: false,
-          created_at: now,
-          updated_at: now,
-        },
-      });
-    }
-  }
-
-  await sendInviteEmail(email, {
-    headStudyFirstname: currentUser.firstname ?? '',
-    headStudyLastname: currentUser.lastname ?? '',
-    territoryName: study.territory_name,
-    userExists: Boolean(invitee),
-  });
-
-  await setFlash('Email envoyé.');
-  revalidatePath('/settings');
 }
 
 /**

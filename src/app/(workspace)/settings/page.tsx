@@ -7,7 +7,6 @@ import { ContentLayout } from '@/components/layout/ContentLayout';
 import { Label } from '@/components/ui/Label';
 import { StudySettingsForm } from '@/components/settings/StudySettingsForm';
 import { TransferStudyForm } from '@/components/settings/TransferStudyForm';
-import { InviteCoUserForm } from '@/components/settings/InviteCoUserForm';
 
 export const dynamic = 'force-dynamic';
 
@@ -98,28 +97,16 @@ export default async function SettingsPage({
                   />
                 </div>
 
-                {isHead && (
+                {isHead ? (
                   <>
                     <span className="sc-settings__title sc-settings__subtitle">
                       Transférer l&apos;étude à un nouveau chargé d&apos;étude
                     </span>
                     <TransferStudyForm studyId={study.id} />
                   </>
-                )}
-
-                {isHead && (
-                  <>
-                    <span className="sc-settings__title sc-settings__subtitle">
-                      Bureau d&apos;étude
-                    </span>
-                    <InviteCoUserForm studyId={study.id} />
-                  </>
-                )}
-
-                {!isHead && (
+                ) : (
                   <div className="c-subtitle-grey mt-3">
-                    Seul le chargé d&apos;étude peut transférer l&apos;étude ou inviter
-                    un bureau d&apos;étude.
+                    Seul le chargé d&apos;étude peut transférer l&apos;étude.
                   </div>
                 )}
               </section>

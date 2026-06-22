@@ -8,12 +8,9 @@ import { transferStudyHead } from '@/server/profile/actions';
  * Form « Transférer l'étude à un nouveau chargé d'étude ».
  *
  * Inputs Nom + Prénom + Adresse mail + icône mail + bouton TRANSFÉRER.
- * Sur succès :
- *  – user cible existe : alerte « Transfert effectué. » et reload
- *  – user cible inexistant : alerte « Compte inexistant - Email envoyé »
- *
- * NB : l'envoi d'email d'invitation côté next n'est pas encore branché
- * (service mail à porter). Pour V1 on affiche le bon message.
+ *  – cible existante : « Transfert effectué. » + reload
+ *  – cible inexistante : message « Ce compte n'existe pas dans notre base. »
+ *    (plus d'invitation par email)
  */
 export function TransferStudyForm({ studyId }: { studyId: string }) {
   const router = useRouter();
@@ -33,8 +30,8 @@ export function TransferStudyForm({ studyId }: { studyId: string }) {
           form.reset();
           router.refresh();
         } else {
-          setMessage('Compte inexistant - Email envoyé.');
-          form.reset();
+          // Cible inexistante : on garde les valeurs saisies pour correction.
+          setMessage("Ce compte n'existe pas dans notre base.");
         }
       } catch (err) {
         setMessage(err instanceof Error ? err.message : 'Erreur lors du transfert');
