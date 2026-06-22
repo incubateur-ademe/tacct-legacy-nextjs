@@ -1,4 +1,4 @@
-@import "bases";
+@import 'bases';
 
 /* ─── Card d'une exposition observée (liste) ─── */
 .sc-exposure {
@@ -258,7 +258,7 @@
 /* ─── Input d'exposition (ng-select wrapper port) ─── */
 .o-observed-exposure {
   .c-required {
-    color: $color-warning;
+    color: #06d6a0;
     font-size: $txt-size-small;
     margin-top: 0.25rem;
   }

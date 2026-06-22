@@ -1,4 +1,4 @@
-@import "bases";
+@import 'bases';
 
 /* ─── Synthese impacts (liste compacte en haut) ─── */
 .sc-synthese-impacts__list {
@@ -155,6 +155,14 @@
 }
 .sc-detail-synthese-impacts__yellow {
   color: $color-tacct-yellow;
+}
+
+// Le composant legacy redéfinissait .c-group-buttons localement (sans hauteur
+// fixe). Sans cet override, le `height: 3rem` du .c-group-buttons global rogne
+// la bordure du bouton et fait déborder son texte hors du cadre.
+.sc-detail-synthese-impacts__header .c-group-buttons {
+  height: fit-content;
+  margin-top: $size-lower;
 }
 
 .sc-detail-synthese-impacts__btn-revoked {

@@ -5,6 +5,8 @@ import { redirect } from 'next/navigation';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { prisma } from '@/server/db';
+import { setFlash } from '@/server/flash';
+import { deleteImpactsCascade, deleteImpactStrategiesCascade } from '@/server/strategies/cascade';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { isAdmin } from '@/server/study/current-study';
 
@@ -22,7 +24,7 @@ const impactThemeSchema = z.object({
   studyId: z.uuid(),
   thematicId: z.uuid().optional().nullable(),
   customName: z.string().trim().max(255).optional().nullable(),
-  justification: z.string().min(1, 'Justification requise'),
+  justification: z.string().optional().default(''),
 });
 
 export async function addImpactTheme(formData: FormData): Promise<void> {
@@ -77,7 +79,24 @@ export async function deleteImpactTheme(id: string) {
   if (!theme?.study_id) throw new Error('NOT_FOUND');
   await assertCanEditStudy(theme.study_id);
 
-  await prisma.impact_theme.delete({ where: { id } });
+  // Cascade fidèle au legacy : ImpactTheme → impacts + stratégies → descendance.
+  await prisma.$transaction(async (tx) => {
+    const [impacts, strategies] = await Promise.all([
+      tx.impact.findMany({ where: { impact_theme_id: id }, select: { id: true } }),
+      tx.impact_strategy.findMany({ where: { impact_theme_id: id }, select: { id: true } }),
+    ]);
+    await deleteImpactsCascade(
+      tx,
+      impacts.map((i) => i.id),
+    );
+    await deleteImpactStrategiesCascade(
+      tx,
+      strategies.map((s) => s.id),
+    );
+    await tx.impact_theme.delete({ where: { id } });
+  });
+
+  await setFlash('Thématique supprimée.');
   revalidatePath('/sensibility');
 }
 
@@ -132,24 +151,6 @@ function parseImpactForm(formData: FormData) {
   });
 }
 
-/**
- * Calcule revoked_diagnostic = sensitivity × future_exposure < 8.
- * Si une des deux valeurs manque, retourne false.
- */
-async function computeRevokedDiagnostic(
-  sensitivity: number | null | undefined,
-  primaryExposureId: string | null | undefined,
-): Promise<boolean> {
-  if (!sensitivity || !primaryExposureId) return false;
-  const exposure = await prisma.observed_exposure.findUnique({
-    where: { id: primaryExposureId },
-    include: { future_exposure: true },
-  });
-  const futureExposure = exposure?.future_exposure?.exposure;
-  if (futureExposure === null || futureExposure === undefined) return false;
-  return sensitivity * Number(futureExposure) < 8;
-}
-
 export async function addImpact(formData: FormData): Promise<void> {
   const parsed = parseImpactForm(formData);
   if (!parsed.success) {
@@ -166,7 +167,6 @@ export async function addImpact(formData: FormData): Promise<void> {
   if (!theme?.study_id) throw new Error('NOT_FOUND');
   await assertCanEditStudy(theme.study_id);
 
-  const revoked = await computeRevokedDiagnostic(data.sensitivity, data.primaryExposureId);
   const now = new Date();
   const impactId = randomUUID();
 
@@ -180,7 +180,7 @@ export async function addImpact(formData: FormData): Promise<void> {
       justification: data.justification ?? null,
       observed_impact: data.observedImpact,
       action_plan: data.actionPlan ?? null,
-      revoked_diagnostic: revoked,
+      revoked_diagnostic: false,
       strategy_studied: false,
       created_at: now,
       updated_at: now,
@@ -192,6 +192,7 @@ export async function addImpact(formData: FormData): Promise<void> {
     },
   });
 
+  await setFlash('Impact créé.');
   revalidatePath('/sensibility');
   redirect('/sensibility');
 }
@@ -212,8 +213,6 @@ export async function updateImpact(impactId: string, formData: FormData): Promis
   if (!impact?.impact_theme?.study_id) throw new Error('NOT_FOUND');
   await assertCanEditStudy(impact.impact_theme.study_id);
 
-  const revoked = await computeRevokedDiagnostic(data.sensitivity, data.primaryExposureId);
-
   await prisma.$transaction(async (tx) => {
     // Reset des aléas secondaires : delete puis create
     await tx.observed_exposure_impact.deleteMany({ where: { impact_id: impactId } });
@@ -226,7 +225,6 @@ export async function updateImpact(impactId: string, formData: FormData): Promis
         justification: data.justification ?? null,
         observed_impact: data.observedImpact,
         action_plan: data.actionPlan ?? null,
-        revoked_diagnostic: revoked,
         updated_at: new Date(),
         observed_exposure_impact: {
           create: data.secondaryExposureIds
@@ -237,6 +235,7 @@ export async function updateImpact(impactId: string, formData: FormData): Promis
     });
   });
 
+  await setFlash('Impact mis à jour');
   revalidatePath('/sensibility');
   redirect('/sensibility');
 }
@@ -249,7 +248,10 @@ export async function deleteImpact(impactId: string) {
   if (!impact?.impact_theme?.study_id) throw new Error('NOT_FOUND');
   await assertCanEditStudy(impact.impact_theme.study_id);
 
-  await prisma.impact.delete({ where: { id: impactId } });
+  await prisma.$transaction(async (tx) => {
+    await deleteImpactsCascade(tx, [impactId]);
+  });
+  await setFlash('Impact supprimé.');
   revalidatePath('/sensibility');
 }
 
@@ -274,6 +276,16 @@ export async function validateSensibilityStep(studyId: string) {
       updated_at: new Date(),
     },
   });
+
+  if (allComplete) {
+    await setFlash('Validation effectuée');
+  } else {
+    await setFlash(
+      'Validation non effectuée',
+      'error',
+      'Informations manquantes sur un ou plusieurs impacts',
+    );
+  }
 
   revalidatePath('/sensibility');
   revalidatePath('/');

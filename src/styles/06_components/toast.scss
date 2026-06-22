@@ -1,0 +1,110 @@
+@import 'bases';
+
+.sc-toast-group {
+  display: flex;
+  flex-direction: column-reverse;
+  margin-left: $size-large - $size-lower;
+  margin-bottom: 0;
+  position: fixed;
+  bottom: 0;
+  z-index: 1100;
+  transition: 0.4s ease all;
+}
+
+.c-toast {
+  background-color: $color-project-primary-dark;
+  color: $color-txt-default-secondary;
+  border-radius: $radius-default;
+  display: flex;
+  width: 7 * $size-large;
+  margin-top: $size-lower;
+  position: relative;
+  bottom: $size-default;
+  left: 1rem;
+  opacity: 1;
+  animation: c-toast-in 0.6s ease;
+  transition:
+    left 0.6s ease,
+    opacity 0.6s ease;
+
+  &.is-leaving {
+    opacity: 0;
+    left: -7 * $size-large;
+  }
+
+  &.success {
+    .c-toast__figure {
+      background-color: $color-success;
+    }
+  }
+  &.error {
+    .c-toast__figure {
+      background-color: $color-error;
+    }
+  }
+  &.warning {
+    .c-toast__figure {
+      background-color: $color-warning;
+    }
+  }
+}
+
+@keyframes c-toast-in {
+  from {
+    opacity: $opacity-lower;
+    left: -7 * $size-large;
+  }
+  to {
+    opacity: 1;
+    left: 1rem;
+  }
+}
+
+.c-toast__figure {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-default 0 0 $radius-default;
+  min-width: $size-large - $size-lower;
+  width: $size-large - $size-lower;
+
+  & > em.c-icon {
+    font-weight: $txt-bold;
+  }
+}
+
+.c-toast__text {
+  overflow-wrap: break-word;
+  padding: $size-default 1.7rem $size-default $size-default;
+}
+
+.c-toast__title {
+  @include txt-paragraphe-bold;
+  color: $color-txt-default-secondary;
+}
+
+.c-toast__content {
+  @include txt-paragraphe-small;
+  color: $color-txt-default-secondary;
+  margin-top: $size-small;
+}
+
+.c-toast__button {
+  color: $color-project-primary-very-light;
+  margin-top: $size-small;
+  margin-right: $size-small;
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+
+  .close {
+    float: none;
+    font-size: $icon-size-default;
+    font-weight: inherit;
+    line-height: inherit;
+    color: $color-default-secondary;
+    text-shadow: none;
+    opacity: 1;
+  }
+}

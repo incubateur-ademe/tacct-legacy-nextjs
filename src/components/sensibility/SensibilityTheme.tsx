@@ -1,15 +1,11 @@
 'use client';
 
-import { useEffect, useRef, useState, useTransition } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import { BlockHeader } from '@/components/ui/BlockHeader';
-import { StepStatus } from '@/components/ui/StepStatus';
+import { deleteImpactTheme, updateImpactThemeJustification } from '@/server/sensibility/actions';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useRef, useState, useTransition } from 'react';
 import { SensibilityCard, type SensibilityCardItem } from './SensibilityCard';
-import {
-  deleteImpactTheme,
-  updateImpactThemeJustification,
-} from '@/server/sensibility/actions';
 
 export type SensibilityThemeItem = {
   id: string;
@@ -87,9 +83,9 @@ export function SensibilityTheme({ theme }: { theme: SensibilityThemeItem }) {
 
   return (
     <>
-      <div className="c-exposure mt-5 c-sensibility-theme">
+      <div className="c-exposure c-sensibility-theme mt-5">
         <div className="o-card-p-0">
-          <div className="c-accordion__header w-100 d-flex align-items-center align-content-center justify-content-between">
+          <div className="c-accordion__header d-flex align-items-center align-content-center justify-content-between w-100">
             <BlockHeader
               className="col-16"
               pageTitle={theme.name}
@@ -97,9 +93,9 @@ export function SensibilityTheme({ theme }: { theme: SensibilityThemeItem }) {
               size="medium"
               nbElement={theme.impacts.length}
             />
-            <div className="mt-3 ml-3 mr-auto pb-3">
+            {/* <div className="mt-3 ml-3 mr-auto pb-3">
               {showThemeStatus && <StepStatus status="incomplete" />}
-            </div>
+            </div> */}
             <button
               type="button"
               aria-label={opened ? 'Replier' : 'Déplier'}
@@ -124,7 +120,7 @@ export function SensibilityTheme({ theme }: { theme: SensibilityThemeItem }) {
                   <button
                     type="button"
                     aria-label="Modifier la justification"
-                    className="ml-auto c-btn--secondary-icon-circle c-sensibility-theme__edit-theme mr-2"
+                    className="c-btn--secondary-icon-circle c-sensibility-theme__edit-theme mr-2 ml-auto"
                     title="Modifier la thematique"
                     onClick={() => setEditing(true)}
                   >
@@ -146,18 +142,10 @@ export function SensibilityTheme({ theme }: { theme: SensibilityThemeItem }) {
                     </div>
                   </section>
                   <div className="c-box__sensibilite-bottom-theme">
-                    <button
-                      type="button"
-                      onClick={cancelEdit}
-                      className="c-input__sensibilite"
-                    >
+                    <button type="button" onClick={cancelEdit} className="c-input__sensibilite">
                       Annuler
                     </button>
-                    <button
-                      type="button"
-                      onClick={saveJustification}
-                      className="c-btn--primary"
-                    >
+                    <button type="button" onClick={saveJustification} className="c-btn--primary">
                       Enregistrer
                     </button>
                   </div>
@@ -169,11 +157,7 @@ export function SensibilityTheme({ theme }: { theme: SensibilityThemeItem }) {
               ))}
 
               <div className="c-box__sensibilite-bottom-theme c-box__edit-theme">
-                <button
-                  type="button"
-                  onClick={openDelete}
-                  className="c-input__sensibilite"
-                >
+                <button type="button" onClick={openDelete} className="c-input__sensibilite">
                   Supprimer la thématique
                 </button>
                 <Link href={addImpactHref} className="c-btn--primary">

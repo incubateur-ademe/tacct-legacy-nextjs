@@ -35,10 +35,9 @@ export function AddThematicForm({
   const [pending, startTransition] = useTransition();
 
   const isCustom = selected === CUSTOM_ID;
-  const canSubmit =
-    selected !== null &&
-    justification.trim().length > 0 &&
-    (!isCustom || customName.trim().length > 0);
+  // La justification n'est pas obligatoire (fidèle au legacy) : seul le nom
+  // d'une thématique personnalisée l'est.
+  const canSubmit = selected !== null && (!isCustom || customName.trim().length > 0);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,4 +1,4 @@
-@import "bases";
+@import 'bases';
 
 /* ─── Page principale : accordéons sensibility-theme ─── */
 .c-sensibility-theme {
@@ -79,7 +79,7 @@
   margin: 2em auto;
   display: flex;
   flex-wrap: wrap;
-  width: 49rem;
+  gap: 0 1rem;
 }
 
 .o-thematic {
@@ -114,7 +114,7 @@
     height: 24px;
     width: 24px;
     background-size: 24px;
-    background-image: url("/workspace-tacct/assets/img/selectionne.svg");
+    background-image: url('/workspace-tacct/assets/img/selectionne.svg');
     background-position: center;
     background-repeat: no-repeat;
   }

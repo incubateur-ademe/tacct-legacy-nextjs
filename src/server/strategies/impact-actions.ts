@@ -5,6 +5,8 @@ import { redirect } from 'next/navigation';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { prisma } from '@/server/db';
+import { setFlash } from '@/server/flash';
+import { deleteImpactActionsCascade } from './cascade';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { isAdmin } from '@/server/study/current-study';
 import { getImpactOwner, parseIncompatibles, type OwnerType } from './impact-queries';
@@ -48,6 +50,8 @@ export async function saveImpactLevel(
   const data = parsed.data;
 
   const owner = await loadAndAuthorizeOwner(type, ownerId);
+
+  const isUpdate = Boolean(owner.impactLevelId);
 
   if (owner.impactLevelId) {
     await prisma.impact_level.update({
@@ -93,6 +97,7 @@ export async function saveImpactLevel(
     }
   }
 
+  await setFlash(isUpdate ? `Niveaux d'impact mis à jour.` : `Niveaux d'impact ajoutés.`);
   revalidatePath(`/impacts/${type}/${ownerId}/impact-level`);
 }
 
@@ -198,6 +203,7 @@ export async function createImpactAction(
   });
   await syncIncompatibilities(actionId, incompatibles);
 
+  await setFlash('Action créée');
   revalidatePath(`/impacts/${type}/${ownerId}/define-actions`);
 }
 
@@ -230,6 +236,7 @@ export async function updateImpactAction(
   });
   await syncIncompatibilities(actionId, incompatibles);
 
+  await setFlash('Action modifiée');
   revalidatePath(`/impacts/${type}/${ownerId}/define-actions`);
 }
 
@@ -240,7 +247,10 @@ export async function deleteImpactAction(
 ): Promise<void> {
   await loadAndAuthorizeOwner(type, ownerId);
   await syncIncompatibilities(actionId, []);
-  await prisma.impact_action.delete({ where: { id: actionId } });
+  await prisma.$transaction(async (tx) => {
+    await deleteImpactActionsCascade(tx, [actionId]);
+  });
+  await setFlash('Action supprimée');
   revalidatePath(`/impacts/${type}/${ownerId}/define-actions`);
 }
 
@@ -388,6 +398,7 @@ export async function createTrajectory(
     },
   });
 
+  await setFlash('Trajectoire créée');
   revalidatePath(`/impacts/${type}/${ownerId}/build-trajectories`);
   redirect(`/impacts/${type}/${ownerId}/build-trajectories`);
 }
@@ -425,6 +436,7 @@ export async function updateTrajectory(
     }
   });
 
+  await setFlash('Trajectoire modifiée');
   revalidatePath(`/impacts/${type}/${ownerId}/build-trajectories`);
   redirect(`/impacts/${type}/${ownerId}/build-trajectories`);
 }
@@ -436,5 +448,6 @@ export async function deleteTrajectory(
 ): Promise<void> {
   await loadAndAuthorizeOwner(type, ownerId);
   await prisma.impact_trajectory.delete({ where: { id: trajectoryId } });
+  await setFlash('Trajectoire supprimée');
   revalidatePath(`/impacts/${type}/${ownerId}/build-trajectories`);
 }

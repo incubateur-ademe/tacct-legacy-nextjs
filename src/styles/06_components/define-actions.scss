@@ -121,8 +121,12 @@
   }
 }
 
-.sc-form-action__add-icon,
-.sc-form-action__selected-icon {
+// Scopé sous .sc-form-action pour battre, à spécificité égale et par l'ordre
+// source, la règle `.sc-form-action .c-icon__circle { position: relative }`
+// (l'icône `+` porte aussi la classe c-icon__circle). Sans ça, le `+` repasse
+// en flux normal et se centre au lieu de se placer en haut à droite.
+.sc-form-action .sc-form-action__add-icon,
+.sc-form-action .sc-form-action__selected-icon {
   position: absolute;
   right: -0.125rem;
   top: 0;

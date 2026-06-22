@@ -90,12 +90,6 @@ export default async function AccountManagementPage({
                     {total} {pluralize(total, 'résultat', 'résultats')}
                   </span>
                 </div>
-
-                <div className="c-group-buttons c-group-buttons--end">
-                  <Link href="/gestion/account-management/create" className="c-btn--primary">
-                    Créer un compte
-                  </Link>
-                </div>
               </div>
             </div>
           </div>

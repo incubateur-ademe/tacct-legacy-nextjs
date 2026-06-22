@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { prisma } from '@/server/db';
+import { setFlash } from '@/server/flash';
 import { blindIndex, encryptField } from '@/server/crypto/user-crypto';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { isAdmin } from '@/server/study/current-study';
@@ -72,6 +73,7 @@ export async function createUser(formData: FormData): Promise<void> {
     },
   });
 
+  await setFlash('Le compte a été créé.');
   revalidatePath('/gestion/account-management');
   redirect('/gestion/account-management');
 }
@@ -102,6 +104,7 @@ export async function updateUser(id: string, formData: FormData): Promise<void> 
     },
   });
 
+  await setFlash('Le compte a été modifié.');
   revalidatePath('/gestion/account-management');
   redirect('/gestion/account-management');
 }
@@ -109,6 +112,7 @@ export async function updateUser(id: string, formData: FormData): Promise<void> 
 export async function deleteUser(id: string): Promise<void> {
   await assertAdmin();
   await prisma.user.delete({ where: { id } });
+  await setFlash('Le compte a été supprimé.');
   revalidatePath('/gestion/account-management');
 }
 
@@ -182,6 +186,31 @@ async function createStudyForUser(userId: string, communeId: string): Promise<vo
   ]);
 }
 
+/** Domaines internes (équipe) exclus du décompte des collectivités par région. */
+const INTERNAL_EMAIL_DOMAINS = ['@groupeonepoint.com', '@ademe.fr', '@open-groupe.com'];
+
+/**
+ * Incrémente le compteur de collectivités de la région rattachée à la commune
+ * (port de RegionCommunities::increaseCountCommunities). Les comptes internes
+ * sont exclus. À n'appeler qu'à l'activation (transition validated false→true).
+ */
+async function increaseRegionCommunities(
+  communeId: string,
+  email: string | null,
+): Promise<void> {
+  if (!email || INTERNAL_EMAIL_DOMAINS.some((d) => email.includes(d))) return;
+  const commune = await prisma.commune.findUnique({
+    where: { id: communeId },
+    select: { department: { select: { region_id: true } } },
+  });
+  const regionId = commune?.department?.region_id;
+  if (!regionId) return;
+  await prisma.region.update({
+    where: { id: regionId },
+    data: { count_communities: { increment: 1 } },
+  });
+}
+
 /** « Activer le compte et créer l'étude » : validé + étude + email de validation. */
 export async function activateAccount(id: string, formData: FormData): Promise<void> {
   await assertAdmin();
@@ -208,10 +237,15 @@ export async function activateAccount(id: string, formData: FormData): Promise<v
     await createStudyForUser(id, communeId);
   }
 
+  if (!user.validated) {
+    await increaseRegionCommunities(communeId, user.email);
+  }
+
   if (user.email) {
     await sendAccountValidatedEmail(user.email, { firstname: user.firstname ?? '' });
   }
 
+  await setFlash('Le compte a été activé.');
   revalidatePath('/gestion/account-management');
   revalidatePath(`/gestion/account-management/${id}`);
 }
@@ -237,6 +271,7 @@ export async function createStudyForAccount(id: string, formData: FormData): Pro
     await createStudyForUser(id, communeId);
   }
 
+  await setFlash('Le compte a été modifié.');
   revalidatePath('/gestion/account-management');
   revalidatePath(`/gestion/account-management/${id}`);
 }
@@ -245,6 +280,7 @@ export async function createStudyForAccount(id: string, formData: FormData): Pro
 export async function deleteAccount(id: string): Promise<void> {
   await assertAdmin();
   await prisma.user.delete({ where: { id } });
+  await setFlash('Le compte a été supprimé.');
   revalidatePath('/gestion/account-management');
   redirect('/gestion/account-management');
 }
@@ -361,6 +397,7 @@ export async function createProjectSheet(formData: FormData): Promise<void> {
       updated_at: now,
     },
   });
+  await setFlash('Fiche projet créée avec succès');
   revalidatePath('/gestion/project-sheet-management');
   redirect('/gestion/project-sheet-management');
 }
@@ -397,12 +434,18 @@ export async function updateProjectSheet(id: string, formData: FormData): Promis
       updated_at: new Date(),
     },
   });
+  await setFlash('Fiche projet mise à jour');
   revalidatePath('/gestion/project-sheet-management');
   redirect('/gestion/project-sheet-management');
 }
 
 export async function deleteProjectSheet(id: string): Promise<void> {
   await assertAdmin();
+  const sheet = await prisma.project_sheet_detail.findUnique({
+    where: { id },
+    select: { name: true },
+  });
   await prisma.project_sheet_detail.delete({ where: { id } });
+  await setFlash(`La fiche ${sheet?.name ?? ''} a bien été supprimée`);
   revalidatePath('/gestion/project-sheet-management');
 }

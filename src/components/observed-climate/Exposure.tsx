@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useTransition } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { typeExposure } from '@/lib/typeExposure';
 import { deleteObservedExposure } from '@/server/observed-exposure/actions';
@@ -113,13 +114,13 @@ export function Exposure({ items }: { items: ExposureItem[] }) {
             {item.justification && <p className="u-margin__top">{item.justification}</p>}
           </div>
           <div className="sc-exposure__tools">
-            <a
+            <Link
               aria-label="Modifier"
               href={`/observed-climate/observed-exposure/${item.id}/edit${suffix}`}
               className="c-icon__circle project-secondary"
             >
               <em className="c-icon default-secondary pen" aria-hidden="true" />
-            </a>
+            </Link>
             <button
               type="button"
               aria-label="Supprimer"

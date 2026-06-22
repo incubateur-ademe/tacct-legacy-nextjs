@@ -1,28 +1,30 @@
-import { redirect } from 'next/navigation';
+import { ContentLayout } from '@/components/layout/ContentLayout';
+import type { DetailSyntheseImpactItem } from '@/components/skills-partners/DetailSyntheseImpacts';
+import { DetailSyntheseImpacts } from '@/components/skills-partners/DetailSyntheseImpacts';
+import { SyntheseImpacts } from '@/components/skills-partners/SyntheseImpacts';
+import type { SyntheseImpactItem } from '@/components/skills-partners/SyntheseImpactSimple';
+import { BlockTitleIcon } from '@/components/ui/BlockTitleIcon';
 import { requireCurrentUser } from '@/server/auth/current-user';
-import { getCurrentStudy } from '@/server/study/current-study';
 import {
   getImpactsWithCompetencesForStudy,
   getSkillTerritoryCatalog,
 } from '@/server/skills-partners/queries';
-import { BlockTitleIcon } from '@/components/ui/BlockTitleIcon';
-import { ContentLayout } from '@/components/layout/ContentLayout';
-import { SyntheseImpacts } from '@/components/skills-partners/SyntheseImpacts';
-import { DetailSyntheseImpacts } from '@/components/skills-partners/DetailSyntheseImpacts';
-import type { SyntheseImpactItem } from '@/components/skills-partners/SyntheseImpactSimple';
-import type { DetailSyntheseImpactItem } from '@/components/skills-partners/DetailSyntheseImpacts';
+import { getCurrentStudy } from '@/server/study/current-study';
+import { trendIcon } from '@/lib/skillsScore';
+import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
 type SearchParams = Promise<{ study?: string }>;
 
-const MIN_FUTURE_EXPOSURE = 8;
+// Ordre des groupes de tendance à futureExposure égal (cf. tri legacy).
+const TREND_RANK: Record<string, number> = {
+  'arrow-increases': 0,
+  'arrow-holding': 1,
+  'arrow-decreases': 2,
+};
 
-export default async function SkillsPartnersPage({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
+export default async function SkillsPartnersPage({ searchParams }: { searchParams: SearchParams }) {
   const user = await requireCurrentUser();
   const { study: studyIdParam } = await searchParams;
   const study = await getCurrentStudy(user, studyIdParam);
@@ -44,6 +46,7 @@ export default async function SkillsPartnersPage({
   type Item = SyntheseImpactItem & {
     actionPlan: string;
     revokedDiagnostic: boolean;
+    trend: string;
   };
 
   const items: Item[] = impacts.map((imp) => {
@@ -52,32 +55,38 @@ export default async function SkillsPartnersPage({
     const fut = imp.observed_exposure?.future_exposure?.exposure
       ? Number(imp.observed_exposure.future_exposure.exposure)
       : 0;
+    const observedExposure = sensitivity * obs;
+    const futureExposure = sensitivity * fut;
     return {
       id: imp.id,
       description: imp.description ?? '',
       thematicIcon: imp.impact_theme?.thematic?.icon ?? 'suspended',
       thematicName: imp.impact_theme?.thematic?.name ?? imp.impact_theme?.name ?? '',
-      observedExposure: sensitivity * obs,
-      futureExposure: sensitivity * fut,
+      observedExposure,
+      futureExposure,
       revokedDiagnostic: imp.revoked_diagnostic,
       actionPlan: imp.action_plan ?? '',
+      trend: trendIcon(observedExposure, futureExposure),
     };
   });
 
-  // Tri legacy : par futureExposure DESC puis par description
+  // Tri legacy : futureExposure DESC, puis groupe de tendance
+  // (croît → stable → décroît), puis observedExposure DESC, puis description ASC.
   const sorted = [...items].sort((a, b) => {
     if (b.futureExposure !== a.futureExposure) return b.futureExposure - a.futureExposure;
+    if (TREND_RANK[a.trend] !== TREND_RANK[b.trend]) {
+      return (TREND_RANK[a.trend] ?? 0) - (TREND_RANK[b.trend] ?? 0);
+    }
+    if (b.observedExposure !== a.observedExposure) return b.observedExposure - a.observedExposure;
     return a.description.localeCompare(b.description);
   });
 
-  // Pour la liste compacte : ignore les impacts révoqués dans les prioritaires
-  // (la legacy les filtre en amont via le store) — on garde tous pour avoir
-  // possibilité de réajouter via le bouton "Ajouter" dans la zone non-prio.
+  // Liste compacte : tous les impacts (le split prio/non-prio se fait dans le composant).
   const syntheseItems: SyntheseImpactItem[] = sorted;
 
-  // Pour les détails : uniquement les prioritaires non révoqués
+  // Détails : tous les impacts non révoqués (fidèle au legacy `*ngIf="!revokedDiagnostic"`).
   const detailItems: DetailSyntheseImpactItem[] = sorted
-    .filter((i) => i.futureExposure >= MIN_FUTURE_EXPOSURE && !i.revokedDiagnostic)
+    .filter((i) => !i.revokedDiagnostic)
     .map((i) => ({
       id: i.id,
       description: i.description,
@@ -107,7 +116,7 @@ export default async function SkillsPartnersPage({
 
   return (
     <ContentLayout helpKey="skills-partners-mobilised">
-      <div className="container page">
+      <div className="page container">
         <div className="o-card u-margin__bottom--m">
           <div className="row">
             <BlockTitleIcon
@@ -120,6 +129,7 @@ export default async function SkillsPartnersPage({
 
         <div className="o-card">
           <SyntheseImpacts impacts={syntheseItems} />
+          <div style={{ margin: '5rem 0 0' }}></div>
 
           {detailItems.map((d) => (
             <DetailSyntheseImpacts

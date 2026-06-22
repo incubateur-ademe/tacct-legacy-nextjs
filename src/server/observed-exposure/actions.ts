@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { prisma } from '@/server/db';
+import { setFlash } from '@/server/flash';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { isAdmin } from '@/server/study/current-study';
 
@@ -67,6 +68,7 @@ export async function addObservedExposure(formData: FormData): Promise<void> {
     },
   });
 
+  await setFlash('Aléa créé');
   revalidatePath('/observed-climate/observed-exposure');
   redirect('/observed-climate/observed-exposure');
 }
@@ -107,6 +109,7 @@ export async function updateObservedExposure(
     },
   });
 
+  await setFlash('Aléa modifié');
   revalidatePath('/observed-climate/observed-exposure');
   redirect('/observed-climate/observed-exposure');
 }
@@ -120,6 +123,7 @@ export async function deleteObservedExposure(id: string) {
   await assertCanEditStudy(exposure.study_id);
 
   await prisma.observed_exposure.delete({ where: { id } });
+  await setFlash('Aléa supprimé');
   revalidatePath('/observed-climate/observed-exposure');
 }
 
@@ -145,6 +149,16 @@ export async function validateObservedExposureStep(studyId: string) {
       updated_at: new Date(),
     },
   });
+
+  if (allComplete) {
+    await setFlash('Validation effectuée');
+  } else {
+    await setFlash(
+      'Validation non effectuée',
+      'error',
+      'Informations manquantes sur un ou plusieurs aléas',
+    );
+  }
 
   revalidatePath('/observed-climate/observed-exposure');
   revalidatePath('/');

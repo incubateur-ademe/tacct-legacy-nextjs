@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { prisma } from '@/server/db';
+import { setFlash } from '@/server/flash';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { isAdmin } from '@/server/study/current-study';
 
@@ -184,6 +185,16 @@ export async function validateFutureExposureStep(studyId: string) {
       updated_at: new Date(),
     },
   });
+
+  if (allComplete) {
+    await setFlash('Validation effectuée');
+  } else {
+    await setFlash(
+      'Validation non effectuée',
+      'error',
+      'Informations manquantes sur un ou plusieurs aléas',
+    );
+  }
 
   revalidatePath('/future-climate/capture-future-climate');
   revalidatePath('/');

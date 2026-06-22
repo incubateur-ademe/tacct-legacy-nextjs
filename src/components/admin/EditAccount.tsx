@@ -1,11 +1,7 @@
 'use client';
 
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
-import {
-  activateAccount,
-  createStudyForAccount,
-  deleteAccount,
-} from '@/server/admin/actions';
+import { activateAccount, createStudyForAccount, deleteAccount } from '@/server/admin/actions';
 import { useState, useTransition } from 'react';
 import { CommuneAutocomplete } from './CommuneAutocomplete';
 import { StatusAccount } from './StatusAccount';
@@ -142,14 +138,14 @@ export function EditAccount({
                 >
                   Activer le compte et créer l’étude
                 </button>
-                <button
+                {/* <button
                   className="c-btn--secondary"
                   type="button"
                   onClick={() => setConfirmOpen(true)}
                   title="Supprimer le compte"
                 >
                   Supprimer le compte
-                </button>
+                </button> */}
               </div>
             </section>
           </>

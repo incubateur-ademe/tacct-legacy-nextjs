@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { prisma } from '@/server/db';
+import { setFlash } from '@/server/flash';
 import { blindIndex } from '@/server/crypto/user-crypto';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { isAdmin } from '@/server/study/current-study';
@@ -155,6 +156,7 @@ export async function transferStudyHead(
 
   if (!target) {
     await sendTransferEmail(mail, { ...emailParams, userExists: false });
+    await setFlash('Compte inexistant - Email envoyé.');
     return { status: 'mailSent' };
   }
 
@@ -202,6 +204,7 @@ export async function transferStudyHead(
     });
   }
 
+  await setFlash('Transfert effectué. Un mail vous a été transmis.');
   revalidatePath('/settings');
   revalidatePath('/');
   return { status: 'transferred' };
@@ -261,6 +264,7 @@ export async function inviteCoUserToStudy(formData: FormData): Promise<void> {
     userExists: Boolean(invitee),
   });
 
+  await setFlash('Email envoyé.');
   revalidatePath('/settings');
 }
 

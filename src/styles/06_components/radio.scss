@@ -1,4 +1,4 @@
-@import "bases";
+@import 'bases';
 
 .c-radio__group {
   margin: $size-lower 0 $size-default 0;
@@ -33,7 +33,7 @@
 }
 
 .c-radio__input + .c-radio__label:after {
-  content: "";
+  content: '';
   background-color: $color-default-secondary;
   border: $border-empty;
   border-radius: 50%;
@@ -63,7 +63,7 @@
 }
 
 .c-radio__input:disabled + .c-radio__label {
-  color: $color-empty;
+  color: #dddddd;
 }
 
 .c-radio__input:focus + .c-radio__label:after {

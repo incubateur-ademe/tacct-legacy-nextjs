@@ -52,16 +52,18 @@ export function HelpSidebar({
   const steps = pages.filter((p) => p.page_type === 'step');
   const resources = pages.filter((p) => p.page_type === 'resource');
 
-  const orderedPages = pages
-    .filter((p) => p.page_type !== 'intro')
-    .sort((a, b) => a.rank - b.rank);
-  const selectedIndex = selected
-    ? orderedPages.findIndex((p) => p.id === selected.id)
-    : -1;
-  const prevPage = selectedIndex > 0 ? orderedPages[selectedIndex - 1] : null;
+  // Navigation scopée à la section (page_type) de la page ouverte, dans l'ordre
+  // du menu (rank asc) — fidèle au legacy `setCurrentStepAction`/`setPage` qui
+  // filtrent `pages` sur `currentPage.pageType`. (Avant : tri global tous types
+  // confondus, d'où des sauts vers des modales d'autres sections.)
+  const sectionPages = selected
+    ? pages.filter((p) => p.page_type === selected.page_type).sort((a, b) => a.rank - b.rank)
+    : [];
+  const selectedIndex = selected ? sectionPages.findIndex((p) => p.id === selected.id) : -1;
+  const prevPage = selectedIndex > 0 ? sectionPages[selectedIndex - 1] : null;
   const nextPage =
-    selectedIndex !== -1 && selectedIndex < orderedPages.length - 1
-      ? orderedPages[selectedIndex + 1]
+    selectedIndex !== -1 && selectedIndex < sectionPages.length - 1
+      ? sectionPages[selectedIndex + 1]
       : null;
 
   const open = (page: HelpPage) => {

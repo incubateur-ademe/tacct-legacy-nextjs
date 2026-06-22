@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useTransition } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { StepStatus } from '@/components/ui/StepStatus';
 import { sensibilityLabel } from '@/lib/sensibility';
@@ -187,13 +188,13 @@ export function SensibilityCard({ impact }: { impact: SensibilityCardItem }) {
                       </div>
                     </div>
                     <div className="o-section-delete-edit section-blue">
-                      <a
+                      <Link
                         aria-label="Modifier l'impact"
                         href={editHref}
                         className="ml-auto mr-auto mt-2 c-icon__circle project-secondary sc-block-title-icon__icon"
                       >
                         <em className="c-icon default-secondary pen" aria-hidden="true" />
-                      </a>
+                      </Link>
                       <button
                         type="button"
                         aria-label="Supprimer l'impact"

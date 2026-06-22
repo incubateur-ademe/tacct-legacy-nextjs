@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { prisma } from '@/server/db';
+import { setFlash } from '@/server/flash';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { isAdmin } from '@/server/study/current-study';
 
@@ -41,6 +42,7 @@ export async function saveHelpPage(formData: FormData): Promise<void> {
     where: { id },
     data: { name: title, slug: finalSlug, content, updated_at: new Date() },
   });
+  await setFlash('Page enregistrée');
   revalidatePath('/', 'layout');
 }
 
@@ -56,6 +58,7 @@ export async function saveHelpIntro(formData: FormData): Promise<void> {
       where: { id: introId },
       data: { content, updated_at: new Date() },
     });
+    await setFlash('Page enregistrée');
   } else {
     if (!pageInfoId) throw new Error('page_info manquant');
     const now = new Date();
@@ -71,6 +74,7 @@ export async function saveHelpIntro(formData: FormData): Promise<void> {
         updated_at: now,
       },
     });
+    await setFlash('Page créée');
   }
   revalidatePath('/', 'layout');
 }
@@ -79,5 +83,6 @@ export async function saveHelpIntro(formData: FormData): Promise<void> {
 export async function deleteHelpPage(id: string): Promise<void> {
   await assertAdmin();
   await prisma.page.delete({ where: { id } });
+  await setFlash('Page supprimée');
   revalidatePath('/', 'layout');
 }

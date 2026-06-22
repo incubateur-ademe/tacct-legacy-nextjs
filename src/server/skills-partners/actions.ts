@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { prisma } from '@/server/db';
+import { setFlash } from '@/server/flash';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { isAdmin } from '@/server/study/current-study';
 
@@ -71,6 +72,7 @@ export async function saveImpactCompetences(
     }
   });
 
+  await setFlash(`Compétences ajoutées à l'impact.`);
   revalidatePath('/skills-partners-mobilised');
 }
 
@@ -92,5 +94,6 @@ export async function setImpactRevoked(impactId: string, revoked: boolean) {
     data: { revoked_diagnostic: revoked, updated_at: new Date() },
   });
 
+  await setFlash(revoked ? 'Impact retiré.' : 'Impact ajouté.');
   revalidatePath('/skills-partners-mobilised');
 }

@@ -201,61 +201,118 @@ export async function generateStudyCsv(studyId: string): Promise<string> {
     orderBy: { created_at: 'asc' },
   });
 
+  // Colonnes, ordre et libellés repris à l'identique du legacy
+  // (`DashboardRepository::getCsv`), export sous délimiteur `;` + BOM UTF-8.
   const headers = [
     'Thématique',
-    'Sensibilité',
+    'Thématique justification',
     'Description courte',
-    'Description longue',
-    'Aléa principal',
-    'Caractéristiques climatiques',
-    'Tendances passées',
-    'Exposition observée',
-    'Évolution future',
-    'Exposition future',
+    'Sensibilité',
     'Justification',
+    'Description longue',
+    "Plan d'action",
+    'Aléa principal',
+    'Aléa principal - Caractéristiques actuelles du climat du territoire',
+    'Aléa principal - Evolutions tendancielles passées',
+    'Aléa principal - Sources',
+    'Aléa principal - Exposition observée',
+    "Aléa principal - Justification de l'exposition observée",
+    'Aléa principal - Evolution future',
+    'Aléa principal - Exposition future',
+    "Aléa principal - Justification de l'exposition future",
     'Aléas secondaires',
   ];
 
-  const rows: string[] = [headers.map(csvEscape).join(',')];
+  const rows: string[] = [headers.map(csvEscape).join(';')];
 
   for (const theme of themes) {
+    const themeName = theme.thematic?.name ?? theme.name ?? '';
+
+    // Thématique sans impact : une ligne « thématique seule » (cf. LEFT JOIN legacy).
+    if (theme.impact.length === 0) {
+      rows.push(
+        [
+          themeName,
+          theme.justification ?? '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          futureTrendLabel(null),
+          '',
+          '',
+          '',
+        ]
+          .map(csvEscape)
+          .join(';'),
+      );
+      continue;
+    }
+
     for (const impact of theme.impact) {
       const exp = impact.observed_exposure;
       const future = exp?.future_exposure;
       const secondary = impact.observed_exposure_impact
         .map((x) => x.observed_exposure.climate_hazard?.name ?? x.observed_exposure.climate_hazard_custom ?? '')
         .filter(Boolean)
-        .join(' | ');
+        .join(', ');
 
       rows.push(
         [
-          theme.name,
-          impact.sensitivity ? String(impact.sensitivity) : '',
+          themeName,
+          theme.justification ?? '',
           impact.description ?? '',
+          impact.sensitivity ? String(impact.sensitivity) : '',
+          impact.justification ?? '',
           impact.observed_impact ?? '',
+          impact.action_plan ?? '',
           exp?.climate_hazard?.name ?? exp?.climate_hazard_custom ?? '',
           exp?.climate_features ?? '',
           exp?.trends ?? '',
+          exp?.sources ?? '',
           exp?.exposure === null || exp?.exposure === undefined ? '' : String(exp.exposure),
-          future?.trends ?? '',
+          exp?.justification ?? '',
+          futureTrendLabel(future?.trends),
           future?.exposure === null || future?.exposure === undefined
             ? ''
             : String(future.exposure),
-          impact.justification ?? '',
+          future?.justification ?? '',
           secondary,
         ]
           .map(csvEscape)
-          .join(','),
+          .join(';'),
       );
     }
   }
 
-  return rows.join('\n');
+  // BOM UTF-8 pour qu'Excel (locale FR) interprète correctement l'encodage.
+  return '﻿' + rows.join('\n');
+}
+
+/** Traduction FR de l'évolution future, fidèle au CASE SQL du legacy. */
+function futureTrendLabel(trends: string | null | undefined): string {
+  switch (trends) {
+    case 'identical':
+      return 'Identique';
+    case 'increase':
+      return 'Augmentation';
+    case 'decrease':
+      return 'Diminution';
+    default:
+      return 'Non prévisible';
+  }
 }
 
 function csvEscape(value: string | null | undefined): string {
   const v = value ?? '';
-  if (v.includes(',') || v.includes('"') || v.includes('\n')) {
+  if (/[;,"\n\r]/.test(v)) {
     return `"${v.replace(/"/g, '""')}"`;
   }
   return v;

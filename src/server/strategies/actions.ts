@@ -5,6 +5,8 @@ import { redirect } from 'next/navigation';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { prisma } from '@/server/db';
+import { setFlash } from '@/server/flash';
+import { deleteImpactStrategiesCascade } from '@/server/strategies/cascade';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { isAdmin } from '@/server/study/current-study';
 
@@ -153,6 +155,7 @@ export async function createImpactStrategy(formData: FormData): Promise<void> {
     },
   });
 
+  await setFlash('Impact créé');
   revalidatePath('/impacts');
   redirect('/impacts');
 }
@@ -183,6 +186,7 @@ export async function updateImpactStrategy(
     data: { description: parsed.data.description, updated_at: new Date() },
   });
 
+  await setFlash('Impact mis à jour');
   revalidatePath('/impacts');
   redirect('/impacts');
 }
@@ -195,6 +199,9 @@ export async function deleteImpactStrategy(id: string): Promise<void> {
   if (!strategy?.impact_theme?.study_id) throw new Error('NOT_FOUND');
   await assertCanEditStudy(strategy.impact_theme.study_id);
 
-  await prisma.impact_strategy.delete({ where: { id } });
+  await prisma.$transaction(async (tx) => {
+    await deleteImpactStrategiesCascade(tx, [id]);
+  });
+  await setFlash('Impact supprimé.');
   revalidatePath('/impacts');
 }
