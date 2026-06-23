@@ -1,6 +1,7 @@
 import 'server-only';
 import nodemailer, { type Transporter } from 'nodemailer';
 import { getEnv } from '@/lib/env';
+import { emailLogoAttachments } from './layout';
 
 let cached: Transporter | null | undefined;
 
@@ -55,6 +56,12 @@ export async function sendMail(opts: {
       to: opts.to,
       subject: opts.subject,
       html: opts.html,
+      // Logos embarqués en inline (cid) référencés par le layout des mails.
+      attachments: emailLogoAttachments().map((a) => ({
+        filename: a.filename,
+        content: a.content,
+        cid: a.cid,
+      })),
     });
   } catch (err) {
     console.error(`[mail] Échec d'envoi "${opts.subject}" → ${opts.to} :`, err);
