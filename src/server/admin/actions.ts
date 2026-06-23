@@ -1,16 +1,16 @@
 'use server';
 
+import { searchCommunes } from '@/server/admin/queries';
+import { requireCurrentUser } from '@/server/auth/current-user';
+import { blindIndex, encryptField } from '@/server/crypto/user-crypto';
+import { prisma } from '@/server/db';
+import { setFlash } from '@/server/flash';
+import { sendAccountValidatedEmail } from '@/server/mail/account-emails';
+import { isAdmin } from '@/server/study/current-study';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
-import { prisma } from '@/server/db';
-import { setFlash } from '@/server/flash';
-import { blindIndex, encryptField } from '@/server/crypto/user-crypto';
-import { requireCurrentUser } from '@/server/auth/current-user';
-import { isAdmin } from '@/server/study/current-study';
-import { searchCommunes } from '@/server/admin/queries';
-import { sendAccountValidatedEmail } from '@/server/mail/account-emails';
 
 async function assertAdmin() {
   const user = await requireCurrentUser();
@@ -118,7 +118,7 @@ export async function deleteUser(id: string): Promise<void> {
 
 // ─── Gestion d'un compte (page /gestion/account-management/[id]) ──────────────
 // Port de `edit-account` legacy. L'activation déclenche, côté DB, la création de
-// l'étude + l'email de validation (Keycloak/CRM restent gérés par le legacy).
+// l'étude + l'email de validation (CRM restent gérés par le legacy).
 
 /** Recherche de communes pour l'autocomplete (port de `select-communes`). */
 export async function searchCommunesAction(
@@ -194,10 +194,7 @@ const INTERNAL_EMAIL_DOMAINS = ['@groupeonepoint.com', '@ademe.fr', '@open-group
  * (port de RegionCommunities::increaseCountCommunities). Les comptes internes
  * sont exclus. À n'appeler qu'à l'activation (transition validated false→true).
  */
-async function increaseRegionCommunities(
-  communeId: string,
-  email: string | null,
-): Promise<void> {
+async function increaseRegionCommunities(communeId: string, email: string | null): Promise<void> {
   if (!email || INTERNAL_EMAIL_DOMAINS.some((d) => email.includes(d))) return;
   const commune = await prisma.commune.findUnique({
     where: { id: communeId },
