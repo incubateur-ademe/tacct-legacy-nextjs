@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import '@/styles/main.scss';
 import { Toaster } from '@/components/ui/Toaster';
 import { consumeFlash } from '@/server/flash';
+import { PHProvider } from './providers';
+import PostHogPageView from './PostHogPageView';
 
 export const metadata: Metadata = {
   title: 'TACCT',
@@ -18,8 +20,11 @@ export default async function RootLayout({
   return (
     <html lang="fr">
       <body>
-        {children}
-        <Toaster flash={flash} />
+        <PHProvider>
+          {children}
+          <PostHogPageView />
+          <Toaster flash={flash} />
+        </PHProvider>
       </body>
     </html>
   );
