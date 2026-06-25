@@ -31,7 +31,9 @@ export function TransferStudyForm({ studyId }: { studyId: string }) {
           router.refresh();
         } else {
           // Cible inexistante : on garde les valeurs saisies pour correction.
-          setMessage("Ce compte n'existe pas dans notre base.");
+          setMessage(
+            "Cette personne n'a pas encore de compte sur notre service, vous pourrez lui transférer l'étude quand ce sera le cas",
+          );
         }
       } catch (err) {
         setMessage(err instanceof Error ? err.message : 'Erreur lors du transfert');
