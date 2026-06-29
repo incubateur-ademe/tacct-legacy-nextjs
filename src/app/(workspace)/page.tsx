@@ -308,10 +308,9 @@ function ConstructStrategy({
                   className={`sc-construct-strategy__summary-item-logo c-icon blue medium ${imp.icon}`}
                   aria-hidden="true"
                 />
-                <span
-                  className="u-txt-word-break p-bold-primary sc-construct-strategy__summary-item-txt"
-                  dangerouslySetInnerHTML={{ __html: imp.description }}
-                />
+                <span className="u-txt-word-break p-bold-primary sc-construct-strategy__summary-item-txt">
+                  {imp.description}
+                </span>
                 <span className="c-subtitle-black sc-construct-strategy__summary-item-txt">
                   {imp.nbActions} {pluralize(imp.nbActions, 'action', 'actions')}
                 </span>

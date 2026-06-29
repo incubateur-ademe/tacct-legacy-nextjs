@@ -26,6 +26,44 @@ async function loadAndAuthorizeOwner(type: OwnerType, id: string) {
   return owner;
 }
 
+function ownerScope(type: OwnerType, ownerId: string) {
+  return type === 'impact'
+    ? { impact_id: ownerId }
+    : { impact_strategy_id: ownerId };
+}
+
+// Garde anti-IDOR : l'objet ciblé doit appartenir à l'owner déjà autorisé.
+async function assertActionInOwner(type: OwnerType, ownerId: string, actionId: string) {
+  const found = await prisma.impact_action.findFirst({
+    where: { id: actionId, ...ownerScope(type, ownerId) },
+    select: { id: true },
+  });
+  if (!found) throw new Error('FORBIDDEN');
+}
+
+async function assertTrajectoryInOwner(type: OwnerType, ownerId: string, trajectoryId: string) {
+  const found = await prisma.impact_trajectory.findFirst({
+    where: { id: trajectoryId, ...ownerScope(type, ownerId) },
+    select: { id: true },
+  });
+  if (!found) throw new Error('FORBIDDEN');
+}
+
+// Ne conserve que les actions appartenant à l'owner autorisé (anti-IDOR sur les liens).
+async function filterActionsInOwner(
+  type: OwnerType,
+  ownerId: string,
+  actionIds: string[],
+): Promise<string[]> {
+  if (actionIds.length === 0) return [];
+  const owned = await prisma.impact_action.findMany({
+    where: { ...ownerScope(type, ownerId), id: { in: actionIds } },
+    select: { id: true },
+  });
+  const ownedIds = new Set(owned.map((a) => a.id));
+  return actionIds.filter((aid) => ownedIds.has(aid));
+}
+
 // ─── Impact level ─────────────────────────────────────────────────────────────
 
 const impactLevelSchema = z.object({
@@ -138,8 +176,15 @@ function parseActionForm(formData: FormData) {
  * Maintien la symétrie des incompatibilités : si A déclare B incompatible, on
  * ajoute aussi A dans la liste de B (et vice versa pour les suppressions).
  */
-async function syncIncompatibilities(actionId: string, newIncompatibles: string[]) {
+async function syncIncompatibilities(
+  type: OwnerType,
+  ownerId: string,
+  actionId: string,
+  newIncompatibles: string[],
+) {
+  // Bornage au périmètre de l'owner : on ne touche jamais aux actions d'une autre étude.
   const allActions = await prisma.impact_action.findMany({
+    where: ownerScope(type, ownerId),
     select: { id: true, incompatibles: true },
   });
 
@@ -201,7 +246,7 @@ export async function createImpactAction(
       updated_at: now,
     },
   });
-  await syncIncompatibilities(actionId, incompatibles);
+  await syncIncompatibilities(type, ownerId, actionId, incompatibles);
 
   await setFlash('Action créée');
   revalidatePath(`/impacts/${type}/${ownerId}/define-actions`);
@@ -216,6 +261,7 @@ export async function updateImpactAction(
   const { parsed, incompatibles } = parseActionForm(formData);
   if (!parsed.success) throw new Error('Formulaire invalide');
   await loadAndAuthorizeOwner(type, ownerId);
+  await assertActionInOwner(type, ownerId, actionId);
 
   const data = parsed.data;
   await prisma.impact_action.update({
@@ -234,7 +280,7 @@ export async function updateImpactAction(
       updated_at: new Date(),
     },
   });
-  await syncIncompatibilities(actionId, incompatibles);
+  await syncIncompatibilities(type, ownerId, actionId, incompatibles);
 
   await setFlash('Action modifiée');
   revalidatePath(`/impacts/${type}/${ownerId}/define-actions`);
@@ -246,7 +292,8 @@ export async function deleteImpactAction(
   actionId: string,
 ): Promise<void> {
   await loadAndAuthorizeOwner(type, ownerId);
-  await syncIncompatibilities(actionId, []);
+  await assertActionInOwner(type, ownerId, actionId);
+  await syncIncompatibilities(type, ownerId, actionId, []);
   await prisma.$transaction(async (tx) => {
     await deleteImpactActionsCascade(tx, [actionId]);
   });
@@ -333,9 +380,17 @@ export async function saveActionReviews(
     updates.push({ actionId, rank, value });
   }
 
+  // Filtrage anti-IDOR : ne conserver que les actions appartenant à l'owner autorisé.
+  const ownedActions = await prisma.impact_action.findMany({
+    where: { ...ownerScope(type, ownerId), id: { in: updates.map((u) => u.actionId) } },
+    select: { id: true },
+  });
+  const ownedIds = new Set(ownedActions.map((a) => a.id));
+  const safeUpdates = updates.filter((u) => ownedIds.has(u.actionId));
+
   const now = new Date();
   await prisma.$transaction(async (tx) => {
-    for (const u of updates) {
+    for (const u of safeUpdates) {
       const existing = await tx.impact_action_review.findFirst({
         where: { impact_action_id: u.actionId, rank: u.rank },
       });
@@ -378,6 +433,7 @@ export async function createTrajectory(
   const actionIds = formData.getAll('actionIds').filter(Boolean) as string[];
 
   await loadAndAuthorizeOwner(type, ownerId);
+  const safeActionIds = await filterActionsInOwner(type, ownerId, actionIds);
 
   const now = new Date();
   const trajId = randomUUID();
@@ -389,7 +445,7 @@ export async function createTrajectory(
       impact_strategy_id: type === 'strategy' ? ownerId : null,
       created_at: now,
       impact_trajectory_impact_action: {
-        create: actionIds.map((aid) => ({
+        create: safeActionIds.map((aid) => ({
           id: randomUUID(),
           action_id: aid,
           created_at: now,
@@ -414,6 +470,8 @@ export async function updateTrajectory(
   const actionIds = formData.getAll('actionIds').filter(Boolean) as string[];
 
   await loadAndAuthorizeOwner(type, ownerId);
+  await assertTrajectoryInOwner(type, ownerId, trajectoryId);
+  const safeActionIds = await filterActionsInOwner(type, ownerId, actionIds);
 
   const now = new Date();
   await prisma.$transaction(async (tx) => {
@@ -424,9 +482,9 @@ export async function updateTrajectory(
     await tx.impact_trajectory_impact_action.deleteMany({
       where: { trajectory_id: trajectoryId },
     });
-    if (actionIds.length > 0) {
+    if (safeActionIds.length > 0) {
       await tx.impact_trajectory_impact_action.createMany({
-        data: actionIds.map((aid) => ({
+        data: safeActionIds.map((aid) => ({
           id: randomUUID(),
           trajectory_id: trajectoryId,
           action_id: aid,
@@ -447,6 +505,7 @@ export async function deleteTrajectory(
   trajectoryId: string,
 ): Promise<void> {
   await loadAndAuthorizeOwner(type, ownerId);
+  await assertTrajectoryInOwner(type, ownerId, trajectoryId);
   await prisma.impact_trajectory.delete({ where: { id: trajectoryId } });
   await setFlash('Trajectoire supprimée');
   revalidatePath(`/impacts/${type}/${ownerId}/build-trajectories`);

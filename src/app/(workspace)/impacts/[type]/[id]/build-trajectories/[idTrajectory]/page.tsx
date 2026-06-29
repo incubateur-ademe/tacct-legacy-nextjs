@@ -27,6 +27,10 @@ export default async function EditTrajectoryPage({ params }: { params: Params })
 
   const trajectory = await getTrajectoryById(idTrajectory);
   if (!trajectory) notFound();
+  // Anti-IDOR : la trajectoire doit appartenir à l'owner de l'URL.
+  const trajectoryOwnerId =
+    ownerType === 'impact' ? trajectory.impact_id : trajectory.impact_strategy_id;
+  if (trajectoryOwnerId !== id) notFound();
 
   const [actionsRaw, trajectories, savedCriteria] = await Promise.all([
     getActionsForOwner(ownerType, id),
