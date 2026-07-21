@@ -30,7 +30,9 @@ export function SensibilityTheme({ theme }: { theme: SensibilityThemeItem }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const [opened, setOpened] = useState(false);
+  // Thématiques dépliées par défaut : « Ajouter un impact » reste accessible,
+  // notamment au retour de la création d'un impact.
+  const [opened, setOpened] = useState(true);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(theme.justification);
   const [, startTransition] = useTransition();

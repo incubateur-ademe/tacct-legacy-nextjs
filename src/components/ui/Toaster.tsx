@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FlashMessage, FlashType } from '@/server/flash';
 import { clearFlash } from '@/server/flash-actions';
 
@@ -37,13 +37,36 @@ export function Toaster({ flash }: { flash: FlashMessage | null }) {
     }, 600);
   }, []);
 
+  // Un timer par toast, conservé dans un ref : le prop `flash` repasse à null dès
+  // que `clearFlash()` a purgé le cookie, on ne peut donc pas y attacher le
+  // minuteur (le cleanup l'annulerait aussitôt et le toast resterait affiché).
+  const timers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
+
   useEffect(() => {
-    if (!flash) return;
-    const { id } = flash;
-    void clearFlash();
-    const timer = setTimeout(() => dismiss(id), 6000);
-    return () => clearTimeout(timer);
-  }, [flash, dismiss]);
+    const map = timers.current;
+    for (const toast of toasts) {
+      if (toast.leaving || map.has(toast.id)) continue;
+      map.set(
+        toast.id,
+        setTimeout(() => {
+          map.delete(toast.id);
+          dismiss(toast.id);
+        }, 6000),
+      );
+    }
+  }, [toasts, dismiss]);
+
+  useEffect(() => {
+    const map = timers.current;
+    return () => {
+      map.forEach(clearTimeout);
+      map.clear();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (flash) void clearFlash();
+  }, [flash]);
 
   if (toasts.length === 0) return null;
 

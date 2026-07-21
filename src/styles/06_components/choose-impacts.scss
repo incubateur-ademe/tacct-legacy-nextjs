@@ -40,6 +40,20 @@
   height: $border-size-default;
 }
 
+/* ── Page « Ajouter un impact à étudier » (legacy create-strategie-impact.scss) ── */
+.sc-create-strategy-impact {
+  display: block;
+  width: auto;
+  margin-left: 0.95rem;
+}
+
+.sc-create-strategy-impact__thematic-list-title {
+  padding-left: $size-lower;
+  margin-bottom: $size-default;
+  font-family: $font-marianne-medium;
+  font-size: $txt-size-lower;
+}
+
 /* ── Ligne d'un impact de synthèse (legacy synthese-impact.scss) ── */
 .sc-synthese-impact {
   display: flex;

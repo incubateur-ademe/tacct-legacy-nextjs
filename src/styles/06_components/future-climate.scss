@@ -96,8 +96,18 @@
   margin-top: 0.063rem; // 1px séparateur (cf. legacy)
 }
 
+// `col-16` n'existe pas (grille Bootstrap générée sur 12 colonnes) : sans
+// largeur explicite les deux groupes sont dimensionnés par leur contenu et
+// passent en colonne dès que le texte de l'option vide s'allonge.
 .c-select__future_evolution {
+  flex: 0 0 50%;
   min-width: 50%;
+  max-width: 50%;
+
+  .c-input {
+    width: 100%;
+    min-width: 0;
+  }
 }
 
 .c-justification {

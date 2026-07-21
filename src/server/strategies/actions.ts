@@ -70,9 +70,7 @@ const impactStrategySchema = z.object({
   studyId: z.uuid(),
   description: z.string().min(1, 'Description requise'),
   thematicId: z.uuid().optional().nullable(),
-  impactThemeId: z.uuid().optional().nullable(),
-  customThematicName: z.string().trim().max(255).optional().nullable(),
-  themeJustification: z.string().max(2000).optional().nullable(),
+  customThematicName: z.string().trim().max(50).optional().nullable(),
 });
 
 /**
@@ -85,9 +83,7 @@ export async function createImpactStrategy(formData: FormData): Promise<void> {
   const parsed = impactStrategySchema.safeParse({
     ...raw,
     thematicId: raw.thematicId || null,
-    impactThemeId: raw.impactThemeId || null,
     customThematicName: raw.customThematicName || null,
-    themeJustification: raw.themeJustification || null,
   });
   if (!parsed.success) {
     throw new Error(
@@ -100,48 +96,46 @@ export async function createImpactStrategy(formData: FormData): Promise<void> {
   const now = new Date();
 
   // 1. Résoudre / créer l'impact_theme
-  let impactThemeId = data.impactThemeId;
-  if (!impactThemeId) {
-    if (data.thematicId) {
-      // Réutiliser un impact_theme existant pour cette thématique dans l'étude
-      const existing = await prisma.impact_theme.findFirst({
-        where: { study_id: data.studyId, thematic_id: data.thematicId },
+  let impactThemeId: string;
+  if (data.thematicId) {
+    // Réutiliser un impact_theme existant pour cette thématique dans l'étude
+    const existing = await prisma.impact_theme.findFirst({
+      where: { study_id: data.studyId, thematic_id: data.thematicId },
+    });
+    if (existing) {
+      impactThemeId = existing.id;
+    } else {
+      const thematic = await prisma.thematic.findUnique({
+        where: { id: data.thematicId },
       });
-      if (existing) {
-        impactThemeId = existing.id;
-      } else {
-        const thematic = await prisma.thematic.findUnique({
-          where: { id: data.thematicId },
-        });
-        impactThemeId = randomUUID();
-        await prisma.impact_theme.create({
-          data: {
-            id: impactThemeId,
-            study_id: data.studyId,
-            thematic_id: data.thematicId,
-            name: thematic?.name ?? '',
-            justification: data.themeJustification ?? '',
-            created_at: now,
-            updated_at: now,
-          },
-        });
-      }
-    } else if (data.customThematicName) {
       impactThemeId = randomUUID();
       await prisma.impact_theme.create({
         data: {
           id: impactThemeId,
           study_id: data.studyId,
-          thematic_id: null,
-          name: data.customThematicName,
-          justification: data.themeJustification ?? '',
+          thematic_id: data.thematicId,
+          name: thematic?.name ?? '',
+          justification: '',
           created_at: now,
           updated_at: now,
         },
       });
-    } else {
-      throw new Error('Choisis une thématique du catalogue ou saisis un nom personnalisé.');
     }
+  } else if (data.customThematicName) {
+    impactThemeId = randomUUID();
+    await prisma.impact_theme.create({
+      data: {
+        id: impactThemeId,
+        study_id: data.studyId,
+        thematic_id: null,
+        name: data.customThematicName,
+        justification: '',
+        created_at: now,
+        updated_at: now,
+      },
+    });
+  } else {
+    throw new Error('Choisis une thématique du catalogue ou saisis un nom personnalisé.');
   }
 
   // 2. Créer l'impact_strategy

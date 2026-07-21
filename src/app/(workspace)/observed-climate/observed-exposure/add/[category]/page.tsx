@@ -96,14 +96,17 @@ export default async function AddExposureHazardPage({
                       )}
                       {hazards.map((h) => (
                         <div key={h.id} className="c-radio__group">
+                          {/* Aléas déjà saisis : cochés et désactivés, hors du
+                              groupe de radios pour ne pas fausser la sélection. */}
                           <input
                             type="radio"
-                            name="climateHazardId"
+                            name={h.alreadyExposed ? `used${h.id}` : 'climateHazardId'}
                             id={`climate${h.id}`}
                             value={h.id}
                             className="c-radio__input"
                             disabled={h.alreadyExposed}
-                            required
+                            defaultChecked={h.alreadyExposed}
+                            required={!h.alreadyExposed}
                           />
                           <label className="c-radio__label" htmlFor={`climate${h.id}`}>
                             {h.name}

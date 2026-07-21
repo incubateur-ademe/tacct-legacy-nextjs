@@ -1,7 +1,21 @@
 @import "bases";
 
-input::placeholder {
+input::placeholder,
+textarea::placeholder {
   @include txt-placeholder;
+}
+
+// Selects natifs : l'option vide fait office de placeholder. On la distingue
+// d'une valeur saisie comme le faisait `.ng-placeholder` du ng-select legacy.
+select.c-input:has(option[value=""]:checked):not(:disabled),
+select.c-input__large:has(option[value=""]:checked):not(:disabled) {
+  @include txt-placeholder;
+}
+
+select.c-input option:not([value=""]),
+select.c-input__large option:not([value=""]) {
+  font-style: normal;
+  color: $color-txt-default-primary;
 }
 
 .c-input__group {
@@ -28,7 +42,10 @@ input::placeholder {
   @include txt-paragraphe;
   height: 2.98rem;
 
-  &:read-only,
+  // `<select>` matche TOUJOURS `:read-only` (il n'est jamais éditable au sens
+  // CSS) : sans l'exclusion, une liste renseignée reste grise comme un
+  // placeholder.
+  &:read-only:not(select),
   &:disabled {
     overflow-y: hidden;
     color: $COLUMBIA-GREY;
@@ -44,7 +61,7 @@ input::placeholder {
   @include input-style;
   @include txt-paragraphe;
   height: $icon-size-medium + $size-small;
-  &:read-only,
+  &:read-only:not(select),
   &:disabled {
     overflow-y: hidden;
     color: $COLUMBIA-GREY;
@@ -69,8 +86,12 @@ textarea.c-input {
   height: 2 * $size-large;
 }
 
+// Même remarque que plus haut sur `:read-only` : les `<select>` sont ajoutés
+// explicitement, sinon leur label ne se colore jamais au focus.
 .c-input:focus:not(:read-only) ~ label,
-.c-input:active:not(:read-only) ~ label {
+.c-input:active:not(:read-only) ~ label,
+select.c-input:focus ~ label,
+select.c-input:active ~ label {
   color: $color-txt-project-primary;
 }
 

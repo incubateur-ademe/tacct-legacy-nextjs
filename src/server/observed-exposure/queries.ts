@@ -32,7 +32,8 @@ export async function getCategoriesForStudy(studyId: string) {
         },
       },
     },
-    orderBy: { name: 'asc' },
+    // Ordre d'insertion des fixtures, comme le legacy (SQL sans ORDER BY).
+    orderBy: { created_at: 'asc' },
   });
 
   return categories.map((cat) => {
@@ -61,14 +62,17 @@ export async function getHazardsForCategoryAndStudy(categoryId: string, studyId:
         select: { id: true },
       },
     },
-    orderBy: { name: 'asc' },
+    orderBy: { created_at: 'asc' },
   });
 
-  return hazards.map((h) => ({
+  const items = hazards.map((h) => ({
     id: h.id,
     name: h.name,
     alreadyExposed: h.observed_exposure.length > 0,
   }));
+
+  // Comme le legacy : les aléas déjà saisis remontent en tête de liste.
+  return [...items.filter((h) => h.alreadyExposed), ...items.filter((h) => !h.alreadyExposed)];
 }
 
 /**

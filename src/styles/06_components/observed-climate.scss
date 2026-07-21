@@ -79,15 +79,15 @@
     visibility 0.5s;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $size-lower;
 
   button {
     background: transparent;
     border: 0;
     cursor: pointer;
     padding: 0;
-  }
-  button:first-child {
-    margin-bottom: $size-lower;
   }
 }
 
