@@ -148,21 +148,6 @@ export type impact_trajectory_impact_action = Prisma.impact_trajectory_impact_ac
  */
 export type messenger_messages = Prisma.messenger_messagesModel
 /**
- * Model natural_disaster
- * 
- */
-export type natural_disaster = Prisma.natural_disasterModel
-/**
- * Model natural_disaster_search
- * This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
- */
-export type natural_disaster_search = Prisma.natural_disaster_searchModel
-/**
- * Model natural_disaster_search_commune
- * This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
- */
-export type natural_disaster_search_commune = Prisma.natural_disaster_search_communeModel
-/**
  * Model observed_exposure
  * This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
  */
@@ -242,3 +227,13 @@ export type user = Prisma.userModel
  * This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
  */
 export type user_study = Prisma.user_studyModel
+/**
+ * Model tacctoscope_answer
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type tacctoscope_answer = Prisma.tacctoscope_answerModel
+/**
+ * Model tacctoscope_criterion_feedback
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type tacctoscope_criterion_feedback = Prisma.tacctoscope_criterion_feedbackModel

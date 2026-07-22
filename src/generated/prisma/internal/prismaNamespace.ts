@@ -410,9 +410,6 @@ export const ModelName = {
   impact_trajectory: 'impact_trajectory',
   impact_trajectory_impact_action: 'impact_trajectory_impact_action',
   messenger_messages: 'messenger_messages',
-  natural_disaster: 'natural_disaster',
-  natural_disaster_search: 'natural_disaster_search',
-  natural_disaster_search_commune: 'natural_disaster_search_commune',
   observed_exposure: 'observed_exposure',
   observed_exposure_impact: 'observed_exposure_impact',
   old_region: 'old_region',
@@ -428,7 +425,9 @@ export const ModelName = {
   thematic: 'thematic',
   token: 'token',
   user: 'user',
-  user_study: 'user_study'
+  user_study: 'user_study',
+  tacctoscope_answer: 'tacctoscope_answer',
+  tacctoscope_criterion_feedback: 'tacctoscope_criterion_feedback'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -444,7 +443,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "climate" | "climate_hazard" | "climate_hazard_category" | "climate_hazard_category_department" | "command_migration" | "command_process" | "commune" | "config" | "department" | "doctrine_migration_versions" | "domain" | "file" | "future_climate" | "future_exposure" | "impact" | "impact_action" | "impact_action_review" | "impact_climate_hazard" | "impact_competence" | "impact_level" | "impact_review_criteria" | "impact_strategy" | "impact_theme" | "impact_trajectory" | "impact_trajectory_impact_action" | "messenger_messages" | "natural_disaster" | "natural_disaster_search" | "natural_disaster_search_commune" | "observed_exposure" | "observed_exposure_impact" | "old_region" | "page" | "page_info" | "project_sheet_detail" | "project_sheet_detail_relation" | "project_sheet_question" | "region" | "skill_territory" | "study" | "study_office" | "thematic" | "token" | "user" | "user_study"
+    modelProps: "climate" | "climate_hazard" | "climate_hazard_category" | "climate_hazard_category_department" | "command_migration" | "command_process" | "commune" | "config" | "department" | "doctrine_migration_versions" | "domain" | "file" | "future_climate" | "future_exposure" | "impact" | "impact_action" | "impact_action_review" | "impact_climate_hazard" | "impact_competence" | "impact_level" | "impact_review_criteria" | "impact_strategy" | "impact_theme" | "impact_trajectory" | "impact_trajectory_impact_action" | "messenger_messages" | "observed_exposure" | "observed_exposure_impact" | "old_region" | "page" | "page_info" | "project_sheet_detail" | "project_sheet_detail_relation" | "project_sheet_question" | "region" | "skill_territory" | "study" | "study_office" | "thematic" | "token" | "user" | "user_study" | "tacctoscope_answer" | "tacctoscope_criterion_feedback"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2372,228 +2371,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    natural_disaster: {
-      payload: Prisma.$natural_disasterPayload<ExtArgs>
-      fields: Prisma.natural_disasterFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.natural_disasterFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disasterPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.natural_disasterFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disasterPayload>
-        }
-        findFirst: {
-          args: Prisma.natural_disasterFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disasterPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.natural_disasterFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disasterPayload>
-        }
-        findMany: {
-          args: Prisma.natural_disasterFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disasterPayload>[]
-        }
-        create: {
-          args: Prisma.natural_disasterCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disasterPayload>
-        }
-        createMany: {
-          args: Prisma.natural_disasterCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.natural_disasterCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disasterPayload>[]
-        }
-        delete: {
-          args: Prisma.natural_disasterDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disasterPayload>
-        }
-        update: {
-          args: Prisma.natural_disasterUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disasterPayload>
-        }
-        deleteMany: {
-          args: Prisma.natural_disasterDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.natural_disasterUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.natural_disasterUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disasterPayload>[]
-        }
-        upsert: {
-          args: Prisma.natural_disasterUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disasterPayload>
-        }
-        aggregate: {
-          args: Prisma.Natural_disasterAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateNatural_disaster>
-        }
-        groupBy: {
-          args: Prisma.natural_disasterGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.Natural_disasterGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.natural_disasterCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.Natural_disasterCountAggregateOutputType> | number
-        }
-      }
-    }
-    natural_disaster_search: {
-      payload: Prisma.$natural_disaster_searchPayload<ExtArgs>
-      fields: Prisma.natural_disaster_searchFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.natural_disaster_searchFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disaster_searchPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.natural_disaster_searchFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disaster_searchPayload>
-        }
-        findFirst: {
-          args: Prisma.natural_disaster_searchFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disaster_searchPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.natural_disaster_searchFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disaster_searchPayload>
-        }
-        findMany: {
-          args: Prisma.natural_disaster_searchFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disaster_searchPayload>[]
-        }
-        create: {
-          args: Prisma.natural_disaster_searchCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disaster_searchPayload>
-        }
-        createMany: {
-          args: Prisma.natural_disaster_searchCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.natural_disaster_searchCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disaster_searchPayload>[]
-        }
-        delete: {
-          args: Prisma.natural_disaster_searchDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disaster_searchPayload>
-        }
-        update: {
-          args: Prisma.natural_disaster_searchUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disaster_searchPayload>
-        }
-        deleteMany: {
-          args: Prisma.natural_disaster_searchDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.natural_disaster_searchUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.natural_disaster_searchUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disaster_searchPayload>[]
-        }
-        upsert: {
-          args: Prisma.natural_disaster_searchUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disaster_searchPayload>
-        }
-        aggregate: {
-          args: Prisma.Natural_disaster_searchAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateNatural_disaster_search>
-        }
-        groupBy: {
-          args: Prisma.natural_disaster_searchGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.Natural_disaster_searchGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.natural_disaster_searchCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.Natural_disaster_searchCountAggregateOutputType> | number
-        }
-      }
-    }
-    natural_disaster_search_commune: {
-      payload: Prisma.$natural_disaster_search_communePayload<ExtArgs>
-      fields: Prisma.natural_disaster_search_communeFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.natural_disaster_search_communeFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disaster_search_communePayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.natural_disaster_search_communeFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disaster_search_communePayload>
-        }
-        findFirst: {
-          args: Prisma.natural_disaster_search_communeFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disaster_search_communePayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.natural_disaster_search_communeFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disaster_search_communePayload>
-        }
-        findMany: {
-          args: Prisma.natural_disaster_search_communeFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disaster_search_communePayload>[]
-        }
-        create: {
-          args: Prisma.natural_disaster_search_communeCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disaster_search_communePayload>
-        }
-        createMany: {
-          args: Prisma.natural_disaster_search_communeCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.natural_disaster_search_communeCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disaster_search_communePayload>[]
-        }
-        delete: {
-          args: Prisma.natural_disaster_search_communeDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disaster_search_communePayload>
-        }
-        update: {
-          args: Prisma.natural_disaster_search_communeUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disaster_search_communePayload>
-        }
-        deleteMany: {
-          args: Prisma.natural_disaster_search_communeDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.natural_disaster_search_communeUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.natural_disaster_search_communeUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disaster_search_communePayload>[]
-        }
-        upsert: {
-          args: Prisma.natural_disaster_search_communeUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$natural_disaster_search_communePayload>
-        }
-        aggregate: {
-          args: Prisma.Natural_disaster_search_communeAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateNatural_disaster_search_commune>
-        }
-        groupBy: {
-          args: Prisma.natural_disaster_search_communeGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.Natural_disaster_search_communeGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.natural_disaster_search_communeCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.Natural_disaster_search_communeCountAggregateOutputType> | number
-        }
-      }
-    }
     observed_exposure: {
       payload: Prisma.$observed_exposurePayload<ExtArgs>
       fields: Prisma.observed_exposureFieldRefs
@@ -3778,6 +3555,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    tacctoscope_answer: {
+      payload: Prisma.$tacctoscope_answerPayload<ExtArgs>
+      fields: Prisma.tacctoscope_answerFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.tacctoscope_answerFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tacctoscope_answerPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.tacctoscope_answerFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tacctoscope_answerPayload>
+        }
+        findFirst: {
+          args: Prisma.tacctoscope_answerFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tacctoscope_answerPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.tacctoscope_answerFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tacctoscope_answerPayload>
+        }
+        findMany: {
+          args: Prisma.tacctoscope_answerFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tacctoscope_answerPayload>[]
+        }
+        create: {
+          args: Prisma.tacctoscope_answerCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tacctoscope_answerPayload>
+        }
+        createMany: {
+          args: Prisma.tacctoscope_answerCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.tacctoscope_answerCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tacctoscope_answerPayload>[]
+        }
+        delete: {
+          args: Prisma.tacctoscope_answerDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tacctoscope_answerPayload>
+        }
+        update: {
+          args: Prisma.tacctoscope_answerUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tacctoscope_answerPayload>
+        }
+        deleteMany: {
+          args: Prisma.tacctoscope_answerDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.tacctoscope_answerUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.tacctoscope_answerUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tacctoscope_answerPayload>[]
+        }
+        upsert: {
+          args: Prisma.tacctoscope_answerUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tacctoscope_answerPayload>
+        }
+        aggregate: {
+          args: Prisma.Tacctoscope_answerAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTacctoscope_answer>
+        }
+        groupBy: {
+          args: Prisma.tacctoscope_answerGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tacctoscope_answerGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.tacctoscope_answerCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tacctoscope_answerCountAggregateOutputType> | number
+        }
+      }
+    }
+    tacctoscope_criterion_feedback: {
+      payload: Prisma.$tacctoscope_criterion_feedbackPayload<ExtArgs>
+      fields: Prisma.tacctoscope_criterion_feedbackFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.tacctoscope_criterion_feedbackFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tacctoscope_criterion_feedbackPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.tacctoscope_criterion_feedbackFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tacctoscope_criterion_feedbackPayload>
+        }
+        findFirst: {
+          args: Prisma.tacctoscope_criterion_feedbackFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tacctoscope_criterion_feedbackPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.tacctoscope_criterion_feedbackFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tacctoscope_criterion_feedbackPayload>
+        }
+        findMany: {
+          args: Prisma.tacctoscope_criterion_feedbackFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tacctoscope_criterion_feedbackPayload>[]
+        }
+        create: {
+          args: Prisma.tacctoscope_criterion_feedbackCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tacctoscope_criterion_feedbackPayload>
+        }
+        createMany: {
+          args: Prisma.tacctoscope_criterion_feedbackCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.tacctoscope_criterion_feedbackCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tacctoscope_criterion_feedbackPayload>[]
+        }
+        delete: {
+          args: Prisma.tacctoscope_criterion_feedbackDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tacctoscope_criterion_feedbackPayload>
+        }
+        update: {
+          args: Prisma.tacctoscope_criterion_feedbackUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tacctoscope_criterion_feedbackPayload>
+        }
+        deleteMany: {
+          args: Prisma.tacctoscope_criterion_feedbackDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.tacctoscope_criterion_feedbackUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.tacctoscope_criterion_feedbackUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tacctoscope_criterion_feedbackPayload>[]
+        }
+        upsert: {
+          args: Prisma.tacctoscope_criterion_feedbackUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tacctoscope_criterion_feedbackPayload>
+        }
+        aggregate: {
+          args: Prisma.Tacctoscope_criterion_feedbackAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTacctoscope_criterion_feedback>
+        }
+        groupBy: {
+          args: Prisma.tacctoscope_criterion_feedbackGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tacctoscope_criterion_feedbackGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.tacctoscope_criterion_feedbackCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tacctoscope_criterion_feedbackCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -4142,43 +4067,6 @@ export const Messenger_messagesScalarFieldEnum = {
 export type Messenger_messagesScalarFieldEnum = (typeof Messenger_messagesScalarFieldEnum)[keyof typeof Messenger_messagesScalarFieldEnum]
 
 
-export const Natural_disasterScalarFieldEnum = {
-  id: 'id',
-  commune_id: 'commune_id',
-  risk_number: 'risk_number',
-  risk_label: 'risk_label',
-  tacct_risk_number: 'tacct_risk_number',
-  tacct_risk_label: 'tacct_risk_label',
-  start_date: 'start_date',
-  end_date: 'end_date',
-  season: 'season',
-  created_at: 'created_at',
-  updated_at: 'updated_at'
-} as const
-
-export type Natural_disasterScalarFieldEnum = (typeof Natural_disasterScalarFieldEnum)[keyof typeof Natural_disasterScalarFieldEnum]
-
-
-export const Natural_disaster_searchScalarFieldEnum = {
-  id: 'id',
-  study_id: 'study_id',
-  start_year: 'start_year',
-  end_year: 'end_year',
-  created_at: 'created_at',
-  updated_at: 'updated_at'
-} as const
-
-export type Natural_disaster_searchScalarFieldEnum = (typeof Natural_disaster_searchScalarFieldEnum)[keyof typeof Natural_disaster_searchScalarFieldEnum]
-
-
-export const Natural_disaster_search_communeScalarFieldEnum = {
-  natural_disaster_search_id: 'natural_disaster_search_id',
-  commune_id: 'commune_id'
-} as const
-
-export type Natural_disaster_search_communeScalarFieldEnum = (typeof Natural_disaster_search_communeScalarFieldEnum)[keyof typeof Natural_disaster_search_communeScalarFieldEnum]
-
-
 export const Observed_exposureScalarFieldEnum = {
   id: 'id',
   study_id: 'study_id',
@@ -4369,7 +4257,9 @@ export const UserScalarFieldEnum = {
   has_accepted_surveys: 'has_accepted_surveys',
   authenticated_id_bidx: 'authenticated_id_bidx',
   email_bidx: 'email_bidx',
-  encryption_version: 'encryption_version'
+  encryption_version: 'encryption_version',
+  wants_beta_features: 'wants_beta_features',
+  recontact_email: 'recontact_email'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -4385,6 +4275,31 @@ export const User_studyScalarFieldEnum = {
 } as const
 
 export type User_studyScalarFieldEnum = (typeof User_studyScalarFieldEnum)[keyof typeof User_studyScalarFieldEnum]
+
+
+export const Tacctoscope_answerScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  question_key: 'question_key',
+  value: 'value',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Tacctoscope_answerScalarFieldEnum = (typeof Tacctoscope_answerScalarFieldEnum)[keyof typeof Tacctoscope_answerScalarFieldEnum]
+
+
+export const Tacctoscope_criterion_feedbackScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  criterion_key: 'criterion_key',
+  is_useful: 'is_useful',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  comment: 'comment'
+} as const
+
+export type Tacctoscope_criterion_feedbackScalarFieldEnum = (typeof Tacctoscope_criterion_feedbackScalarFieldEnum)[keyof typeof Tacctoscope_criterion_feedbackScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -4629,9 +4544,6 @@ export type GlobalOmitConfig = {
   impact_trajectory?: Prisma.impact_trajectoryOmit
   impact_trajectory_impact_action?: Prisma.impact_trajectory_impact_actionOmit
   messenger_messages?: Prisma.messenger_messagesOmit
-  natural_disaster?: Prisma.natural_disasterOmit
-  natural_disaster_search?: Prisma.natural_disaster_searchOmit
-  natural_disaster_search_commune?: Prisma.natural_disaster_search_communeOmit
   observed_exposure?: Prisma.observed_exposureOmit
   observed_exposure_impact?: Prisma.observed_exposure_impactOmit
   old_region?: Prisma.old_regionOmit
@@ -4648,6 +4560,8 @@ export type GlobalOmitConfig = {
   token?: Prisma.tokenOmit
   user?: Prisma.userOmit
   user_study?: Prisma.user_studyOmit
+  tacctoscope_answer?: Prisma.tacctoscope_answerOmit
+  tacctoscope_criterion_feedback?: Prisma.tacctoscope_criterion_feedbackOmit
 }
 
 /* Types for Logging */

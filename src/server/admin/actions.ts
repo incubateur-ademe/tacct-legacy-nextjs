@@ -131,8 +131,10 @@ export async function searchCommunesAction(
 
 /**
  * Création de l'étude rattachée à un utilisateur — port de `CreateStudy.php` :
- * study (année courante, nom = libellé commune) + user_study (head) +
- * natural_disaster_search (plage d'années des catastrophes de la commune).
+ * study (année courante, nom = libellé commune) + user_study (head).
+ *
+ * Les catastrophes naturelles sont désormais consultées sur tacct.ademe.fr :
+ * ni `natural_disaster` ni `natural_disaster_search` ne sont utilisées ici.
  */
 async function createStudyForUser(userId: string, communeId: string): Promise<void> {
   const commune = await prisma.commune.findUnique({
@@ -140,14 +142,6 @@ async function createStudyForUser(userId: string, communeId: string): Promise<vo
     select: { label: true },
   });
   if (!commune) throw new Error('Commune introuvable.');
-
-  const range = await prisma.$queryRaw<{ min_year: number | null; max_year: number | null }[]>`
-    SELECT MIN(EXTRACT(YEAR FROM start_date))::int AS min_year,
-           MAX(EXTRACT(YEAR FROM start_date))::int AS max_year
-    FROM tacct.natural_disaster
-    WHERE commune_id = ${communeId}`;
-  const startYear = range[0]?.min_year ?? 1982;
-  const endYear = range[0]?.max_year ?? new Date().getFullYear();
 
   const now = new Date();
   const studyId = randomUUID();
@@ -170,17 +164,6 @@ async function createStudyForUser(userId: string, communeId: string): Promise<vo
         head_study: true,
         created_at: now,
         updated_at: now,
-      },
-    }),
-    prisma.natural_disaster_search.create({
-      data: {
-        id: randomUUID(),
-        study_id: studyId,
-        start_year: BigInt(startYear),
-        end_year: BigInt(endYear),
-        created_at: now,
-        updated_at: now,
-        natural_disaster_search_commune: { create: [{ commune_id: communeId }] },
       },
     }),
   ]);

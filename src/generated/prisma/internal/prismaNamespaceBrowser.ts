@@ -77,9 +77,6 @@ export const ModelName = {
   impact_trajectory: 'impact_trajectory',
   impact_trajectory_impact_action: 'impact_trajectory_impact_action',
   messenger_messages: 'messenger_messages',
-  natural_disaster: 'natural_disaster',
-  natural_disaster_search: 'natural_disaster_search',
-  natural_disaster_search_commune: 'natural_disaster_search_commune',
   observed_exposure: 'observed_exposure',
   observed_exposure_impact: 'observed_exposure_impact',
   old_region: 'old_region',
@@ -95,7 +92,9 @@ export const ModelName = {
   thematic: 'thematic',
   token: 'token',
   user: 'user',
-  user_study: 'user_study'
+  user_study: 'user_study',
+  tacctoscope_answer: 'tacctoscope_answer',
+  tacctoscope_criterion_feedback: 'tacctoscope_criterion_feedback'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -439,43 +438,6 @@ export const Messenger_messagesScalarFieldEnum = {
 export type Messenger_messagesScalarFieldEnum = (typeof Messenger_messagesScalarFieldEnum)[keyof typeof Messenger_messagesScalarFieldEnum]
 
 
-export const Natural_disasterScalarFieldEnum = {
-  id: 'id',
-  commune_id: 'commune_id',
-  risk_number: 'risk_number',
-  risk_label: 'risk_label',
-  tacct_risk_number: 'tacct_risk_number',
-  tacct_risk_label: 'tacct_risk_label',
-  start_date: 'start_date',
-  end_date: 'end_date',
-  season: 'season',
-  created_at: 'created_at',
-  updated_at: 'updated_at'
-} as const
-
-export type Natural_disasterScalarFieldEnum = (typeof Natural_disasterScalarFieldEnum)[keyof typeof Natural_disasterScalarFieldEnum]
-
-
-export const Natural_disaster_searchScalarFieldEnum = {
-  id: 'id',
-  study_id: 'study_id',
-  start_year: 'start_year',
-  end_year: 'end_year',
-  created_at: 'created_at',
-  updated_at: 'updated_at'
-} as const
-
-export type Natural_disaster_searchScalarFieldEnum = (typeof Natural_disaster_searchScalarFieldEnum)[keyof typeof Natural_disaster_searchScalarFieldEnum]
-
-
-export const Natural_disaster_search_communeScalarFieldEnum = {
-  natural_disaster_search_id: 'natural_disaster_search_id',
-  commune_id: 'commune_id'
-} as const
-
-export type Natural_disaster_search_communeScalarFieldEnum = (typeof Natural_disaster_search_communeScalarFieldEnum)[keyof typeof Natural_disaster_search_communeScalarFieldEnum]
-
-
 export const Observed_exposureScalarFieldEnum = {
   id: 'id',
   study_id: 'study_id',
@@ -666,7 +628,9 @@ export const UserScalarFieldEnum = {
   has_accepted_surveys: 'has_accepted_surveys',
   authenticated_id_bidx: 'authenticated_id_bidx',
   email_bidx: 'email_bidx',
-  encryption_version: 'encryption_version'
+  encryption_version: 'encryption_version',
+  wants_beta_features: 'wants_beta_features',
+  recontact_email: 'recontact_email'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -682,6 +646,31 @@ export const User_studyScalarFieldEnum = {
 } as const
 
 export type User_studyScalarFieldEnum = (typeof User_studyScalarFieldEnum)[keyof typeof User_studyScalarFieldEnum]
+
+
+export const Tacctoscope_answerScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  question_key: 'question_key',
+  value: 'value',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Tacctoscope_answerScalarFieldEnum = (typeof Tacctoscope_answerScalarFieldEnum)[keyof typeof Tacctoscope_answerScalarFieldEnum]
+
+
+export const Tacctoscope_criterion_feedbackScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  criterion_key: 'criterion_key',
+  is_useful: 'is_useful',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  comment: 'comment'
+} as const
+
+export type Tacctoscope_criterion_feedbackScalarFieldEnum = (typeof Tacctoscope_criterion_feedbackScalarFieldEnum)[keyof typeof Tacctoscope_criterion_feedbackScalarFieldEnum]
 
 
 export const SortOrder = {
