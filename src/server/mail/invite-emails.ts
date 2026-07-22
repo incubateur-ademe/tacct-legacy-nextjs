@@ -1,7 +1,7 @@
-import 'server-only';
 import { getEnv } from '@/lib/env';
-import { sendMail } from './mailer';
+import 'server-only';
 import { emailLayout, escapeHtml } from './layout';
+import { sendMail } from './mailer';
 
 // Port de `InviteEmailService` + `templates/email/invite-known.html.twig`.
 // L'invitation ne cible que des comptes existants : le template « unknown »
@@ -25,9 +25,8 @@ export async function sendInviteEmail(
     <div><p>Bienvenue !</p></div>
     <div><p>Vous avez été invité(e) à collaborer sur le site des Trajectoires d'Adaptation au
       Changement Climatique des Territoires par ${head} pour le territoire : ${territory}.</p></div>
-    <div><p>Votre compte est actif : vous pouvez dès à présent vous connecter à l'outil de saisie
-      TACCT.</p></div>
-    <div><p>Retrouvez ci-dessous votre identifiant pour vous connecter à votre compte :</p></div>
+    <div><p>Votre compte est actif, vous pouvez dès à présent vous connecter à l'outil de saisie
+      TACCT avec l'identifiant ci-dessous :</p></div>
     <div><span>Identifiant : ${escapeHtml(to)}</span></div>
     <div><p>À bientôt sur <a href="${APP_URL}">TACCT !</a></p></div>
     <div><p>Pour toute question, n'hésitez pas à <a href="${APP_URL}/contact">nous contacter</a>.</p></div>`;
