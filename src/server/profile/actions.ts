@@ -9,6 +9,7 @@ import { blindIndex } from '@/server/crypto/user-crypto';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { isAdmin } from '@/server/study/current-study';
 import { sendDeactivationEmail, sendTransferEmail } from '@/server/mail/study-emails';
+import { sendInviteEmail } from '@/server/mail/invite-emails';
 
 async function assertCanEditStudy(studyId: string) {
   const user = await requireCurrentUser();
@@ -101,8 +102,12 @@ const transferSchema = z.object({
  * - Compte cible déjà responsable d'une étude → refus.
  * - Compte cible existant : il devient head, l'ancien head est retiré de
  *   l'étude, et sa commune de rattachement devient celle de l'étude. Email
- *   « transfert » au nouveau ; si l'ancien head n'a plus d'étude, email de
- *   désactivation.
+ *   « transfert » au nouveau ; si l'ancien head n'a plus d'étude, son compte
+ *   est désactivé et il reçoit l'email de désactivation.
+ *
+ * Le flag `validated` suit la possession d'une étude : la cible est validée
+ * (accès à l'outil de saisie), l'ancien head est dévalidé s'il ne participe
+ * plus à aucune étude.
  */
 export async function transferStudyHead(
   formData: FormData,
@@ -177,14 +182,28 @@ export async function transferStudyHead(
         },
       });
     }
-    if (study.commune_id) {
-      await tx.user.update({
-        where: { id: target.id },
-        data: { commune_id: study.commune_id, updated_at: now },
-      });
-    }
+    // La cible devient responsable : son compte est validé pour lui ouvrir
+    // l'accès à l'outil de saisie.
+    await tx.user.update({
+      where: { id: target.id },
+      data: {
+        ...(study.commune_id ? { commune_id: study.commune_id } : {}),
+        validated: true,
+        updated_at: now,
+      },
+    });
     // L'ancien chargé d'étude est retiré de l'étude (legacy : suppression).
     await tx.user_study.delete({ where: { id: currentUs.id } });
+
+    // Plus aucune étude → compte désactivé (cohérent avec l'email de
+    // désactivation, qui invite à demander une réactivation).
+    const remaining = await tx.user_study.count({ where: { user_id: currentUser.id } });
+    if (remaining === 0) {
+      await tx.user.update({
+        where: { id: currentUser.id },
+        data: { validated: false, updated_at: now },
+      });
+    }
   });
 
   await sendTransferEmail(mail, emailParams);
@@ -203,6 +222,90 @@ export async function transferStudyHead(
   revalidatePath('/settings');
   revalidatePath('/');
   return { status: 'transferred' };
+}
+
+// ─── Invitation d'un(e) collègue sur l'étude ─────────────────────────────────
+
+const inviteSchema = z.object({
+  studyId: z.uuid(),
+  mail: z.email(),
+});
+
+/**
+ * Invite un compte existant à rejoindre l'étude en tant que collaborateur.
+ *
+ * - Compte cible inexistant → retour `not_found` (message affiché à l'écran).
+ * - Compte cible existant : ajout à l'étude (sans `head_study`) et passage du
+ *   compte en « validé » pour lui ouvrir l'accès à l'outil de saisie, puis
+ *   email d'invitation.
+ */
+export async function inviteColleague(
+  formData: FormData,
+): Promise<{ status: 'invited' | 'already_member' | 'not_found' }> {
+  const parsed = inviteSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) {
+    throw new Error(
+      `Formulaire invalide : ${parsed.error.issues.map((i) => i.message).join(', ')}`,
+    );
+  }
+  const { studyId, mail } = parsed.data;
+  const currentUser = await assertCanEditStudy(studyId);
+
+  const currentUs = await prisma.user_study.findFirst({
+    where: { study_id: studyId, user_id: currentUser.id, head_study: true },
+  });
+  if (!currentUs) {
+    throw new Error('Seul le chargé d’étude peut inviter un(e) collègue.');
+  }
+
+  const study = await prisma.study.findUnique({
+    where: { id: studyId },
+    select: { territory_name: true },
+  });
+  if (!study) throw new Error('NOT_FOUND');
+
+  const target = await prisma.user.findUnique({
+    where: { email_bidx: blindIndex(mail) },
+  });
+  if (!target) {
+    return { status: 'not_found' };
+  }
+
+  const existingUs = await prisma.user_study.findFirst({
+    where: { study_id: studyId, user_id: target.id },
+  });
+  if (existingUs) {
+    return { status: 'already_member' };
+  }
+
+  const now = new Date();
+  await prisma.$transaction(async (tx) => {
+    await tx.user_study.create({
+      data: {
+        id: randomUUID(),
+        study_id: studyId,
+        user_id: target.id,
+        head_study: false,
+        created_at: now,
+        updated_at: now,
+      },
+    });
+    if (!target.validated) {
+      await tx.user.update({
+        where: { id: target.id },
+        data: { validated: true, updated_at: now },
+      });
+    }
+  });
+
+  await sendInviteEmail(mail, {
+    headStudyFirstname: currentUser.firstname ?? '',
+    headStudyLastname: currentUser.lastname ?? '',
+    territoryName: study.territory_name,
+  });
+
+  revalidatePath('/settings');
+  return { status: 'invited' };
 }
 
 /**

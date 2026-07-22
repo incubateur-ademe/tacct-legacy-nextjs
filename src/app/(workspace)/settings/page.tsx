@@ -7,6 +7,7 @@ import { ContentLayout } from '@/components/layout/ContentLayout';
 import { Label } from '@/components/ui/Label';
 import { StudySettingsForm } from '@/components/settings/StudySettingsForm';
 import { TransferStudyForm } from '@/components/settings/TransferStudyForm';
+import { InviteColleagueForm } from '@/components/settings/InviteColleagueForm';
 
 export const dynamic = 'force-dynamic';
 
@@ -103,6 +104,11 @@ export default async function SettingsPage({
                       Transférer l&apos;étude à un nouveau chargé d&apos;étude
                     </span>
                     <TransferStudyForm studyId={study.id} />
+
+                    <span className="sc-settings__title sc-settings__subtitle">
+                      Inviter un(e) collègue
+                    </span>
+                    <InviteColleagueForm studyId={study.id} />
                   </>
                 ) : (
                   <div className="c-subtitle-grey mt-3">
