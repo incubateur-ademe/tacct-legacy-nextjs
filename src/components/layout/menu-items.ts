@@ -26,6 +26,8 @@ export interface NavItem {
   subNav?: SubNavItem[];
   /** roles requis ; vide = tous */
   roles?: ('ROLE_USER' | 'ROLE_ADMIN')[];
+  /** masqué si l'utilisateur n'a aucune étude courante (la page redirigerait) */
+  requiresStudy?: boolean;
   /** si true, l'item n'est actif que sur une correspondance exacte du chemin */
   exact?: boolean;
 }
@@ -163,6 +165,14 @@ export const adminNavItems: NavItem[] = [
     roles: ['ROLE_ADMIN'],
   },
   {
+    name: 'settings',
+    title: 'Paramétrage',
+    route: 'settings',
+    icon: 'settings',
+    roles: ['ROLE_ADMIN'],
+    requiresStudy: true,
+  },
+  {
     name: 'status',
     title: 'État du système',
     route: 'gestion/status',
@@ -217,7 +227,7 @@ export function resolveMenuKey(pathname: string): MenuKey | null {
   return null;
 }
 
-export function getNavItemsForKey(key: MenuKey): NavItem[] {
+export function getNavItemsForKey(key: MenuKey, isAdmin = false): NavItem[] {
   switch (key) {
     case 'DIAGNOSTIC':
       return diagnosticNavItems;
@@ -231,6 +241,8 @@ export function getNavItemsForKey(key: MenuKey): NavItem[] {
     case 'PROFILE':
       return profileNavItems;
     case 'SETTINGS':
-      return settingsNavItems;
+      // Un admin arrive sur /settings depuis le menu d'administration : on le lui
+      // conserve, sinon le menu se réduirait à « Accueil » sous ses pieds.
+      return isAdmin ? adminNavItems : settingsNavItems;
   }
 }

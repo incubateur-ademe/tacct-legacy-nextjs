@@ -7,6 +7,7 @@ import { prisma } from '@/server/db';
 import { setFlash } from '@/server/flash';
 import { blindIndex } from '@/server/crypto/user-crypto';
 import { requireCurrentUser } from '@/server/auth/current-user';
+import { accountValidatedValue } from '@/server/acl/account';
 import { isAdmin } from '@/server/study/current-study';
 import { sendDeactivationEmail, sendTransferEmail } from '@/server/mail/study-emails';
 import { sendInviteEmail } from '@/server/mail/invite-emails';
@@ -160,6 +161,8 @@ export async function transferStudyHead(
     territoryName: study.territory_name,
   };
 
+  const deactivatesWithoutStudy = !accountValidatedValue(isAdmin(currentUser), false);
+
   const now = new Date();
   await prisma.$transaction(async (tx) => {
     const targetUs = await tx.user_study.findFirst({
@@ -196,9 +199,10 @@ export async function transferStudyHead(
     await tx.user_study.delete({ where: { id: currentUs.id } });
 
     // Plus aucune étude → compte désactivé (cohérent avec l'email de
-    // désactivation, qui invite à demander une réactivation).
+    // désactivation, qui invite à demander une réactivation). Un admin en est
+    // exempté : le désactiver l'empêcherait de se reconnecter.
     const remaining = await tx.user_study.count({ where: { user_id: currentUser.id } });
-    if (remaining === 0) {
+    if (remaining === 0 && deactivatesWithoutStudy) {
       await tx.user.update({
         where: { id: currentUser.id },
         data: { validated: false, updated_at: now },
@@ -209,7 +213,7 @@ export async function transferStudyHead(
   await sendTransferEmail(mail, emailParams);
 
   const remaining = await prisma.user_study.count({ where: { user_id: currentUser.id } });
-  if (remaining === 0 && currentUser.email) {
+  if (remaining === 0 && deactivatesWithoutStudy && currentUser.email) {
     await sendDeactivationEmail(currentUser.email, {
       firstname: currentUser.firstname ?? '',
       recipientFirstname: firstname,

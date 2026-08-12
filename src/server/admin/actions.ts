@@ -1,5 +1,6 @@
 'use server';
 
+import { accountValidatedValue } from '@/server/acl/account';
 import { searchCommunes } from '@/server/admin/queries';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { blindIndex, encryptField } from '@/server/crypto/user-crypto';
@@ -66,7 +67,7 @@ export async function createUser(formData: FormData): Promise<void> {
       commune_id: data.communeId ?? null,
       study_office_id: data.studyOfficeId ?? null,
       roles: rolesJson(data.isAdmin),
-      validated: data.validated,
+      validated: accountValidatedValue(data.isAdmin, data.validated),
       validated_terms_of_use: true,
       created_at: now,
       updated_at: now,
@@ -99,7 +100,7 @@ export async function updateUser(id: string, formData: FormData): Promise<void> 
       commune_id: data.communeId ?? null,
       study_office_id: data.studyOfficeId ?? null,
       roles: rolesJson(data.isAdmin),
-      validated: data.validated,
+      validated: accountValidatedValue(data.isAdmin, data.validated),
       updated_at: new Date(),
     },
   });

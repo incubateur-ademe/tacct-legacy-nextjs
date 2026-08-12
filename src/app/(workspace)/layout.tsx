@@ -23,7 +23,7 @@ export default async function WorkspaceLayout({
     <>
       <Header />
       <div id="mainContent" className="sc-app__container pt-5">
-        <Menu userRoles={roles} studyStatus={studyStatus} />
+        <Menu userRoles={roles} studyStatus={studyStatus} hasStudy={study !== null} />
         <div className="sc-app__content container-fluid">
           <div className="content-body">{children}</div>
           {/* <div className="container page">

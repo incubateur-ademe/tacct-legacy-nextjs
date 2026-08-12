@@ -28,12 +28,15 @@ export interface MenuProps {
    * (ex. `ROLE_ADMIN` pour les pages d'administration).
    */
   userRoles?: string[];
+  /** false = aucune étude courante : on masque les entrées qui en dépendent. */
+  hasStudy?: boolean;
   initialSmallMode?: SmallMode;
 }
 
 export function Menu({
   studyStatus,
   userRoles = [],
+  hasStudy = true,
   initialSmallMode = 'normal',
 }: MenuProps) {
   const pathname = usePathname();
@@ -55,11 +58,14 @@ export function Menu({
   // Pas de menuKey (ex. /workspace accueil) : on garde l'espace réservé mais pas la nav.
   if (!menuKey) return zonePlaceholder;
 
+  const isAdmin = userRoles.includes('ROLE_ADMIN');
+
   const navItems = (
     menuKey === 'IMPACT_STRATEGIE'
       ? getImpactStrategyNavItemsFromPath(pathname)
-      : getNavItemsForKey(menuKey)
+      : getNavItemsForKey(menuKey, isAdmin)
   ).filter((item) => {
+    if (item.requiresStudy && !hasStudy) return false;
     if (!item.roles || item.roles.length === 0) return true;
     return item.roles.some((r) => userRoles.includes(r));
   });

@@ -171,6 +171,10 @@ export function UserForm({
           />
           <label htmlFor="validated">Compte validé</label>
         </div>
+        <div className="c-subtitle-grey mt-1">
+          Un compte administrateur est toujours validé : décocher cette case reste sans effet
+          sur lui.
+        </div>
       </div>
 
       <div className="d-flex justify-content-between">
