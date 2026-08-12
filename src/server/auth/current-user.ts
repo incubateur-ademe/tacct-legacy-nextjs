@@ -15,7 +15,9 @@ export const getCurrentUser = cache(async () => {
     include: {
       study_office: true,
       commune: true,
-      user_study: { include: { study: true } },
+      // Tri explicite : sans lui l'ordre des lignes varie d'une requête à
+      // l'autre, donc l'étude par défaut aussi.
+      user_study: { include: { study: true }, orderBy: { id: 'asc' } },
     },
   });
 });

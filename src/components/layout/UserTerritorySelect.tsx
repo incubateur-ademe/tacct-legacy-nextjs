@@ -1,6 +1,8 @@
 'use client';
 
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useTransition } from 'react';
+import { usePathname } from 'next/navigation';
+import { selectCurrentStudy } from '@/server/study/actions';
 import styles from './UserTerritorySelect.module.scss';
 
 type StudyOption = {
@@ -11,30 +13,36 @@ type StudyOption = {
 
 /**
  * Port de `app-user-territory` du legacy : permet à un user multi-études de
- * basculer entre ses dossiers via un select. Le choix est persisté dans
- * l'URL via `?study=<id>` (lu côté serveur par `getCurrentStudy`).
+ * basculer entre ses dossiers. Le choix est persisté dans un cookie côté
+ * serveur, donc il survit à toute navigation.
  */
-export function UserTerritorySelect({ studies }: { studies: StudyOption[] }) {
-  const router = useRouter();
+export function UserTerritorySelect({
+  studies,
+  currentStudyId,
+}: {
+  studies: StudyOption[];
+  currentStudyId: string;
+}) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const [pending, startTransition] = useTransition();
 
   if (studies.length === 0) return null;
 
-  const currentId = searchParams.get('study') ?? studies[0]?.id ?? '';
-
   const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('study', e.target.value);
-    router.push(`${pathname}?${params.toString()}`);
-    router.refresh();
+    const studyId = e.target.value;
+    startTransition(async () => {
+      await selectCurrentStudy(studyId, pathname);
+    });
   };
 
   return (
     <select
+      // Remonte le select sur la valeur du serveur une fois le changement acté.
+      key={currentStudyId}
       aria-label="Sélection du territoire d'étude"
       className={styles.select}
-      value={currentId}
+      defaultValue={currentStudyId}
+      disabled={pending}
       onChange={onChange}
     >
       {studies.map((s) => (

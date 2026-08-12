@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { getCurrentUser } from '@/server/auth/current-user';
 import { getPublicOrigin } from '@/lib/public-origin';
-import { isAdmin } from '@/server/study/current-study';
+import { getCurrentStudy, isAdmin } from '@/server/study/current-study';
 import { UserTerritorySelect } from './UserTerritorySelect';
 import { HeaderLogo } from './HeaderLogo';
 import styles from './Header.module.scss';
@@ -11,6 +11,7 @@ export async function Header() {
 
   if (!user) return null;
 
+  const currentStudy = await getCurrentStudy(user);
   const admin = isAdmin(user);
   const isHeadOfAStudy = user.user_study.some((us) => us.head_study);
   const settingsHref = admin ? '/gestion/studies-management' : '/settings';
@@ -31,7 +32,10 @@ export async function Header() {
         <div className={`o-card w-100 ${styles.cardHeader}`}>
           <div className={styles.header}>
             <HeaderLogo />
-            <UserTerritorySelect studies={studies} />
+            <UserTerritorySelect
+              studies={studies}
+              currentStudyId={currentStudy?.id ?? studies[0]?.id ?? ''}
+            />
             <div className={styles.header}>
               <span className="mr-2 c-legend-action">{user.firstname}</span>
               <span className="mr-3 c-legend-action text-uppercase">{user.lastname}</span>

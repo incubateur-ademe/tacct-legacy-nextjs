@@ -1,6 +1,11 @@
 import 'server-only';
+import { cache } from 'react';
+import { cookies } from 'next/headers';
 import { prisma } from '@/server/db';
 import type { CurrentUser } from '@/server/auth/current-user';
+
+/** Étude sélectionnée dans le header. Persiste tant que l'utilisateur n'en change pas. */
+export const CURRENT_STUDY_COOKIE = 'tacct.current-study';
 
 /**
  * Parse les roles (stockés en JSON dans la colonne `roles` String).
@@ -28,7 +33,7 @@ export function isAdmin(user: { roles: string }): boolean {
  *
  * Retourne `null` si l'utilisateur n'a pas d'étude ou pas accès à celle demandée.
  */
-export async function getCurrentStudy(
+export const getCurrentStudy = cache(async function getCurrentStudy(
   user: CurrentUser,
   studyId?: string,
 ): Promise<Awaited<ReturnType<typeof loadStudy>> | null> {
@@ -38,9 +43,20 @@ export async function getCurrentStudy(
     return loadStudy(studyId);
   }
 
+  const selectedId = (await cookies()).get(CURRENT_STUDY_COOKIE)?.value;
+  if (selectedId && canAccess(user, selectedId)) {
+    const selected = await loadStudy(selectedId);
+    // Cookie obsolète (étude supprimée) : on retombe sur le défaut plus bas.
+    if (selected) return selected;
+  }
+
   const firstStudyId = user.user_study[0]?.study_id;
   if (!firstStudyId) return null;
   return loadStudy(firstStudyId);
+});
+
+export function canAccess(user: CurrentUser, studyId: string): boolean {
+  return isAdmin(user) || user.user_study.some((us) => us.study_id === studyId);
 }
 
 function loadStudy(id: string) {

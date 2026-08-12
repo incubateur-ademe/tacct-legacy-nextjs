@@ -16,6 +16,8 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:routes": "vitest run tests/smoke/routes.test.ts",
+    "test:coverage-routes": "vitest run tests/smoke/route-coverage.test.ts",
     "db:generate": "prisma generate",
     "db:pull": "prisma db pull",
     "db:migrate": "prisma migrate dev",
