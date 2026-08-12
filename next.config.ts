@@ -3,6 +3,11 @@ import path from 'node:path';
 
 const nextConfig: NextConfig = {
   basePath: '/workspace-tacct',
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['tacct.ademe.fr', 'tacct-prod.osc-secnum-fr1.scalingo.io'],
+    },
+  },
   sassOptions: {
     // Permet aux SCSS portés du legacy Angular de résoudre `bases`, `colors`, etc.
     // sans préfixe relatif (comportement Angular/Webpack reproduit).
