@@ -242,6 +242,8 @@ const inviteSchema = z.object({
  * - Compte cible existant : ajout à l'étude (sans `head_study`) et passage du
  *   compte en « validé » pour lui ouvrir l'accès à l'outil de saisie, puis
  *   email d'invitation.
+ * - Si la cible n'a pas de commune de rattachement, elle hérite de celle du
+ *   chargé d'étude. Une commune déjà renseignée n'est jamais écrasée.
  */
 export async function inviteColleague(
   formData: FormData,
@@ -294,10 +296,15 @@ export async function inviteColleague(
         updated_at: now,
       },
     });
-    if (!target.validated) {
+    const heriteCommune = !target.commune_id && currentUser.commune_id;
+    if (!target.validated || heriteCommune) {
       await tx.user.update({
         where: { id: target.id },
-        data: { validated: true, updated_at: now },
+        data: {
+          ...(target.validated ? {} : { validated: true }),
+          ...(heriteCommune ? { commune_id: currentUser.commune_id } : {}),
+          updated_at: now,
+        },
       });
     }
   });
