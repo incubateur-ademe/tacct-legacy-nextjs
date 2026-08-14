@@ -162,8 +162,14 @@
   background-color: transparent;
   border-radius: $radius-default;
   border: $border-empty;
+  // NE PAS réintroduire `width: -moz-available` (hérité du legacy) : ce mot-clé
+  // propriétaire écrase le `width: 100%` sous Firefox uniquement, et sur un flex
+  // item (les champs sont dans `.c-input__group`, en `display: flex`) les Firefox
+  // antérieurs à l'implémentation standard de `stretch` le résolvent en taille
+  // intrinsèque → champs réduits à `size=20` / largeur de l'option la plus longue.
+  // Bug observé en Firefox ESR, invisible sur Firefox récent et Chrome.
   width: 100%;
-  width: -moz-available;
+  min-width: 0; // flex item : neutralise `min-width: auto` (= min-content)
   height: $size-medium;
   padding: $size-lower;
   outline: none;
