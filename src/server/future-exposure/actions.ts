@@ -7,6 +7,7 @@ import { prisma } from '@/server/db';
 import { setFlash } from '@/server/flash';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { isAdmin } from '@/server/study/current-study';
+import { refreshStatusesAfterFutureExposureChange } from '@/server/study/step-status';
 
 /**
  * Valeurs autorisées de `trends` (fidélité legacy : `entity/trendexposure.ts`).
@@ -81,6 +82,8 @@ export async function saveFutureExposure(formData: FormData): Promise<void> {
     });
   }
 
+  await refreshStatusesAfterFutureExposureChange(obs.study_id);
+
   revalidatePath('/future-climate/capture-future-climate');
 }
 
@@ -153,6 +156,8 @@ export async function patchFutureExposureField(
       },
     });
   }
+
+  await refreshStatusesAfterFutureExposureChange(obs.study_id);
 
   revalidatePath('/future-climate/capture-future-climate');
 }

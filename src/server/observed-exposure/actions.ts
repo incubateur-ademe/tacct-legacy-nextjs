@@ -8,6 +8,7 @@ import { prisma } from '@/server/db';
 import { setFlash } from '@/server/flash';
 import { requireCurrentUser } from '@/server/auth/current-user';
 import { isAdmin } from '@/server/study/current-study';
+import { refreshStatusesAfterObservedExposureChange } from '@/server/study/step-status';
 
 const exposureFormSchema = z.object({
   studyId: z.uuid(),
@@ -68,15 +69,16 @@ export async function addObservedExposure(formData: FormData): Promise<void> {
     },
   });
 
+  // Un aléa de plus rend forcément l'étape « exposition future » incomplète
+  // (port du `persist()` legacy, branche création).
+  await refreshStatusesAfterObservedExposureChange(data.studyId, { resetFutureExposure: true });
+
   await setFlash('Aléa créé');
   revalidatePath('/observed-climate/observed-exposure');
   redirect('/observed-climate/observed-exposure');
 }
 
-export async function updateObservedExposure(
-  id: string,
-  formData: FormData,
-): Promise<void> {
+export async function updateObservedExposure(id: string, formData: FormData): Promise<void> {
   const raw = Object.fromEntries(formData);
   const parsed = exposureFormSchema.safeParse({
     ...raw,
@@ -93,27 +95,66 @@ export async function updateObservedExposure(
   }
 
   const data = parsed.data;
-  await assertCanEditStudy(data.studyId);
 
-  await prisma.observed_exposure.update({
+  // L'étude de rattachement est lue sur la ligne, pas prise dans le formulaire :
+  // c'est elle qui porte le contrôle d'accès et les statuts d'étape recalculés
+  // plus bas — un `studyId` obsolète ou forgé écrirait sinon sur une autre étude.
+  const before = await prisma.observed_exposure.findUnique({
     where: { id },
-    data: {
-      climate_hazard_id: data.climateHazardId ?? null,
-      climate_hazard_custom: data.climateHazardCustom ?? null,
-      climate_features: data.climateFeatures,
-      trends: data.trends,
-      sources: data.sources ?? null,
-      exposure: data.exposure ?? null,
-      justification: data.justification ?? null,
-      updated_at: new Date(),
-    },
+    select: { study_id: true, exposure: true, future_exposure: { select: { id: true } } },
   });
+  if (!before?.study_id) throw new Error('NOT_FOUND');
+  await assertCanEditStudy(before.study_id);
+
+  // Changer le niveau d'exposition observée invalide l'exposition future qui en
+  // découlait : le legacy remet `trends` et `exposure` à null sur la
+  // `future_exposure` liée (`persist()`, branche `put`).
+  const previousExposure = before.exposure === null ? null : Number(before.exposure);
+  const exposureChanged = previousExposure !== (data.exposure ?? null);
+  const resetFutureExposure = exposureChanged && before.future_exposure !== null;
+
+  await prisma.$transaction(async (tx) => {
+    await tx.observed_exposure.update({
+      where: { id },
+      data: {
+        climate_hazard_id: data.climateHazardId ?? null,
+        climate_hazard_custom: data.climateHazardCustom ?? null,
+        climate_features: data.climateFeatures,
+        trends: data.trends,
+        sources: data.sources ?? null,
+        exposure: data.exposure ?? null,
+        justification: data.justification ?? null,
+        updated_at: new Date(),
+      },
+    });
+
+    if (resetFutureExposure && before.future_exposure) {
+      await tx.future_exposure.update({
+        where: { id: before.future_exposure.id },
+        data: { trends: null, exposure: null, updated_at: new Date() },
+      });
+    }
+  });
+
+  await refreshStatusesAfterObservedExposureChange(before.study_id, { resetFutureExposure });
 
   await setFlash('Aléa modifié');
   revalidatePath('/observed-climate/observed-exposure');
   redirect('/observed-climate/observed-exposure');
 }
 
+/**
+ * Supprime un aléa (exposition observée).
+ *
+ * Les clés étrangères qui pointent vers `observed_exposure` sont en RESTRICT
+ * côté base : la suppression échoue tant que les lignes liées existent. On
+ * réplique donc le comportement du legacy :
+ *  - `impact.primary_exposure_id` → suppression refusée (`ExposureAlreadyUsed`),
+ *    avec un message d'erreur plutôt qu'une erreur serveur ;
+ *  - `future_exposure` → supprimée en cascade (`cascade: ['remove']` Doctrine).
+ *
+ * (`observed_exposure_impact`, les aléas secondaires, est déjà en CASCADE.)
+ */
 export async function deleteObservedExposure(id: string) {
   const exposure = await prisma.observed_exposure.findUnique({
     where: { id },
@@ -122,7 +163,27 @@ export async function deleteObservedExposure(id: string) {
   if (!exposure?.study_id) throw new Error('NOT_FOUND');
   await assertCanEditStudy(exposure.study_id);
 
-  await prisma.observed_exposure.delete({ where: { id } });
+  const usedByImpact = await prisma.impact.findFirst({
+    where: { primary_exposure_id: id },
+    select: { id: true },
+  });
+  if (usedByImpact) {
+    await setFlash(
+      'Suppression impossible',
+      'error',
+      "L'aléa est renseigné dans un impact d'une thématique",
+    );
+    revalidatePath('/observed-climate/observed-exposure');
+    return;
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.future_exposure.deleteMany({ where: { observed_exposure_id: id } });
+    await tx.observed_exposure.delete({ where: { id } });
+  });
+
+  await refreshStatusesAfterObservedExposureChange(exposure.study_id);
+
   await setFlash('Aléa supprimé');
   revalidatePath('/observed-climate/observed-exposure');
 }
