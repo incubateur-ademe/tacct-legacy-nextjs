@@ -1,12 +1,14 @@
 import { Header } from '@/components/layout/Header';
 import { Menu } from '@/components/layout/Menu';
 import { requireCurrentUser } from '@/server/auth/current-user';
+import { enregistrerAccesWorkspace } from '@/server/auth/workspace-access';
 import { getCurrentStudy, userRoles } from '@/server/study/current-study';
 
 export default async function WorkspaceLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const user = await requireCurrentUser();
+  await enregistrerAccesWorkspace(user.id);
   const roles = userRoles(user);
 
   // Statut des étapes du diagnostic, affiché en badge dans le menu (comme le legacy).

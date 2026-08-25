@@ -25,6 +25,7 @@ export const { auth } = NextAuth({
   callbacks: {
     session({ session, token }) {
       if (token.sub) session.user.id = token.sub;
+      if (token.jti) session.user.sessionJti = token.jti;
       return session;
     },
   },
