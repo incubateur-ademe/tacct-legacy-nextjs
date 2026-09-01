@@ -1,6 +1,6 @@
 import { getEnv } from '@/lib/env';
 import 'server-only';
-import { emailLayout, escapeHtml } from './layout';
+import { emailLayout, escapeHtmlAndTemplateDelimiters } from './layout';
 import { sendMail } from './mailer';
 
 // Port de `InviteEmailService` + `templates/email/invite-known.html.twig`.
@@ -18,8 +18,10 @@ export async function sendInviteEmail(
   },
 ): Promise<void> {
   const { APP_URL } = getEnv();
-  const head = escapeHtml(`${params.headStudyFirstname} ${params.headStudyLastname}`.trim());
-  const territory = escapeHtml(params.territoryName);
+  const head = escapeHtmlAndTemplateDelimiters(
+    `${params.headStudyFirstname} ${params.headStudyLastname}`.trim(),
+  );
+  const territory = escapeHtmlAndTemplateDelimiters(params.territoryName);
 
   const body = `<div><span>Bonjour,</span></div>
     <div><p>Bienvenue !</p></div>
@@ -27,7 +29,7 @@ export async function sendInviteEmail(
       Changement Climatique des Territoires par ${head} pour le territoire : ${territory}.</p></div>
     <div><p>Votre compte est actif, vous pouvez dès à présent vous connecter à l'outil de saisie
       TACCT avec l'identifiant ci-dessous :</p></div>
-    <div><span>Identifiant : ${escapeHtml(to)}</span></div>
+    <div><span>Identifiant : ${escapeHtmlAndTemplateDelimiters(to)}</span></div>
     <div><p>À bientôt sur <a href="${APP_URL}">TACCT !</a></p></div>
     <div><p>Pour toute question, n'hésitez pas à <a href="${APP_URL}/contact">nous contacter</a>.</p></div>`;
 
