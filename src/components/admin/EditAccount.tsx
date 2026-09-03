@@ -37,7 +37,11 @@ export function EditAccount({
   studies,
 }: EditAccountProps) {
   const hasStudies = studies.length > 0;
-  const communeEditable = !hasStudies;
+  // Une commune déjà rattachée à une étude n'est plus modifiable, mais un compte
+  // sans commune (cas des comptes créés par ProConnect) doit rester saisissable,
+  // sinon l'activation est définitivement bloquée.
+  const communeEditable = !hasStudies || !commune;
+  const [communeId, setCommuneId] = useState(commune?.id ?? '');
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pending, startTransition] = useTransition();
 
@@ -98,8 +102,14 @@ export function EditAccount({
                           : commune.label
                         : ''
                     }
+                    onSelectedIdChange={setCommuneId}
                   />
                   <label className="c-input__label">Commune de rattachement</label>
+                  {!communeId && (
+                    <p className="c-content mt-1">
+                      Sélectionnez une commune dans la liste proposée pour pouvoir enregistrer.
+                    </p>
+                  )}
                 </div>
               </div>
             ) : (
@@ -134,6 +144,7 @@ export function EditAccount({
                   className="c-btn--primary"
                   type="submit"
                   formAction={activateAccount.bind(null, id)}
+                  disabled={!communeId}
                   title="Activer le compte et créer l’étude"
                 >
                   Activer le compte et créer l’étude
@@ -158,6 +169,7 @@ export function EditAccount({
                 className="c-btn--primary"
                 type="submit"
                 formAction={createStudyForAccount.bind(null, id)}
+                disabled={!communeId}
                 title="Créer une étude"
               >
                 Enregistrer et Créer l&apos;étude

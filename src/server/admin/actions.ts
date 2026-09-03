@@ -192,11 +192,21 @@ async function increaseRegionCommunities(communeId: string, email: string | null
   });
 }
 
+/**
+ * Commune absente du formulaire : erreur de saisie, pas d'incident serveur. On
+ * remonte un flash plutôt qu'un `throw` — sans error boundary, une exception ici
+ * fait tomber toute la page d'administration (écran « Une erreur est survenue »).
+ */
+async function missingCommune(id: string): Promise<void> {
+  await setFlash('Veuillez renseigner une commune de rattachement.', 'error');
+  revalidatePath(`/gestion/account-management/${id}`);
+}
+
 /** « Activer le compte et créer l'étude » : validé + étude + email de validation. */
 export async function activateAccount(id: string, formData: FormData): Promise<void> {
   await assertAdmin();
   const communeId = String(formData.get('communeId') ?? '').trim();
-  if (!communeId) throw new Error('Veuillez renseigner une commune de rattachement.');
+  if (!communeId) return missingCommune(id);
 
   const user = await prisma.user.findUnique({
     where: { id },
@@ -235,7 +245,7 @@ export async function activateAccount(id: string, formData: FormData): Promise<v
 export async function createStudyForAccount(id: string, formData: FormData): Promise<void> {
   await assertAdmin();
   const communeId = String(formData.get('communeId') ?? '').trim();
-  if (!communeId) throw new Error('Veuillez renseigner une commune de rattachement.');
+  if (!communeId) return missingCommune(id);
 
   const user = await prisma.user.findUnique({
     where: { id },

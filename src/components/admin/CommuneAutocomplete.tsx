@@ -21,10 +21,13 @@ export function CommuneAutocomplete({
   name,
   defaultCommuneId,
   defaultLabel,
+  onSelectedIdChange,
 }: {
   name: string;
   defaultCommuneId?: string | null;
   defaultLabel?: string | null;
+  /** Notifie le parent de l'id réellement sélectionné ('' tant qu'aucun choix). */
+  onSelectedIdChange?: (id: string) => void;
 }) {
   const [query, setQuery] = useState(defaultLabel ?? '');
   const [selectedId, setSelectedId] = useState(defaultCommuneId ?? '');
@@ -65,6 +68,7 @@ export function CommuneAutocomplete({
 
   const select = (commune: CommuneItem) => {
     setSelectedId(commune.id);
+    onSelectedIdChange?.(commune.id);
     setQuery(format(commune));
     setOpen(false);
   };
@@ -79,6 +83,15 @@ export function CommuneAutocomplete({
         onChange={(event) => {
           setQuery(event.target.value);
           setSelectedId('');
+          onSelectedIdChange?.('');
+        }}
+        // Entrée ne doit jamais soumettre le formulaire parent : la saisie libre
+        // ne vaut pas sélection, et l'action serveur partirait sans commune.
+        onKeyDown={(event) => {
+          if (event.key !== 'Enter') return;
+          event.preventDefault();
+          const first = results[0];
+          if (open && first) select(first);
         }}
         onFocus={() => results.length > 0 && setOpen(true)}
         placeholder="Saisir une commune"
