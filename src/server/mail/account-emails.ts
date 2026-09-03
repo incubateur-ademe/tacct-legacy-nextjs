@@ -1,6 +1,6 @@
 import { getEnv } from '@/lib/env';
 import 'server-only';
-import { emailLayout, escapeHtml } from './layout';
+import { emailLayout, escapeHtmlAndTemplateDelimiters } from './layout';
 import { sendMail } from './mailer';
 
 const SUBJECT_VALIDATED = '[TACCT] Validation de votre compte';
@@ -14,8 +14,8 @@ export async function sendAccountValidatedEmail(
   params: { firstname: string },
 ): Promise<void> {
   const { APP_URL } = getEnv();
-  const firstname = escapeHtml(params.firstname);
-  const identifier = escapeHtml(to);
+  const firstname = escapeHtmlAndTemplateDelimiters(params.firstname);
+  const identifier = escapeHtmlAndTemplateDelimiters(to);
 
   const body = `<div><span>Bonjour ${firstname},</span></div>
     <div><p>Bienvenue !</p></div>

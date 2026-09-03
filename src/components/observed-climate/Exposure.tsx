@@ -151,14 +151,15 @@ export function Exposure({ items }: { items: ExposureItem[] }) {
               <div className="sc-modal__content__titles">
                 <h3>Suppression d&apos;un aléa</h3>
               </div>
+              <p>
+                L&apos;aléa sera supprimé de l&apos;onglet « Saisie exposition observée » et
+                « Saisie exposition future ». Si vous aviez sélectionné cet aléa en tant
+                qu&apos;aléa secondaire dans vos impacts, il sera supprimé (l&apos;impact sera
+                conservé).
+              </p>
               <p>Confirmez-vous la suppression de l&apos;aléa ?</p>
               <div className="c-group-buttons c-group-buttons--end">
-                <button
-                  type="button"
-                  className="c-btn--tertiary"
-                  onClick={cancel}
-                  title="Non"
-                >
+                <button type="button" className="c-btn--tertiary" onClick={cancel} title="Non">
                   Non
                 </button>
                 <button

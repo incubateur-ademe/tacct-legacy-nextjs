@@ -28,10 +28,14 @@ export type AggregateUser = {
 
 export type UserAvgAggregateOutputType = {
   encryption_version: number | null
+  login_count: number | null
+  workspace_login_count: number | null
 }
 
 export type UserSumAggregateOutputType = {
   encryption_version: number | null
+  login_count: number | null
+  workspace_login_count: number | null
 }
 
 export type UserMinAggregateOutputType = {
@@ -55,6 +59,11 @@ export type UserMinAggregateOutputType = {
   encryption_version: number | null
   wants_beta_features: boolean | null
   recontact_email: string | null
+  last_login_at: Date | null
+  login_count: number | null
+  workspace_login_count: number | null
+  workspace_last_login_at: Date | null
+  workspace_last_session_jti: string | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -78,6 +87,11 @@ export type UserMaxAggregateOutputType = {
   encryption_version: number | null
   wants_beta_features: boolean | null
   recontact_email: string | null
+  last_login_at: Date | null
+  login_count: number | null
+  workspace_login_count: number | null
+  workspace_last_login_at: Date | null
+  workspace_last_session_jti: string | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -101,16 +115,25 @@ export type UserCountAggregateOutputType = {
   encryption_version: number
   wants_beta_features: number
   recontact_email: number
+  last_login_at: number
+  login_count: number
+  workspace_login_count: number
+  workspace_last_login_at: number
+  workspace_last_session_jti: number
   _all: number
 }
 
 
 export type UserAvgAggregateInputType = {
   encryption_version?: true
+  login_count?: true
+  workspace_login_count?: true
 }
 
 export type UserSumAggregateInputType = {
   encryption_version?: true
+  login_count?: true
+  workspace_login_count?: true
 }
 
 export type UserMinAggregateInputType = {
@@ -134,6 +157,11 @@ export type UserMinAggregateInputType = {
   encryption_version?: true
   wants_beta_features?: true
   recontact_email?: true
+  last_login_at?: true
+  login_count?: true
+  workspace_login_count?: true
+  workspace_last_login_at?: true
+  workspace_last_session_jti?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -157,6 +185,11 @@ export type UserMaxAggregateInputType = {
   encryption_version?: true
   wants_beta_features?: true
   recontact_email?: true
+  last_login_at?: true
+  login_count?: true
+  workspace_login_count?: true
+  workspace_last_login_at?: true
+  workspace_last_session_jti?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -180,6 +213,11 @@ export type UserCountAggregateInputType = {
   encryption_version?: true
   wants_beta_features?: true
   recontact_email?: true
+  last_login_at?: true
+  login_count?: true
+  workspace_login_count?: true
+  workspace_last_login_at?: true
+  workspace_last_session_jti?: true
   _all?: true
 }
 
@@ -290,6 +328,11 @@ export type UserGroupByOutputType = {
   encryption_version: number
   wants_beta_features: boolean
   recontact_email: string | null
+  last_login_at: Date | null
+  login_count: number
+  workspace_login_count: number
+  workspace_last_login_at: Date | null
+  workspace_last_session_jti: string | null
   _count: UserCountAggregateOutputType | null
   _avg: UserAvgAggregateOutputType | null
   _sum: UserSumAggregateOutputType | null
@@ -336,8 +379,12 @@ export type userWhereInput = {
   encryption_version?: Prisma.IntFilter<"user"> | number
   wants_beta_features?: Prisma.BoolFilter<"user"> | boolean
   recontact_email?: Prisma.StringNullableFilter<"user"> | string | null
+  last_login_at?: Prisma.DateTimeNullableFilter<"user"> | Date | string | null
+  login_count?: Prisma.IntFilter<"user"> | number
+  workspace_login_count?: Prisma.IntFilter<"user"> | number
+  workspace_last_login_at?: Prisma.DateTimeNullableFilter<"user"> | Date | string | null
+  workspace_last_session_jti?: Prisma.StringNullableFilter<"user"> | string | null
   tacctoscope_answer?: Prisma.Tacctoscope_answerListRelationFilter
-  tacctoscope_criterion_feedback?: Prisma.Tacctoscope_criterion_feedbackListRelationFilter
   commune?: Prisma.XOR<Prisma.CommuneNullableScalarRelationFilter, Prisma.communeWhereInput> | null
   study_office?: Prisma.XOR<Prisma.Study_officeNullableScalarRelationFilter, Prisma.study_officeWhereInput> | null
   user_study?: Prisma.User_studyListRelationFilter
@@ -364,8 +411,12 @@ export type userOrderByWithRelationInput = {
   encryption_version?: Prisma.SortOrder
   wants_beta_features?: Prisma.SortOrder
   recontact_email?: Prisma.SortOrderInput | Prisma.SortOrder
+  last_login_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  login_count?: Prisma.SortOrder
+  workspace_login_count?: Prisma.SortOrder
+  workspace_last_login_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  workspace_last_session_jti?: Prisma.SortOrderInput | Prisma.SortOrder
   tacctoscope_answer?: Prisma.tacctoscope_answerOrderByRelationAggregateInput
-  tacctoscope_criterion_feedback?: Prisma.tacctoscope_criterion_feedbackOrderByRelationAggregateInput
   commune?: Prisma.communeOrderByWithRelationInput
   study_office?: Prisma.study_officeOrderByWithRelationInput
   user_study?: Prisma.user_studyOrderByRelationAggregateInput
@@ -395,8 +446,12 @@ export type userWhereUniqueInput = Prisma.AtLeast<{
   encryption_version?: Prisma.IntFilter<"user"> | number
   wants_beta_features?: Prisma.BoolFilter<"user"> | boolean
   recontact_email?: Prisma.StringNullableFilter<"user"> | string | null
+  last_login_at?: Prisma.DateTimeNullableFilter<"user"> | Date | string | null
+  login_count?: Prisma.IntFilter<"user"> | number
+  workspace_login_count?: Prisma.IntFilter<"user"> | number
+  workspace_last_login_at?: Prisma.DateTimeNullableFilter<"user"> | Date | string | null
+  workspace_last_session_jti?: Prisma.StringNullableFilter<"user"> | string | null
   tacctoscope_answer?: Prisma.Tacctoscope_answerListRelationFilter
-  tacctoscope_criterion_feedback?: Prisma.Tacctoscope_criterion_feedbackListRelationFilter
   commune?: Prisma.XOR<Prisma.CommuneNullableScalarRelationFilter, Prisma.communeWhereInput> | null
   study_office?: Prisma.XOR<Prisma.Study_officeNullableScalarRelationFilter, Prisma.study_officeWhereInput> | null
   user_study?: Prisma.User_studyListRelationFilter
@@ -423,6 +478,11 @@ export type userOrderByWithAggregationInput = {
   encryption_version?: Prisma.SortOrder
   wants_beta_features?: Prisma.SortOrder
   recontact_email?: Prisma.SortOrderInput | Prisma.SortOrder
+  last_login_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  login_count?: Prisma.SortOrder
+  workspace_login_count?: Prisma.SortOrder
+  workspace_last_login_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  workspace_last_session_jti?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.userCountOrderByAggregateInput
   _avg?: Prisma.userAvgOrderByAggregateInput
   _max?: Prisma.userMaxOrderByAggregateInput
@@ -454,6 +514,11 @@ export type userScalarWhereWithAggregatesInput = {
   encryption_version?: Prisma.IntWithAggregatesFilter<"user"> | number
   wants_beta_features?: Prisma.BoolWithAggregatesFilter<"user"> | boolean
   recontact_email?: Prisma.StringNullableWithAggregatesFilter<"user"> | string | null
+  last_login_at?: Prisma.DateTimeNullableWithAggregatesFilter<"user"> | Date | string | null
+  login_count?: Prisma.IntWithAggregatesFilter<"user"> | number
+  workspace_login_count?: Prisma.IntWithAggregatesFilter<"user"> | number
+  workspace_last_login_at?: Prisma.DateTimeNullableWithAggregatesFilter<"user"> | Date | string | null
+  workspace_last_session_jti?: Prisma.StringNullableWithAggregatesFilter<"user"> | string | null
 }
 
 export type userCreateInput = {
@@ -475,8 +540,12 @@ export type userCreateInput = {
   encryption_version?: number
   wants_beta_features?: boolean
   recontact_email?: string | null
+  last_login_at?: Date | string | null
+  login_count?: number
+  workspace_login_count?: number
+  workspace_last_login_at?: Date | string | null
+  workspace_last_session_jti?: string | null
   tacctoscope_answer?: Prisma.tacctoscope_answerCreateNestedManyWithoutUserInput
-  tacctoscope_criterion_feedback?: Prisma.tacctoscope_criterion_feedbackCreateNestedManyWithoutUserInput
   commune?: Prisma.communeCreateNestedOneWithoutUserInput
   study_office?: Prisma.study_officeCreateNestedOneWithoutUserInput
   user_study?: Prisma.user_studyCreateNestedManyWithoutUserInput
@@ -503,8 +572,12 @@ export type userUncheckedCreateInput = {
   encryption_version?: number
   wants_beta_features?: boolean
   recontact_email?: string | null
+  last_login_at?: Date | string | null
+  login_count?: number
+  workspace_login_count?: number
+  workspace_last_login_at?: Date | string | null
+  workspace_last_session_jti?: string | null
   tacctoscope_answer?: Prisma.tacctoscope_answerUncheckedCreateNestedManyWithoutUserInput
-  tacctoscope_criterion_feedback?: Prisma.tacctoscope_criterion_feedbackUncheckedCreateNestedManyWithoutUserInput
   user_study?: Prisma.user_studyUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -527,8 +600,12 @@ export type userUpdateInput = {
   encryption_version?: Prisma.IntFieldUpdateOperationsInput | number
   wants_beta_features?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recontact_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workspace_last_session_jti?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tacctoscope_answer?: Prisma.tacctoscope_answerUpdateManyWithoutUserNestedInput
-  tacctoscope_criterion_feedback?: Prisma.tacctoscope_criterion_feedbackUpdateManyWithoutUserNestedInput
   commune?: Prisma.communeUpdateOneWithoutUserNestedInput
   study_office?: Prisma.study_officeUpdateOneWithoutUserNestedInput
   user_study?: Prisma.user_studyUpdateManyWithoutUserNestedInput
@@ -555,8 +632,12 @@ export type userUncheckedUpdateInput = {
   encryption_version?: Prisma.IntFieldUpdateOperationsInput | number
   wants_beta_features?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recontact_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workspace_last_session_jti?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tacctoscope_answer?: Prisma.tacctoscope_answerUncheckedUpdateManyWithoutUserNestedInput
-  tacctoscope_criterion_feedback?: Prisma.tacctoscope_criterion_feedbackUncheckedUpdateManyWithoutUserNestedInput
   user_study?: Prisma.user_studyUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -581,6 +662,11 @@ export type userCreateManyInput = {
   encryption_version?: number
   wants_beta_features?: boolean
   recontact_email?: string | null
+  last_login_at?: Date | string | null
+  login_count?: number
+  workspace_login_count?: number
+  workspace_last_login_at?: Date | string | null
+  workspace_last_session_jti?: string | null
 }
 
 export type userUpdateManyMutationInput = {
@@ -602,6 +688,11 @@ export type userUpdateManyMutationInput = {
   encryption_version?: Prisma.IntFieldUpdateOperationsInput | number
   wants_beta_features?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recontact_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workspace_last_session_jti?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type userUncheckedUpdateManyInput = {
@@ -625,6 +716,11 @@ export type userUncheckedUpdateManyInput = {
   encryption_version?: Prisma.IntFieldUpdateOperationsInput | number
   wants_beta_features?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recontact_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workspace_last_session_jti?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserListRelationFilter = {
@@ -658,10 +754,17 @@ export type userCountOrderByAggregateInput = {
   encryption_version?: Prisma.SortOrder
   wants_beta_features?: Prisma.SortOrder
   recontact_email?: Prisma.SortOrder
+  last_login_at?: Prisma.SortOrder
+  login_count?: Prisma.SortOrder
+  workspace_login_count?: Prisma.SortOrder
+  workspace_last_login_at?: Prisma.SortOrder
+  workspace_last_session_jti?: Prisma.SortOrder
 }
 
 export type userAvgOrderByAggregateInput = {
   encryption_version?: Prisma.SortOrder
+  login_count?: Prisma.SortOrder
+  workspace_login_count?: Prisma.SortOrder
 }
 
 export type userMaxOrderByAggregateInput = {
@@ -685,6 +788,11 @@ export type userMaxOrderByAggregateInput = {
   encryption_version?: Prisma.SortOrder
   wants_beta_features?: Prisma.SortOrder
   recontact_email?: Prisma.SortOrder
+  last_login_at?: Prisma.SortOrder
+  login_count?: Prisma.SortOrder
+  workspace_login_count?: Prisma.SortOrder
+  workspace_last_login_at?: Prisma.SortOrder
+  workspace_last_session_jti?: Prisma.SortOrder
 }
 
 export type userMinOrderByAggregateInput = {
@@ -708,10 +816,17 @@ export type userMinOrderByAggregateInput = {
   encryption_version?: Prisma.SortOrder
   wants_beta_features?: Prisma.SortOrder
   recontact_email?: Prisma.SortOrder
+  last_login_at?: Prisma.SortOrder
+  login_count?: Prisma.SortOrder
+  workspace_login_count?: Prisma.SortOrder
+  workspace_last_login_at?: Prisma.SortOrder
+  workspace_last_session_jti?: Prisma.SortOrder
 }
 
 export type userSumOrderByAggregateInput = {
   encryption_version?: Prisma.SortOrder
+  login_count?: Prisma.SortOrder
+  workspace_login_count?: Prisma.SortOrder
 }
 
 export type UserNullableScalarRelationFilter = {
@@ -842,20 +957,6 @@ export type userUpdateOneRequiredWithoutTacctoscope_answerNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.userUpdateToOneWithWhereWithoutTacctoscope_answerInput, Prisma.userUpdateWithoutTacctoscope_answerInput>, Prisma.userUncheckedUpdateWithoutTacctoscope_answerInput>
 }
 
-export type userCreateNestedOneWithoutTacctoscope_criterion_feedbackInput = {
-  create?: Prisma.XOR<Prisma.userCreateWithoutTacctoscope_criterion_feedbackInput, Prisma.userUncheckedCreateWithoutTacctoscope_criterion_feedbackInput>
-  connectOrCreate?: Prisma.userCreateOrConnectWithoutTacctoscope_criterion_feedbackInput
-  connect?: Prisma.userWhereUniqueInput
-}
-
-export type userUpdateOneRequiredWithoutTacctoscope_criterion_feedbackNestedInput = {
-  create?: Prisma.XOR<Prisma.userCreateWithoutTacctoscope_criterion_feedbackInput, Prisma.userUncheckedCreateWithoutTacctoscope_criterion_feedbackInput>
-  connectOrCreate?: Prisma.userCreateOrConnectWithoutTacctoscope_criterion_feedbackInput
-  upsert?: Prisma.userUpsertWithoutTacctoscope_criterion_feedbackInput
-  connect?: Prisma.userWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.userUpdateToOneWithWhereWithoutTacctoscope_criterion_feedbackInput, Prisma.userUpdateWithoutTacctoscope_criterion_feedbackInput>, Prisma.userUncheckedUpdateWithoutTacctoscope_criterion_feedbackInput>
-}
-
 export type userCreateWithoutCommuneInput = {
   id: string
   email: string
@@ -875,8 +976,12 @@ export type userCreateWithoutCommuneInput = {
   encryption_version?: number
   wants_beta_features?: boolean
   recontact_email?: string | null
+  last_login_at?: Date | string | null
+  login_count?: number
+  workspace_login_count?: number
+  workspace_last_login_at?: Date | string | null
+  workspace_last_session_jti?: string | null
   tacctoscope_answer?: Prisma.tacctoscope_answerCreateNestedManyWithoutUserInput
-  tacctoscope_criterion_feedback?: Prisma.tacctoscope_criterion_feedbackCreateNestedManyWithoutUserInput
   study_office?: Prisma.study_officeCreateNestedOneWithoutUserInput
   user_study?: Prisma.user_studyCreateNestedManyWithoutUserInput
 }
@@ -901,8 +1006,12 @@ export type userUncheckedCreateWithoutCommuneInput = {
   encryption_version?: number
   wants_beta_features?: boolean
   recontact_email?: string | null
+  last_login_at?: Date | string | null
+  login_count?: number
+  workspace_login_count?: number
+  workspace_last_login_at?: Date | string | null
+  workspace_last_session_jti?: string | null
   tacctoscope_answer?: Prisma.tacctoscope_answerUncheckedCreateNestedManyWithoutUserInput
-  tacctoscope_criterion_feedback?: Prisma.tacctoscope_criterion_feedbackUncheckedCreateNestedManyWithoutUserInput
   user_study?: Prisma.user_studyUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -956,6 +1065,11 @@ export type userScalarWhereInput = {
   encryption_version?: Prisma.IntFilter<"user"> | number
   wants_beta_features?: Prisma.BoolFilter<"user"> | boolean
   recontact_email?: Prisma.StringNullableFilter<"user"> | string | null
+  last_login_at?: Prisma.DateTimeNullableFilter<"user"> | Date | string | null
+  login_count?: Prisma.IntFilter<"user"> | number
+  workspace_login_count?: Prisma.IntFilter<"user"> | number
+  workspace_last_login_at?: Prisma.DateTimeNullableFilter<"user"> | Date | string | null
+  workspace_last_session_jti?: Prisma.StringNullableFilter<"user"> | string | null
 }
 
 export type userCreateWithoutStudy_officeInput = {
@@ -977,8 +1091,12 @@ export type userCreateWithoutStudy_officeInput = {
   encryption_version?: number
   wants_beta_features?: boolean
   recontact_email?: string | null
+  last_login_at?: Date | string | null
+  login_count?: number
+  workspace_login_count?: number
+  workspace_last_login_at?: Date | string | null
+  workspace_last_session_jti?: string | null
   tacctoscope_answer?: Prisma.tacctoscope_answerCreateNestedManyWithoutUserInput
-  tacctoscope_criterion_feedback?: Prisma.tacctoscope_criterion_feedbackCreateNestedManyWithoutUserInput
   commune?: Prisma.communeCreateNestedOneWithoutUserInput
   user_study?: Prisma.user_studyCreateNestedManyWithoutUserInput
 }
@@ -1003,8 +1121,12 @@ export type userUncheckedCreateWithoutStudy_officeInput = {
   encryption_version?: number
   wants_beta_features?: boolean
   recontact_email?: string | null
+  last_login_at?: Date | string | null
+  login_count?: number
+  workspace_login_count?: number
+  workspace_last_login_at?: Date | string | null
+  workspace_last_session_jti?: string | null
   tacctoscope_answer?: Prisma.tacctoscope_answerUncheckedCreateNestedManyWithoutUserInput
-  tacctoscope_criterion_feedback?: Prisma.tacctoscope_criterion_feedbackUncheckedCreateNestedManyWithoutUserInput
   user_study?: Prisma.user_studyUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -1053,8 +1175,12 @@ export type userCreateWithoutUser_studyInput = {
   encryption_version?: number
   wants_beta_features?: boolean
   recontact_email?: string | null
+  last_login_at?: Date | string | null
+  login_count?: number
+  workspace_login_count?: number
+  workspace_last_login_at?: Date | string | null
+  workspace_last_session_jti?: string | null
   tacctoscope_answer?: Prisma.tacctoscope_answerCreateNestedManyWithoutUserInput
-  tacctoscope_criterion_feedback?: Prisma.tacctoscope_criterion_feedbackCreateNestedManyWithoutUserInput
   commune?: Prisma.communeCreateNestedOneWithoutUserInput
   study_office?: Prisma.study_officeCreateNestedOneWithoutUserInput
 }
@@ -1080,8 +1206,12 @@ export type userUncheckedCreateWithoutUser_studyInput = {
   encryption_version?: number
   wants_beta_features?: boolean
   recontact_email?: string | null
+  last_login_at?: Date | string | null
+  login_count?: number
+  workspace_login_count?: number
+  workspace_last_login_at?: Date | string | null
+  workspace_last_session_jti?: string | null
   tacctoscope_answer?: Prisma.tacctoscope_answerUncheckedCreateNestedManyWithoutUserInput
-  tacctoscope_criterion_feedback?: Prisma.tacctoscope_criterion_feedbackUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type userCreateOrConnectWithoutUser_studyInput = {
@@ -1119,8 +1249,12 @@ export type userUpdateWithoutUser_studyInput = {
   encryption_version?: Prisma.IntFieldUpdateOperationsInput | number
   wants_beta_features?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recontact_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workspace_last_session_jti?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tacctoscope_answer?: Prisma.tacctoscope_answerUpdateManyWithoutUserNestedInput
-  tacctoscope_criterion_feedback?: Prisma.tacctoscope_criterion_feedbackUpdateManyWithoutUserNestedInput
   commune?: Prisma.communeUpdateOneWithoutUserNestedInput
   study_office?: Prisma.study_officeUpdateOneWithoutUserNestedInput
 }
@@ -1146,8 +1280,12 @@ export type userUncheckedUpdateWithoutUser_studyInput = {
   encryption_version?: Prisma.IntFieldUpdateOperationsInput | number
   wants_beta_features?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recontact_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workspace_last_session_jti?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tacctoscope_answer?: Prisma.tacctoscope_answerUncheckedUpdateManyWithoutUserNestedInput
-  tacctoscope_criterion_feedback?: Prisma.tacctoscope_criterion_feedbackUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type userCreateWithoutTacctoscope_answerInput = {
@@ -1169,7 +1307,11 @@ export type userCreateWithoutTacctoscope_answerInput = {
   encryption_version?: number
   wants_beta_features?: boolean
   recontact_email?: string | null
-  tacctoscope_criterion_feedback?: Prisma.tacctoscope_criterion_feedbackCreateNestedManyWithoutUserInput
+  last_login_at?: Date | string | null
+  login_count?: number
+  workspace_login_count?: number
+  workspace_last_login_at?: Date | string | null
+  workspace_last_session_jti?: string | null
   commune?: Prisma.communeCreateNestedOneWithoutUserInput
   study_office?: Prisma.study_officeCreateNestedOneWithoutUserInput
   user_study?: Prisma.user_studyCreateNestedManyWithoutUserInput
@@ -1196,7 +1338,11 @@ export type userUncheckedCreateWithoutTacctoscope_answerInput = {
   encryption_version?: number
   wants_beta_features?: boolean
   recontact_email?: string | null
-  tacctoscope_criterion_feedback?: Prisma.tacctoscope_criterion_feedbackUncheckedCreateNestedManyWithoutUserInput
+  last_login_at?: Date | string | null
+  login_count?: number
+  workspace_login_count?: number
+  workspace_last_login_at?: Date | string | null
+  workspace_last_session_jti?: string | null
   user_study?: Prisma.user_studyUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -1235,7 +1381,11 @@ export type userUpdateWithoutTacctoscope_answerInput = {
   encryption_version?: Prisma.IntFieldUpdateOperationsInput | number
   wants_beta_features?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recontact_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tacctoscope_criterion_feedback?: Prisma.tacctoscope_criterion_feedbackUpdateManyWithoutUserNestedInput
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workspace_last_session_jti?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   commune?: Prisma.communeUpdateOneWithoutUserNestedInput
   study_office?: Prisma.study_officeUpdateOneWithoutUserNestedInput
   user_study?: Prisma.user_studyUpdateManyWithoutUserNestedInput
@@ -1262,123 +1412,11 @@ export type userUncheckedUpdateWithoutTacctoscope_answerInput = {
   encryption_version?: Prisma.IntFieldUpdateOperationsInput | number
   wants_beta_features?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recontact_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tacctoscope_criterion_feedback?: Prisma.tacctoscope_criterion_feedbackUncheckedUpdateManyWithoutUserNestedInput
-  user_study?: Prisma.user_studyUncheckedUpdateManyWithoutUserNestedInput
-}
-
-export type userCreateWithoutTacctoscope_criterion_feedbackInput = {
-  id: string
-  email: string
-  username: string
-  firstname: string
-  lastname: string
-  validated?: boolean
-  validated_terms_of_use?: boolean
-  authenticated_id?: string | null
-  access_token?: string | null
-  roles: string
-  created_at: Date | string
-  updated_at: Date | string
-  has_accepted_surveys?: boolean | null
-  authenticated_id_bidx?: string | null
-  email_bidx?: string | null
-  encryption_version?: number
-  wants_beta_features?: boolean
-  recontact_email?: string | null
-  tacctoscope_answer?: Prisma.tacctoscope_answerCreateNestedManyWithoutUserInput
-  commune?: Prisma.communeCreateNestedOneWithoutUserInput
-  study_office?: Prisma.study_officeCreateNestedOneWithoutUserInput
-  user_study?: Prisma.user_studyCreateNestedManyWithoutUserInput
-}
-
-export type userUncheckedCreateWithoutTacctoscope_criterion_feedbackInput = {
-  id: string
-  study_office_id?: string | null
-  commune_id?: string | null
-  email: string
-  username: string
-  firstname: string
-  lastname: string
-  validated?: boolean
-  validated_terms_of_use?: boolean
-  authenticated_id?: string | null
-  access_token?: string | null
-  roles: string
-  created_at: Date | string
-  updated_at: Date | string
-  has_accepted_surveys?: boolean | null
-  authenticated_id_bidx?: string | null
-  email_bidx?: string | null
-  encryption_version?: number
-  wants_beta_features?: boolean
-  recontact_email?: string | null
-  tacctoscope_answer?: Prisma.tacctoscope_answerUncheckedCreateNestedManyWithoutUserInput
-  user_study?: Prisma.user_studyUncheckedCreateNestedManyWithoutUserInput
-}
-
-export type userCreateOrConnectWithoutTacctoscope_criterion_feedbackInput = {
-  where: Prisma.userWhereUniqueInput
-  create: Prisma.XOR<Prisma.userCreateWithoutTacctoscope_criterion_feedbackInput, Prisma.userUncheckedCreateWithoutTacctoscope_criterion_feedbackInput>
-}
-
-export type userUpsertWithoutTacctoscope_criterion_feedbackInput = {
-  update: Prisma.XOR<Prisma.userUpdateWithoutTacctoscope_criterion_feedbackInput, Prisma.userUncheckedUpdateWithoutTacctoscope_criterion_feedbackInput>
-  create: Prisma.XOR<Prisma.userCreateWithoutTacctoscope_criterion_feedbackInput, Prisma.userUncheckedCreateWithoutTacctoscope_criterion_feedbackInput>
-  where?: Prisma.userWhereInput
-}
-
-export type userUpdateToOneWithWhereWithoutTacctoscope_criterion_feedbackInput = {
-  where?: Prisma.userWhereInput
-  data: Prisma.XOR<Prisma.userUpdateWithoutTacctoscope_criterion_feedbackInput, Prisma.userUncheckedUpdateWithoutTacctoscope_criterion_feedbackInput>
-}
-
-export type userUpdateWithoutTacctoscope_criterion_feedbackInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
-  firstname?: Prisma.StringFieldUpdateOperationsInput | string
-  lastname?: Prisma.StringFieldUpdateOperationsInput | string
-  validated?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  validated_terms_of_use?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  authenticated_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  access_token?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  roles?: Prisma.StringFieldUpdateOperationsInput | string
-  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  has_accepted_surveys?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  authenticated_id_bidx?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email_bidx?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  encryption_version?: Prisma.IntFieldUpdateOperationsInput | number
-  wants_beta_features?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  recontact_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tacctoscope_answer?: Prisma.tacctoscope_answerUpdateManyWithoutUserNestedInput
-  commune?: Prisma.communeUpdateOneWithoutUserNestedInput
-  study_office?: Prisma.study_officeUpdateOneWithoutUserNestedInput
-  user_study?: Prisma.user_studyUpdateManyWithoutUserNestedInput
-}
-
-export type userUncheckedUpdateWithoutTacctoscope_criterion_feedbackInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  study_office_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  commune_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
-  firstname?: Prisma.StringFieldUpdateOperationsInput | string
-  lastname?: Prisma.StringFieldUpdateOperationsInput | string
-  validated?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  validated_terms_of_use?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  authenticated_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  access_token?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  roles?: Prisma.StringFieldUpdateOperationsInput | string
-  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  has_accepted_surveys?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  authenticated_id_bidx?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email_bidx?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  encryption_version?: Prisma.IntFieldUpdateOperationsInput | number
-  wants_beta_features?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  recontact_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tacctoscope_answer?: Prisma.tacctoscope_answerUncheckedUpdateManyWithoutUserNestedInput
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workspace_last_session_jti?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user_study?: Prisma.user_studyUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1402,6 +1440,11 @@ export type userCreateManyCommuneInput = {
   encryption_version?: number
   wants_beta_features?: boolean
   recontact_email?: string | null
+  last_login_at?: Date | string | null
+  login_count?: number
+  workspace_login_count?: number
+  workspace_last_login_at?: Date | string | null
+  workspace_last_session_jti?: string | null
 }
 
 export type userUpdateWithoutCommuneInput = {
@@ -1423,8 +1466,12 @@ export type userUpdateWithoutCommuneInput = {
   encryption_version?: Prisma.IntFieldUpdateOperationsInput | number
   wants_beta_features?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recontact_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workspace_last_session_jti?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tacctoscope_answer?: Prisma.tacctoscope_answerUpdateManyWithoutUserNestedInput
-  tacctoscope_criterion_feedback?: Prisma.tacctoscope_criterion_feedbackUpdateManyWithoutUserNestedInput
   study_office?: Prisma.study_officeUpdateOneWithoutUserNestedInput
   user_study?: Prisma.user_studyUpdateManyWithoutUserNestedInput
 }
@@ -1449,8 +1496,12 @@ export type userUncheckedUpdateWithoutCommuneInput = {
   encryption_version?: Prisma.IntFieldUpdateOperationsInput | number
   wants_beta_features?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recontact_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workspace_last_session_jti?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tacctoscope_answer?: Prisma.tacctoscope_answerUncheckedUpdateManyWithoutUserNestedInput
-  tacctoscope_criterion_feedback?: Prisma.tacctoscope_criterion_feedbackUncheckedUpdateManyWithoutUserNestedInput
   user_study?: Prisma.user_studyUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1474,6 +1525,11 @@ export type userUncheckedUpdateManyWithoutCommuneInput = {
   encryption_version?: Prisma.IntFieldUpdateOperationsInput | number
   wants_beta_features?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recontact_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workspace_last_session_jti?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type userCreateManyStudy_officeInput = {
@@ -1496,6 +1552,11 @@ export type userCreateManyStudy_officeInput = {
   encryption_version?: number
   wants_beta_features?: boolean
   recontact_email?: string | null
+  last_login_at?: Date | string | null
+  login_count?: number
+  workspace_login_count?: number
+  workspace_last_login_at?: Date | string | null
+  workspace_last_session_jti?: string | null
 }
 
 export type userUpdateWithoutStudy_officeInput = {
@@ -1517,8 +1578,12 @@ export type userUpdateWithoutStudy_officeInput = {
   encryption_version?: Prisma.IntFieldUpdateOperationsInput | number
   wants_beta_features?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recontact_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workspace_last_session_jti?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tacctoscope_answer?: Prisma.tacctoscope_answerUpdateManyWithoutUserNestedInput
-  tacctoscope_criterion_feedback?: Prisma.tacctoscope_criterion_feedbackUpdateManyWithoutUserNestedInput
   commune?: Prisma.communeUpdateOneWithoutUserNestedInput
   user_study?: Prisma.user_studyUpdateManyWithoutUserNestedInput
 }
@@ -1543,8 +1608,12 @@ export type userUncheckedUpdateWithoutStudy_officeInput = {
   encryption_version?: Prisma.IntFieldUpdateOperationsInput | number
   wants_beta_features?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recontact_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workspace_last_session_jti?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tacctoscope_answer?: Prisma.tacctoscope_answerUncheckedUpdateManyWithoutUserNestedInput
-  tacctoscope_criterion_feedback?: Prisma.tacctoscope_criterion_feedbackUncheckedUpdateManyWithoutUserNestedInput
   user_study?: Prisma.user_studyUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1568,6 +1637,11 @@ export type userUncheckedUpdateManyWithoutStudy_officeInput = {
   encryption_version?: Prisma.IntFieldUpdateOperationsInput | number
   wants_beta_features?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recontact_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  workspace_last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workspace_last_session_jti?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -1577,13 +1651,11 @@ export type userUncheckedUpdateManyWithoutStudy_officeInput = {
 
 export type UserCountOutputType = {
   tacctoscope_answer: number
-  tacctoscope_criterion_feedback: number
   user_study: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tacctoscope_answer?: boolean | UserCountOutputTypeCountTacctoscope_answerArgs
-  tacctoscope_criterion_feedback?: boolean | UserCountOutputTypeCountTacctoscope_criterion_feedbackArgs
   user_study?: boolean | UserCountOutputTypeCountUser_studyArgs
 }
 
@@ -1602,13 +1674,6 @@ export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
  */
 export type UserCountOutputTypeCountTacctoscope_answerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.tacctoscope_answerWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountTacctoscope_criterion_feedbackArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.tacctoscope_criterion_feedbackWhereInput
 }
 
 /**
@@ -1640,8 +1705,12 @@ export type userSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   encryption_version?: boolean
   wants_beta_features?: boolean
   recontact_email?: boolean
+  last_login_at?: boolean
+  login_count?: boolean
+  workspace_login_count?: boolean
+  workspace_last_login_at?: boolean
+  workspace_last_session_jti?: boolean
   tacctoscope_answer?: boolean | Prisma.user$tacctoscope_answerArgs<ExtArgs>
-  tacctoscope_criterion_feedback?: boolean | Prisma.user$tacctoscope_criterion_feedbackArgs<ExtArgs>
   commune?: boolean | Prisma.user$communeArgs<ExtArgs>
   study_office?: boolean | Prisma.user$study_officeArgs<ExtArgs>
   user_study?: boolean | Prisma.user$user_studyArgs<ExtArgs>
@@ -1669,6 +1738,11 @@ export type userSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   encryption_version?: boolean
   wants_beta_features?: boolean
   recontact_email?: boolean
+  last_login_at?: boolean
+  login_count?: boolean
+  workspace_login_count?: boolean
+  workspace_last_login_at?: boolean
+  workspace_last_session_jti?: boolean
   commune?: boolean | Prisma.user$communeArgs<ExtArgs>
   study_office?: boolean | Prisma.user$study_officeArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
@@ -1694,6 +1768,11 @@ export type userSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   encryption_version?: boolean
   wants_beta_features?: boolean
   recontact_email?: boolean
+  last_login_at?: boolean
+  login_count?: boolean
+  workspace_login_count?: boolean
+  workspace_last_login_at?: boolean
+  workspace_last_session_jti?: boolean
   commune?: boolean | Prisma.user$communeArgs<ExtArgs>
   study_office?: boolean | Prisma.user$study_officeArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
@@ -1719,12 +1798,16 @@ export type userSelectScalar = {
   encryption_version?: boolean
   wants_beta_features?: boolean
   recontact_email?: boolean
+  last_login_at?: boolean
+  login_count?: boolean
+  workspace_login_count?: boolean
+  workspace_last_login_at?: boolean
+  workspace_last_session_jti?: boolean
 }
 
-export type userOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "study_office_id" | "commune_id" | "email" | "username" | "firstname" | "lastname" | "validated" | "validated_terms_of_use" | "authenticated_id" | "access_token" | "roles" | "created_at" | "updated_at" | "has_accepted_surveys" | "authenticated_id_bidx" | "email_bidx" | "encryption_version" | "wants_beta_features" | "recontact_email", ExtArgs["result"]["user"]>
+export type userOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "study_office_id" | "commune_id" | "email" | "username" | "firstname" | "lastname" | "validated" | "validated_terms_of_use" | "authenticated_id" | "access_token" | "roles" | "created_at" | "updated_at" | "has_accepted_surveys" | "authenticated_id_bidx" | "email_bidx" | "encryption_version" | "wants_beta_features" | "recontact_email" | "last_login_at" | "login_count" | "workspace_login_count" | "workspace_last_login_at" | "workspace_last_session_jti", ExtArgs["result"]["user"]>
 export type userInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tacctoscope_answer?: boolean | Prisma.user$tacctoscope_answerArgs<ExtArgs>
-  tacctoscope_criterion_feedback?: boolean | Prisma.user$tacctoscope_criterion_feedbackArgs<ExtArgs>
   commune?: boolean | Prisma.user$communeArgs<ExtArgs>
   study_office?: boolean | Prisma.user$study_officeArgs<ExtArgs>
   user_study?: boolean | Prisma.user$user_studyArgs<ExtArgs>
@@ -1743,7 +1826,6 @@ export type $userPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   name: "user"
   objects: {
     tacctoscope_answer: Prisma.$tacctoscope_answerPayload<ExtArgs>[]
-    tacctoscope_criterion_feedback: Prisma.$tacctoscope_criterion_feedbackPayload<ExtArgs>[]
     commune: Prisma.$communePayload<ExtArgs> | null
     study_office: Prisma.$study_officePayload<ExtArgs> | null
     user_study: Prisma.$user_studyPayload<ExtArgs>[]
@@ -1769,6 +1851,11 @@ export type $userPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     encryption_version: number
     wants_beta_features: boolean
     recontact_email: string | null
+    last_login_at: Date | null
+    login_count: number
+    workspace_login_count: number
+    workspace_last_login_at: Date | null
+    workspace_last_session_jti: string | null
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -2164,7 +2251,6 @@ readonly fields: userFieldRefs;
 export interface Prisma__userClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   tacctoscope_answer<T extends Prisma.user$tacctoscope_answerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$tacctoscope_answerArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tacctoscope_answerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  tacctoscope_criterion_feedback<T extends Prisma.user$tacctoscope_criterion_feedbackArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$tacctoscope_criterion_feedbackArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tacctoscope_criterion_feedbackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   commune<T extends Prisma.user$communeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$communeArgs<ExtArgs>>): Prisma.Prisma__communeClient<runtime.Types.Result.GetResult<Prisma.$communePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   study_office<T extends Prisma.user$study_officeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$study_officeArgs<ExtArgs>>): Prisma.Prisma__study_officeClient<runtime.Types.Result.GetResult<Prisma.$study_officePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   user_study<T extends Prisma.user$user_studyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$user_studyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$user_studyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2217,6 +2303,11 @@ export interface userFieldRefs {
   readonly encryption_version: Prisma.FieldRef<"user", 'Int'>
   readonly wants_beta_features: Prisma.FieldRef<"user", 'Boolean'>
   readonly recontact_email: Prisma.FieldRef<"user", 'String'>
+  readonly last_login_at: Prisma.FieldRef<"user", 'DateTime'>
+  readonly login_count: Prisma.FieldRef<"user", 'Int'>
+  readonly workspace_login_count: Prisma.FieldRef<"user", 'Int'>
+  readonly workspace_last_login_at: Prisma.FieldRef<"user", 'DateTime'>
+  readonly workspace_last_session_jti: Prisma.FieldRef<"user", 'String'>
 }
     
 
@@ -2639,30 +2730,6 @@ export type user$tacctoscope_answerArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.Tacctoscope_answerScalarFieldEnum | Prisma.Tacctoscope_answerScalarFieldEnum[]
-}
-
-/**
- * user.tacctoscope_criterion_feedback
- */
-export type user$tacctoscope_criterion_feedbackArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the tacctoscope_criterion_feedback
-   */
-  select?: Prisma.tacctoscope_criterion_feedbackSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the tacctoscope_criterion_feedback
-   */
-  omit?: Prisma.tacctoscope_criterion_feedbackOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.tacctoscope_criterion_feedbackInclude<ExtArgs> | null
-  where?: Prisma.tacctoscope_criterion_feedbackWhereInput
-  orderBy?: Prisma.tacctoscope_criterion_feedbackOrderByWithRelationInput | Prisma.tacctoscope_criterion_feedbackOrderByWithRelationInput[]
-  cursor?: Prisma.tacctoscope_criterion_feedbackWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.Tacctoscope_criterion_feedbackScalarFieldEnum | Prisma.Tacctoscope_criterion_feedbackScalarFieldEnum[]
 }
 
 /**

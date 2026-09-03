@@ -2,12 +2,14 @@ import 'server-only';
 import path from 'node:path';
 import { readFileSync } from 'node:fs';
 
-export function escapeHtml(value: string): string {
+export function escapeHtmlAndTemplateDelimiters(value: string): string {
   return value
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/"/g, '&quot;')
+    .replace(/\{/g, '&#123;')
+    .replace(/\}/g, '&#125;');
 }
 
 // Logos embarqués en images inline `cid:` (port de EmailBuilder::embedImages du
