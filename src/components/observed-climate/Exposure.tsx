@@ -152,12 +152,14 @@ export function Exposure({ items }: { items: ExposureItem[] }) {
                 <h3>Suppression d&apos;un aléa</h3>
               </div>
               <p>
-                L&apos;aléa sera supprimé de l&apos;onglet « Saisie exposition observée » et
-                « Saisie exposition future ». Si vous aviez sélectionné cet aléa en tant
-                qu&apos;aléa secondaire dans vos impacts, il sera supprimé (l&apos;impact sera
-                conservé).
+                L&apos;aléa sera supprimé de l&apos;onglet « Saisie exposition observée » et
+                « Saisie exposition future ».
               </p>
-              <p>Confirmez-vous la suppression de l&apos;aléa ?</p>
+              <p>
+                Si vous aviez sélectionné cet aléa en tant qu&apos;aléa secondaire dans vos impacts,
+                il sera supprimé (l&apos;impact sera conservé).
+              </p>
+              <p>Confirmez-vous la suppression de l&apos;aléa ?</p>
               <div className="c-group-buttons c-group-buttons--end">
                 <button type="button" className="c-btn--tertiary" onClick={cancel} title="Non">
                   Non

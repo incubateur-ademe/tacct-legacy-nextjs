@@ -171,7 +171,7 @@ export async function deleteObservedExposure(id: string) {
     await setFlash(
       'Suppression impossible',
       'error',
-      "L'aléa est renseigné dans un impact d'une thématique",
+      "Cet aléa est défini comme aléa principal sur l'un de vos impacts",
     );
     revalidatePath('/observed-climate/observed-exposure');
     return;
