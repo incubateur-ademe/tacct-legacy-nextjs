@@ -33,9 +33,18 @@ export function isAdmin(user: { roles: string }): boolean {
  *
  * Retourne `null` si l'utilisateur n'a pas d'étude ou pas accès à celle demandée.
  */
-export const getCurrentStudy = cache(async function getCurrentStudy(
+export function getCurrentStudy(user: CurrentUser, studyId?: string) {
+  // `cache` indexe sur la liste d'arguments telle que passée : `(user)` et
+  // `(user, undefined)` sont deux entrées distinctes. Le layout et le Header
+  // appellent sans `studyId`, les pages avec `studyIdParam` (souvent undefined) :
+  // sans cette normalisation, l'étude et toute son arborescence étaient chargées
+  // deux fois par rendu.
+  return getCurrentStudyCached(user, studyId ?? null);
+}
+
+const getCurrentStudyCached = cache(async function getCurrentStudyCached(
   user: CurrentUser,
-  studyId?: string,
+  studyId: string | null,
 ): Promise<Awaited<ReturnType<typeof loadStudy>> | null> {
   if (studyId) {
     const allowed = isAdmin(user) || user.user_study.some((us) => us.study_id === studyId);

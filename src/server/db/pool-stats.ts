@@ -1,5 +1,6 @@
 import 'server-only';
 import type { Pool } from 'pg';
+import { formatProcessStats } from '@/server/process-stats';
 
 /**
  * Jauges du pool `pg`. Pas de compteur maison : `pg` les maintient déjà, on se
@@ -69,8 +70,11 @@ function seuilRedemarrage(): number {
  * connexion et `total` reste sous `max` : la condition est fausse, donc **pas de
  * redémarrage**. On ne se met pas en boucle de crash sur une panne de base, où
  * relancer le conteneur n'apporterait rien.
+ *
+ * `surSaturation` est appelé une fois par épisode, à son début : c'est le seul
+ * moment où l'on peut photographier ce qui tient les connexions.
  */
-export function watchPoolSaturation(pool: Pool, max: number): void {
+export function watchPoolSaturation(pool: Pool, max: number, surSaturation?: () => void): void {
   const seuil = seuilRedemarrage();
   let saturePuis: number | null = null;
   let dernierLog = 0;
@@ -93,7 +97,8 @@ export function watchPoolSaturation(pool: Pool, max: number): void {
     if (saturePuis === null) {
       saturePuis = maintenant;
       dernierLog = maintenant;
-      console.warn(`[pg] pool saturé — ${formatPoolStats(stats)}`);
+      console.warn(`[pg] pool saturé — ${formatPoolStats(stats)} — ${formatProcessStats()}`);
+      surSaturation?.();
       return;
     }
 

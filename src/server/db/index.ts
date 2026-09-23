@@ -1,8 +1,9 @@
 import { readFileSync } from 'node:fs';
-import { Pool, type PoolConfig } from 'pg';
+import { Client, Pool, type PoolConfig } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../../generated/prisma/client';
 import { decryptField } from '@/server/crypto/user-crypto';
+import { formatProcessStats } from '@/server/process-stats';
 import { formatPoolStats, readPoolStats, watchPoolSaturation } from './pool-stats';
 
 /**
@@ -157,15 +158,97 @@ function logSiErreurDeConnexion(error: unknown, pool: Pool): void {
   if (!ERREURS_DE_CONNEXION.some((motif) => message.includes(motif))) return;
 
   console.error(
-    `[pg] échec d'acquisition — ${formatPoolStats(readPoolStats(pool, POOL_MAX))} — ${message}`,
+    `[pg] échec d'acquisition — ${formatPoolStats(readPoolStats(pool, POOL_MAX))} — ${formatProcessStats()} — ${message}`,
   );
+}
+
+/**
+ * Au-delà, une opération retient une connexion assez longtemps pour que le pool
+ * (5 slots) s'engorge dès quelques utilisateurs simultanés.
+ */
+const SEUIL_REQUETE_LENTE_MS = 2_000;
+
+/**
+ * Nomme les opérations qui tiennent les connexions : les échecs d'acquisition
+ * disent que le pool est plein, pas *qui* le remplit.
+ *
+ * La durée inclut l'attente d'une connexion. Si `waiting>0` sur la ligne, une
+ * partie du temps est de la file d'attente et non de l'exécution SQL : ce sont
+ * les lignes avec `waiting=0` qui désignent les vraies requêtes lentes.
+ */
+function logSiLente(
+  model: string | undefined,
+  operation: string,
+  dureeMs: number,
+  pool: Pool,
+): void {
+  if (dureeMs < SEUIL_REQUETE_LENTE_MS) return;
+  console.warn(
+    `[pg] requête lente ${dureeMs}ms — ${model ?? '?'}.${operation} — ${formatPoolStats(readPoolStats(pool, POOL_MAX))}`,
+  );
+}
+
+/**
+ * Photographie, au début d'une saturation, ce que font les connexions de l'app
+ * côté Postgres. Les incidents arrivent sans prévenir : c'est la seule façon
+ * d'avoir `pg_stat_activity` au bon moment.
+ *
+ * Connexion dédiée, hors pool : le pool est plein à cet instant précis. Elle est
+ * ouverte puis fermée aussitôt, une fois par épisode.
+ *
+ * À lire :
+ * - `state=active` avec une longue durée → requête lente côté base (ou attente
+ *   de verrou si `wait=Lock`).
+ * - `state=idle` alors que le pool se dit plein → Postgres a déjà répondu, c'est
+ *   le process Node qui tarde à traiter les réponses (mémoire, swap, event loop).
+ */
+async function capturerActiviteBase(config: PoolConfig): Promise<void> {
+  const client = new Client({
+    ...config,
+    connectionTimeoutMillis: 5_000,
+    statement_timeout: 5_000,
+  });
+  try {
+    await client.connect();
+    const { rows } = await client.query<{
+      pid: number;
+      state: string | null;
+      duree_s: number | null;
+      wait: string | null;
+      requete: string | null;
+    }>(
+      `SELECT pid, state,
+              round(extract(epoch FROM now() - coalesce(query_start, state_change)))::int AS duree_s,
+              concat_ws(':', wait_event_type, wait_event) AS wait,
+              left(regexp_replace(query, '\\s+', ' ', 'g'), 200) AS requete
+         FROM pg_stat_activity
+        WHERE application_name = $1 AND pid <> pg_backend_pid()
+        ORDER BY query_start NULLS LAST`,
+      [APPLICATION_NAME],
+    );
+    console.warn(`[pg] activité côté base au début de la saturation : ${rows.length} connexion(s)`);
+    for (const r of rows) {
+      console.warn(
+        `[pg]   pid=${r.pid} state=${r.state} depuis=${r.duree_s}s wait=${r.wait || '-'} — ${r.requete}`,
+      );
+    }
+  } catch (error) {
+    // Échec instructif en soi : si même une connexion neuve n'aboutit pas, c'est la
+    // base (ou sa limite de connexions) qui bloque.
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(`[pg] capture de pg_stat_activity impossible — ${message}`);
+  } finally {
+    await client.end().catch(() => {});
+  }
 }
 
 function createPrismaClient() {
   const { config, schema } = buildPool();
   const pool = new Pool(config);
   activePool = pool;
-  watchPoolSaturation(pool, POOL_MAX);
+  watchPoolSaturation(pool, POOL_MAX, () => {
+    void capturerActiviteBase(config);
+  });
 
   // CRITIQUE : sans ce handler, une erreur sur une connexion *idle* (fermée par
   // le serveur PG / le réseau après inactivité) est émise comme événement
@@ -185,7 +268,8 @@ function createPrismaClient() {
   return client.$extends({
     query: {
       $allModels: {
-        async $allOperations({ args, query }) {
+        async $allOperations({ model, operation, args, query }) {
+          const debut = Date.now();
           try {
             const result = await query(args);
             deepDecryptUsers(result);
@@ -193,6 +277,8 @@ function createPrismaClient() {
           } catch (error) {
             logSiErreurDeConnexion(error, pool);
             throw error;
+          } finally {
+            logSiLente(model, operation, Date.now() - debut, pool);
           }
         },
       },

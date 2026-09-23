@@ -1,4 +1,5 @@
 import 'server-only';
+import { cache } from 'react';
 import { prisma } from '@/server/db';
 
 export type OwnerType = 'impact' | 'strategy';
@@ -7,8 +8,11 @@ export type OwnerType = 'impact' | 'strategy';
  * Wrapper unifié pour récupérer un impact (diagnostiqué) OU un impact_strategy
  * (créé ex nihilo). Permet aux pages de stratégies de travailler indifféremment
  * sur les deux types.
+ *
+ * Mis en cache par rendu : le layout `impacts/[type]/[id]` et chacune de ses
+ * pages l'appellent avec les mêmes arguments.
  */
-export async function getImpactOwner(type: OwnerType, id: string) {
+export const getImpactOwner = cache(async function getImpactOwner(type: OwnerType, id: string) {
   if (type === 'impact') {
     const impact = await prisma.impact.findUnique({
       where: { id },
@@ -47,7 +51,7 @@ export async function getImpactOwner(type: OwnerType, id: string) {
     impactLevel: strategy.impact_level,
     impactLevelId: strategy.impact_level_id,
   };
-}
+});
 
 export type ImpactOwner = NonNullable<Awaited<ReturnType<typeof getImpactOwner>>>;
 
