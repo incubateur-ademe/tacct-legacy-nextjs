@@ -1,12 +1,12 @@
-import type { Metadata } from 'next';
-import '@/styles/main.scss';
 import { Toaster } from '@/components/ui/Toaster';
 import { consumeFlash } from '@/server/flash';
-import { PHProvider } from './providers';
+import '@/styles/main.scss';
+import type { Metadata } from 'next';
 import PostHogPageView from './PostHogPageView';
+import { PHProvider } from './providers';
 
 export const metadata: Metadata = {
-  title: 'TACCT',
+  title: 'Outil de saisie TACCT',
   description: "Outil d'aide à la décision pour l'adaptation au changement climatique",
 };
 
