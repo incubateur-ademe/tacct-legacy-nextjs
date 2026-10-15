@@ -16,7 +16,6 @@ export async function getPublicOrigin(): Promise<string> {
       if (LOCAL_HOSTNAMES.has(hostname)) {
         return `${firstValue(h.get('x-forwarded-proto')) || 'http'}://${host}`;
       }
-      return `https://${hostname}`;
     } catch {
       // en-tête illisible : repli sur APP_URL
     }
