@@ -74,13 +74,26 @@ export async function getUsersList({
   return { items, total, page, pageSize };
 }
 
-/** Tous les comptes correspondant aux filtres de la liste, pour l'export xlsx. */
+/**
+ * Tous les comptes correspondant aux filtres de la liste, pour l'export xlsx.
+ * `select` strict : seuls les champs exportés (ou nécessaires au filtre) sont
+ * chargés — jamais `access_token`, `authenticated_id` ni les index aveugles.
+ */
 export async function getUsersExport(filters: UsersListFilters) {
   const all = await prisma.user.findMany({
-    include: {
-      study_office: true,
-      commune: true,
-      user_study: { include: { study: { select: { territory_name: true, year: true } } } },
+    select: {
+      firstname: true,
+      lastname: true,
+      email: true,
+      username: true,
+      roles: true,
+      validated: true,
+      created_at: true,
+      workspace_last_login_at: true,
+      workspace_login_count: true,
+      study_office: { select: { name: true } },
+      commune: { select: { label: true, postal_code: true } },
+      user_study: { select: { study: { select: { territory_name: true, year: true } } } },
     },
   });
   return filterAndSortUsers(all, filters);
@@ -106,7 +119,9 @@ export type StudiesListFilters = {
   dir?: SortDir;
 };
 
-async function buildStudiesQuery({ search, regionId, sort, dir = 'asc' }: StudiesListFilters) {
+async function buildStudiesQuery({ search, regionId, sort, dir }: StudiesListFilters) {
+  // Valeurs issues de l'URL : seules les valeurs attendues atteignent Prisma.
+  const order: SortDir = dir === 'desc' ? 'desc' : 'asc';
   // Le nom du chargé d'étude est chiffré : on résout d'abord en mémoire les
   // user_ids dont le nom matche (volume modéré), puis on filtre les études
   // dessus en SQL — la pagination et le tri SQL des études sont conservés.
@@ -137,18 +152,18 @@ async function buildStudiesQuery({ search, regionId, sort, dir = 'asc' }: Studie
           ],
         }
       : {}),
-    ...(regionId
+    ...(typeof regionId === 'string' && regionId
       ? { commune: { department: { region_id: regionId } } }
       : {}),
   };
 
   const orderBy =
     sort === 'territoryName'
-      ? { territory_name: dir }
+      ? { territory_name: order }
       : sort === 'region'
-        ? { commune: { department: { region: { label: dir } } } }
+        ? { commune: { department: { region: { label: order } } } }
         : sort === 'dateCreation'
-          ? { created_at: dir }
+          ? { created_at: order }
           : { created_at: 'desc' as SortDir };
 
   return { where, orderBy };
@@ -181,14 +196,37 @@ export async function getStudiesAdminList({
   return { items, total, page, pageSize };
 }
 
-/** Toutes les études correspondant aux filtres de la liste, pour l'export xlsx. */
+/**
+ * Toutes les études correspondant aux filtres de la liste, pour l'export xlsx.
+ * Des membres, on ne charge que l'identité du chargé d'étude (cf. `getUsersExport`).
+ */
 export async function getStudiesAdminExport(filters: StudiesListFilters) {
   const { where, orderBy } = await buildStudiesQuery(filters);
   return prisma.study.findMany({
     where,
-    include: {
-      commune: { include: { department: { include: { region: true } } } },
-      user_study: { include: { user: true } },
+    select: {
+      territory_name: true,
+      year: true,
+      observed_exposure_valid: true,
+      exposition_future_valid: true,
+      sensibility_valid: true,
+      strategy_construction_valid: true,
+      created_at: true,
+      updated_at: true,
+      commune: {
+        select: {
+          label: true,
+          postal_code: true,
+          department: { select: { label: true, region: { select: { label: true } } } },
+        },
+      },
+      // Les autres membres ne sont que comptés : leur identité n'est pas chargée.
+      user_study: {
+        where: { head_study: true },
+        take: 1,
+        select: { user: { select: { firstname: true, lastname: true, email: true } } },
+      },
+      _count: { select: { user_study: true } },
     },
     orderBy,
   });
