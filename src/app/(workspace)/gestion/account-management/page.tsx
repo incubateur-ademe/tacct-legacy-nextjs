@@ -3,6 +3,7 @@ import { SortHeader } from '@/components/admin/SortHeader';
 import { StatusAccount } from '@/components/admin/StatusAccount';
 import { ContentLayout } from '@/components/layout/ContentLayout';
 import { BlockTitleIcon } from '@/components/ui/BlockTitleIcon';
+import { BASE_PATH } from '@/lib/base-path';
 import { pluralize } from '@/lib/pluralize';
 import { getUsersList } from '@/server/admin/queries';
 import Link from 'next/link';
@@ -50,6 +51,12 @@ export default async function AccountManagementPage({
     return `?${params.toString()}`;
   };
 
+  const exportParams = new URLSearchParams();
+  if (search) exportParams.set('q', search);
+  if (sort) exportParams.set('sort', sort);
+  if (dir) exportParams.set('dir', dir);
+  const exportHref = `${BASE_PATH}/api/gestion/account-management/xlsx?${exportParams.toString()}`;
+
   const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
     day: '2-digit',
     month: '2-digit',
@@ -90,6 +97,14 @@ export default async function AccountManagementPage({
                     {total} {pluralize(total, 'résultat', 'résultats')}
                   </span>
                 </div>
+                <a
+                  href={exportHref}
+                  className="c-btn--secondary ml-auto"
+                  title="Exporter la liste des comptes affichés, toutes pages confondues"
+                  download
+                >
+                  exporter en xlsx
+                </a>
               </div>
             </div>
           </div>

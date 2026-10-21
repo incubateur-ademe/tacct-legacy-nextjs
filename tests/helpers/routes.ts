@@ -194,6 +194,13 @@ export function buildRouteCases(fixtures: Fixtures): RouteCase[] {
     { api: true },
   );
 
+  for (const pattern of [
+    '/api/gestion/account-management/xlsx',
+    '/api/gestion/studies-management/xlsx',
+  ]) {
+    cases.push({ pattern, url: pattern, api: true });
+  }
+
   // Ne dépend d'aucune fixture, et répond 503 si la base est injoignable — donc
   // un 200 ici vaut aussi vérification que le pool sert bien des connexions.
   cases.push({ pattern: '/api/health/db', url: '/api/health/db', api: true });

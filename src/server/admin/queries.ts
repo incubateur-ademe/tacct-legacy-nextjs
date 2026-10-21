@@ -7,28 +7,31 @@ const DEFAULT_PAGE_SIZE = 10;
 
 export type SortDir = 'asc' | 'desc';
 
-export async function getUsersList({
-  page = 1,
-  pageSize = DEFAULT_PAGE_SIZE,
-  search,
-  sort,
-  dir = 'asc',
-}: {
-  page?: number;
-  pageSize?: number;
+export type UsersListFilters = {
   search?: string;
   /** Clé de tri : `lastname` (Nom), `commune`, `creationDate`, `validated` */
   sort?: string;
   dir?: SortDir;
-}) {
-  // firstname/lastname/email/username sont chiffrés (AES-GCM) : ni recherche SQL
-  // (LIKE impossible), ni tri SQL (ordre du chiffré). On charge la liste
-  // déchiffrée (extension Prisma) puis on filtre/trie/pagine en mémoire. OK tant
-  // que le volume reste modéré (quelques milliers de comptes).
-  const all = await prisma.user.findMany({
-    include: { study_office: true, commune: true },
-  });
+};
 
+type FilterableUser = {
+  firstname: string;
+  lastname: string;
+  email: string;
+  username: string;
+  created_at: Date;
+  validated: boolean;
+  commune: { label: string } | null;
+};
+
+// firstname/lastname/email/username sont chiffrés (AES-GCM) : ni recherche SQL
+// (LIKE impossible), ni tri SQL (ordre du chiffré). On charge la liste
+// déchiffrée (extension Prisma) puis on filtre/trie en mémoire. OK tant que le
+// volume reste modéré (quelques milliers de comptes).
+function filterAndSortUsers<T extends FilterableUser>(
+  all: T[],
+  { search, sort, dir = 'asc' }: UsersListFilters,
+): T[] {
   const needle = search?.trim().toLowerCase();
   const filtered = needle
     ? all.filter((u) =>
@@ -41,7 +44,7 @@ export async function getUsersList({
   const factor = dir === 'desc' ? -1 : 1;
   const cmpStr = (a: string, b: string) =>
     a.localeCompare(b, 'fr', { sensitivity: 'base' });
-  const sorted = [...filtered].sort((a, b) => {
+  return [...filtered].sort((a, b) => {
     switch (sort) {
       case 'commune':
         return factor * cmpStr(a.commune?.label ?? '', b.commune?.label ?? '');
@@ -53,11 +56,34 @@ export async function getUsersList({
         return factor * cmpStr(a.lastname, b.lastname);
     }
   });
+}
+
+export async function getUsersList({
+  page = 1,
+  pageSize = DEFAULT_PAGE_SIZE,
+  ...filters
+}: UsersListFilters & { page?: number; pageSize?: number }) {
+  const all = await prisma.user.findMany({
+    include: { study_office: true, commune: true },
+  });
+  const sorted = filterAndSortUsers(all, filters);
 
   const total = sorted.length;
   const start = (page - 1) * pageSize;
   const items = sorted.slice(start, start + pageSize);
   return { items, total, page, pageSize };
+}
+
+/** Tous les comptes correspondant aux filtres de la liste, pour l'export xlsx. */
+export async function getUsersExport(filters: UsersListFilters) {
+  const all = await prisma.user.findMany({
+    include: {
+      study_office: true,
+      commune: true,
+      user_study: { include: { study: { select: { territory_name: true, year: true } } } },
+    },
+  });
+  return filterAndSortUsers(all, filters);
 }
 
 export async function getUserById(id: string) {
@@ -73,21 +99,14 @@ export async function getUserById(id: string) {
 
 // ─── Studies (admin) ──────────────────────────────────────────────────────────
 
-export async function getStudiesAdminList({
-  page = 1,
-  pageSize = DEFAULT_PAGE_SIZE,
-  search,
-  regionId,
-  sort,
-  dir = 'asc',
-}: {
-  page?: number;
-  pageSize?: number;
+export type StudiesListFilters = {
   search?: string;
   regionId?: string;
   sort?: string;
   dir?: SortDir;
-}) {
+};
+
+async function buildStudiesQuery({ search, regionId, sort, dir = 'asc' }: StudiesListFilters) {
   // Le nom du chargé d'étude est chiffré : on résout d'abord en mémoire les
   // user_ids dont le nom matche (volume modéré), puis on filtre les études
   // dessus en SQL — la pagination et le tri SQL des études sont conservés.
@@ -132,6 +151,16 @@ export async function getStudiesAdminList({
           ? { created_at: dir }
           : { created_at: 'desc' as SortDir };
 
+  return { where, orderBy };
+}
+
+export async function getStudiesAdminList({
+  page = 1,
+  pageSize = DEFAULT_PAGE_SIZE,
+  ...filters
+}: StudiesListFilters & { page?: number; pageSize?: number }) {
+  const { where, orderBy } = await buildStudiesQuery(filters);
+
   const [items, total] = await Promise.all([
     prisma.study.findMany({
       where,
@@ -150,6 +179,19 @@ export async function getStudiesAdminList({
     prisma.study.count({ where }),
   ]);
   return { items, total, page, pageSize };
+}
+
+/** Toutes les études correspondant aux filtres de la liste, pour l'export xlsx. */
+export async function getStudiesAdminExport(filters: StudiesListFilters) {
+  const { where, orderBy } = await buildStudiesQuery(filters);
+  return prisma.study.findMany({
+    where,
+    include: {
+      commune: { include: { department: { include: { region: true } } } },
+      user_study: { include: { user: true } },
+    },
+    orderBy,
+  });
 }
 
 export async function getRegionsList() {

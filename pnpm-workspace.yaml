@@ -1,3 +1,8 @@
-ignoredBuiltDependencies:
-  - sharp
-  - unrs-resolver
+allowBuilds:
+  '@parcel/watcher': false
+  '@prisma/engines': false
+  core-js: false
+  prisma: false
+  protobufjs: false
+  sharp: false
+  unrs-resolver: false

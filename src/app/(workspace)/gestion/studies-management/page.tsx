@@ -6,6 +6,7 @@ import { BlockTitleIcon } from '@/components/ui/BlockTitleIcon';
 import { ContentLayout } from '@/components/layout/ContentLayout';
 import { SortHeader } from '@/components/admin/SortHeader';
 import { Pagination } from '@/components/admin/Pagination';
+import { BASE_PATH } from '@/lib/base-path';
 import { pluralize } from '@/lib/pluralize';
 
 export const dynamic = 'force-dynamic';
@@ -57,6 +58,13 @@ export default async function StudiesAdminPage({
     if (dir) params.set('dir', dir);
     return `?${params.toString()}`;
   };
+
+  const exportParams = new URLSearchParams();
+  if (search) exportParams.set('q', search);
+  if (region) exportParams.set('region', region);
+  if (sort) exportParams.set('sort', sort);
+  if (dir) exportParams.set('dir', dir);
+  const exportHref = `${BASE_PATH}/api/gestion/studies-management/xlsx?${exportParams.toString()}`;
 
   const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
     day: '2-digit',
@@ -114,6 +122,14 @@ export default async function StudiesAdminPage({
                 <span className="ml-3">
                   {total} {pluralize(total, 'résultat', 'résultats')}
                 </span>
+                <a
+                  href={exportHref}
+                  className="c-btn--secondary ml-3"
+                  title="Exporter la liste des études affichées, toutes pages confondues"
+                  download
+                >
+                  exporter en xlsx
+                </a>
               </div>
             </div>
           </div>
